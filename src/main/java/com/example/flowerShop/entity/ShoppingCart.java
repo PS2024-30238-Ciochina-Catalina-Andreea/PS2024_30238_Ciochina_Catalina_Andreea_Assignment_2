@@ -38,6 +38,6 @@ public class ShoppingCart {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToMany(mappedBy = "shoppingCart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;
 }

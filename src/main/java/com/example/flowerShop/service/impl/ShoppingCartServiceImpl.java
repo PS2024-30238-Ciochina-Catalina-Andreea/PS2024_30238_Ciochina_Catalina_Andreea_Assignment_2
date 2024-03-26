@@ -110,7 +110,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 if (shoppingCartDetailedDTO.getId_user() != null || shoppingCartDetailedDTO.getId_order() != null) {
 
                 }
-                ShoppingCartUtils.updateCartValues(existingCart, shoppingCartDetailedDTO,items);
+                ShoppingCartUtils.updateCartValues(existingCart, shoppingCartDetailedDTO, items);
                 shoppingCartRepository.save(existingCart);
                 return Utils.getResponseEntity(ShoppingCartConstants.DATA_MODIFIED, HttpStatus.OK);
             } else {

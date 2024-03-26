@@ -176,6 +176,10 @@ public class OrderItemServiceImpl implements OrderItemService {
         try {
             Optional<OrderItem> orderItemOptional = orderItemRepository.findById(id);
             if (orderItemOptional.isPresent()) {
+                OrderItem orderItemExisting = orderItemOptional.get();
+                Product product = orderItemExisting.getProduct();
+                product.setStock((int) (product.getStock() + orderItemExisting.getQuantity()));
+                productRepository.save(product);
                 orderItemRepository.deleteById(id);
                 LOGGER.info("Order item deleted successfully");
                 return Utils.getResponseEntity(OrderItemConstants.ORDER_ITEM_DELETED, HttpStatus.OK);

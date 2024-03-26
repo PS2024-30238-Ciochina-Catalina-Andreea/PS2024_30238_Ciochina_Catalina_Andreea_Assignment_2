@@ -1,11 +1,8 @@
 package com.example.flowerShop.utils.shoppingCart;
 
-import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDetailedDTO;
-import com.example.flowerShop.entity.Order;
 import com.example.flowerShop.entity.OrderItem;
 import com.example.flowerShop.entity.ShoppingCart;
-import com.example.flowerShop.mapper.ShoppingCartMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
