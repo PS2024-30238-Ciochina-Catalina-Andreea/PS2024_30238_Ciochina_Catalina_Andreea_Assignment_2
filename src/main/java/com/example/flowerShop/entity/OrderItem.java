@@ -39,4 +39,11 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     @JsonIgnore
     private Order order;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shoppingCart_id")
+    @JsonIgnore
+    private ShoppingCart shoppingCart;
+
+
 }

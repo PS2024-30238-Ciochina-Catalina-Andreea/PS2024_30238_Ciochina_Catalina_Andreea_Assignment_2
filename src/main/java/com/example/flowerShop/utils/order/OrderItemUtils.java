@@ -12,21 +12,11 @@ import java.util.Objects;
 @NoArgsConstructor
 public class OrderItemUtils {
 
-    /**
-     * Validation of the quantity and product to not be empty
-     * @param orderItemDetailedDTO
-     * @return
-     */
     public boolean validateOrderItemMap(OrderItemDetailedDTO orderItemDetailedDTO) {
         return !Objects.equals(orderItemDetailedDTO.getQuantity(), null)
                 && !Objects.equals(orderItemDetailedDTO.getId_product(), "");
     }
 
-    /**
-     * Updates the entry of an existing order item from DB, updates content of the Product and its Quantity
-     * @param orderItemExisting
-     * @param orderItemDTO
-     */
     public static void updateOrderItemsValues(OrderItem orderItemExisting, OrderItemDTO orderItemDTO) {
         if (Objects.nonNull(orderItemDTO.getProduct())) {
             orderItemExisting.setProduct(orderItemDTO.getProduct());

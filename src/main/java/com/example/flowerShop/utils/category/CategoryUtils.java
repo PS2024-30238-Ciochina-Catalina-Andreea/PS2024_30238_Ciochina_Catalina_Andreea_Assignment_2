@@ -13,21 +13,11 @@ import java.util.Objects;
 @NoArgsConstructor
 public class CategoryUtils {
 
-    /**
-     * Validates the category name and description for creating category
-     * @param categoryDetailedDTO
-     * @return
-     */
     public boolean validateCategoryMap(CategoryDetailedDTO categoryDetailedDTO) {
         return !Objects.equals(categoryDetailedDTO.getName(), "")
                 && !Objects.equals(categoryDetailedDTO.getDescription(), "");
     }
 
-    /**
-     * Updates category's description and list of products
-     * @param categoryExisting
-     * @param category
-     */
     public static void updateCategoryValues(Category categoryExisting, CategoryDetailedDTO category) {
         if (Objects.nonNull(category.getDescription()) && !"".equalsIgnoreCase(category.getDescription())) {
             categoryExisting.setDescription(category.getDescription());

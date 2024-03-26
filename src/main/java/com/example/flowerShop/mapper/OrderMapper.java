@@ -43,9 +43,7 @@ public class OrderMapper implements Mapper<Order, OrderDTO, OrderDetailedDTO> {
     @Override
     public Order convertToEntity(OrderDTO orderDTO) {
         if (orderDTO != null) {
-           System.out.println(orderDTO.getOrderItems().size());
-
-            return Order.builder()
+               return Order.builder()
                     .id(orderDTO.getId())
                     .status(orderDTO.getStatus())
                     .address(orderDTO.getAddress())
