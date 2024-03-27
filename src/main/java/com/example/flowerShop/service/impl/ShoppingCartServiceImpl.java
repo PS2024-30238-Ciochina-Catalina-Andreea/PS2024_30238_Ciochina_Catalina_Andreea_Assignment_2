@@ -97,7 +97,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             exception.printStackTrace();
         }
         return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_CREATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     @Override

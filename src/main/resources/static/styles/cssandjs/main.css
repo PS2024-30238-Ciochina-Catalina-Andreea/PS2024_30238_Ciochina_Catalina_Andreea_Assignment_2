@@ -1,0 +1,54 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 55%;
+    background-color: #f0cecc;
+    border-radius: 20px;
+    box-shadow: 0 0 10px #7e98a9;
+    padding: 20px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.table {
+    border-radius: 10px;
+}
+
+.table th,
+.table td {
+    border: none;
+}
+
+.table th {
+    background-color:#7e98a9;
+    color: #723b38;
+}
+
+.floral-background {
+    background-image: url('floral-background.jpg');
+    background-size: cover;
+    backdrop-filter: opacity(0.5);
+}
+
+.floral-border {
+    border: 5px solid rgba(244, 205, 195, 0.64);
+    padding: 20px;
+}
+
+.floral-header {
+    color: #723b38;
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        max-width: 90%;
+    }
+}

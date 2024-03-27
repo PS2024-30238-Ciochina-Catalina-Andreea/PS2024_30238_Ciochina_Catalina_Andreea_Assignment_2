@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,9 +36,12 @@ public class UserController {
      * @return
      */
     @GetMapping("/get/all")
-    public ResponseEntity<List<UserGetDTO>> getAllUsers() {
+    public ModelAndView getAllUsers() {
+        ModelAndView modelAndView = new ModelAndView("listOfUsers");
+        List<UserGetDTO> users = this.userServiceImpl.getAllUsers().getBody();
+        modelAndView.addObject("users", users);
         LOGGER.info("Request for list of users");
-        return this.userServiceImpl.getAllUsers();
+        return modelAndView;
     }
 
     /**

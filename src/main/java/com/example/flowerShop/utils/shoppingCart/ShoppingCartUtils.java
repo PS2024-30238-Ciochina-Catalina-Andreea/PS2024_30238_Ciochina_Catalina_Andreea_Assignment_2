@@ -3,12 +3,14 @@ package com.example.flowerShop.utils.shoppingCart;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDetailedDTO;
 import com.example.flowerShop.entity.OrderItem;
 import com.example.flowerShop.entity.ShoppingCart;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
 
 @Component
+@NoArgsConstructor
 public class ShoppingCartUtils {
 
     public boolean validateCartMap(ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
