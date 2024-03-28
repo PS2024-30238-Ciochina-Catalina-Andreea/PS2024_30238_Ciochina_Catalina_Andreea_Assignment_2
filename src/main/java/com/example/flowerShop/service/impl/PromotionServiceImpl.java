@@ -28,7 +28,7 @@ public class PromotionServiceImpl implements PromotionService {
     public PromotionServiceImpl(PromotionRepository promotionRepository,
                                 PromotionMapper promotionMapper,
                                 ProductRepository productRepository,
-                                PromotionUtils promotionUtils){
+                                PromotionUtils promotionUtils) {
         this.promotionMapper = promotionMapper;
         this.promotionRepository = promotionRepository;
         this.productRepository = productRepository;
@@ -89,11 +89,36 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public ResponseEntity<String> updatePromotionById(UUID id, PromotionDetailedDTO promotionDetailedDTO) {
-        return null;
+        try {
+            Optional<Promotion> promotionOptional = promotionRepository.findById(id);
+            List<Product> products = productRepository.findProjectedByIdIn(promotionDetailedDTO.getId_products());
+            if (promotionOptional.isPresent()) {
+                Promotion promotionExisting = promotionOptional.get();
+                PromotionUtils.updatePromotion(promotionExisting, promotionDetailedDTO, products);
+                promotionRepository.save(promotionExisting);
+                return Utils.getResponseEntity(PromotionConstants.DATA_MODIFIED, HttpStatus.OK);
+            } else {
+                return Utils.getResponseEntity(PromotionConstants.INVALID_PROMOTION, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_UPDATING_PROMOTION, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<String> deletePromotionById(UUID id) {
-        return null;
+        try {
+            Optional<Promotion> promotionOptional = promotionRepository.findById(id);
+            if (promotionOptional.isPresent()) {
+                promotionRepository.deleteById(id);
+                return Utils.getResponseEntity(PromotionConstants.PROMOTION_DELETED, HttpStatus.OK);
+            } else {
+                return Utils.getResponseEntity(PromotionConstants.INVALID_PROMOTION, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_DELETING_PROMOTION, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

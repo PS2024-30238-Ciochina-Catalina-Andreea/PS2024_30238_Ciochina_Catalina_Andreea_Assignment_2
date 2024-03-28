@@ -1,5 +1,6 @@
 package com.example.flowerShop.entity;
 
+import com.example.flowerShop.dto.customProduct.CustomProductDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -52,6 +53,10 @@ public class Product {
     private List<OrderItem> orderItems;
 
     @ManyToMany(mappedBy = "products",cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonBackReference
     private List<Promotion> promotions;
+
+    @ManyToMany(mappedBy = "products",cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<CustomProduct> customProducts;
 }
