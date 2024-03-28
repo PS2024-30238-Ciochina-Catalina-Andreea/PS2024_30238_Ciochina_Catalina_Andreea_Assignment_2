@@ -8,20 +8,24 @@
 </head>
 <body class="floral-background">
 <div class="container floral-border">
-    <h1 class="floral-header">Users List</h1>
+    <h1 class="floral-header">Lista useri</h1>
     <table class="table table-bordered">
         <thead class="thead-light">
         <tr>
             <th scope="col">ID</th>
-            <th scope="col">Name</th>
+            <th scope="col">Nume</th>
+            <th scope="col">Contact</th>
+            <th scope="col">Adresa</th>
             <th scope="col">Email</th>
-            <th scope="col">Role</th>
+            <th scope="col">Rol</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
             <td th:text="${user.getId().toString()}">ID</td>
-            <td th:text="${user.getName()}">Name</td>
+            <td th:text="${user.getName()}">Nume</td>
+            <td th:text="${user.getContactNumber()}">Contact</td>
+            <td th:text="${user.getAddress()}">Adresa</td>
             <td th:text="${user.getEmail()}">Email</td>
             <td th:text="${user.getRole().toString()}">Role</td>
         </tr>

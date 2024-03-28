@@ -2,10 +2,8 @@ package com.example.flowerShop.mapper;
 
 import com.example.flowerShop.dto.customProduct.CustomProductDTO;
 import com.example.flowerShop.dto.customProduct.CustomProductDetailedDTO;
-import com.example.flowerShop.dto.shoppingCart.ShoppingCartDTO;
 import com.example.flowerShop.entity.CustomProduct;
 import com.example.flowerShop.entity.Product;
-import com.example.flowerShop.entity.ShoppingCart;
 import com.example.flowerShop.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class CustomProductMapper implements Mapper<CustomProduct, CustomProductDTO, CustomProductDetailedDTO> {
+
     @Override
     public CustomProductDetailedDTO convertToDTO(CustomProduct customProduct) {
         if (customProduct != null) {
@@ -53,6 +52,7 @@ public class CustomProductMapper implements Mapper<CustomProduct, CustomProductD
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
+
     public CustomProductDTO convertEntToDtoWithObjects(CustomProduct customProduct) {
 
         if (customProduct != null) {
@@ -83,6 +83,7 @@ public class CustomProductMapper implements Mapper<CustomProduct, CustomProductD
         }
         return null;
     }
+
     @Override
     public CustomProduct convertToEntity(CustomProductDTO customProductDTO) {
         if (customProductDTO != null) {

@@ -13,5 +13,4 @@ public interface CustomProductRepository extends JpaRepository<CustomProduct, UU
 
     Optional<CustomProduct> findById(@Param("id") UUID id);
 
-    Optional<CustomProduct> findByUser(User user);
 }

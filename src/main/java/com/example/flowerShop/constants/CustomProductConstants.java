@@ -8,7 +8,6 @@ public class CustomProductConstants {
     public static final String INVALID_DATA_AT_CREATING_CUSTOM_PRODUCT= "Nu s-a putut crea buchetul. Date incorecte!";
     public static final String SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT = "Ceva nu a mers bine la crearea unui nou buchet!";
     public static final String INVALID_CUSTOM_PRODUCT= "Buchetul nu exista. Date incorecte!";
-    public static final String SOMETHING_WENT_WRONG_AT_UPDATING_CUSTOM_PRODUCT = "Ceva nu a mers bine la modificarea buchetului!";
     public static final String SOMETHING_WENT_WRONG_AT_DELETING_CUSTOM_PRODUCT = "Ceva nu a mers bine la ștergerea buchetului.";
 
 }

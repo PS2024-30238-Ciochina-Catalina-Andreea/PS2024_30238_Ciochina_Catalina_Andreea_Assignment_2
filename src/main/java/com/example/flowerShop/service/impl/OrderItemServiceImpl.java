@@ -35,6 +35,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     /**
      * Constructor for inversion of control, used Autowired annotation for Spring to know to do automated injection
+     *
      * @param orderItemRepository
      * @param productRepository
      * @param orderItemUtils
@@ -50,7 +51,8 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     /**
      * Returns the entries from the DB for the orderItems table
-     * @return ResponseEntity<List<OrderItemDTO>>
+     *
+     * @return ResponseEntity<List < OrderItemDTO>>
      */
     @Override
     public ResponseEntity<List<OrderItemDTO>> getAllOrderItems() {
@@ -69,6 +71,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     /**
      * Gets the order item with the given id
+     *
      * @param id
      * @return ResponseEntity<OrderItemDTO>
      */
@@ -95,6 +98,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     /**
      * Creates a new order item, if there is a product and the same quantity we cannot create another one
+     *
      * @param orderItemDetailedDTO
      * @return ResponseEntity<String>
      */
@@ -124,6 +128,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     /**
      * Updates the order item by id, on here we can change the product and its quantity on a order item given by id
+     *
      * @param id
      * @param orderItemDetailedDTO
      * @return ResponseEntity<String>
@@ -166,6 +171,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     /**
      * Deletes order item by id if it exists in the db
+     *
      * @param id
      * @return ResponseEntity<String>
      */

@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Injected constructor
+     *
      * @param userRepository
      * @param userUtils
      * @param userMapper
@@ -45,7 +46,8 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Gets a list of user entries from the db
-     * @return ResponseEntity<List<UserGetDTO>>
+     *
+     * @return ResponseEntity<List < UserGetDTO>>
      */
     @Override
     public ResponseEntity<List<UserGetDTO>> getAllUsers() {
@@ -64,6 +66,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Gets an existing user by id
+     *
      * @param id
      * @return ResponseEntity<UserGetDTO>
      */
@@ -90,6 +93,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Creates a new user in the user table
+     *
      * @param user
      * @return ResponseEntity<String>
      */
@@ -121,6 +125,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Updates an existing user from the user table with new values
+     *
      * @param id
      * @param user
      * @return ResponseEntity<String>
@@ -150,6 +155,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Deletes an existing user by given id
+     *
      * @param id
      * @return ResponseEntity<String>
      */

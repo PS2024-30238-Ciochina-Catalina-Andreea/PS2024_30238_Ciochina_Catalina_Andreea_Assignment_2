@@ -34,8 +34,7 @@ public class CustomProductServiceImpl implements CustomProductService {
                                     CustomProductMapper customProductMapper,
                                     CustomProductRepository customProductRepository,
                                     CustomProductUtils customProductUtils,
-                                    UserRepository userRepository)
-    {
+                                    UserRepository userRepository) {
         this.customProductMapper = customProductMapper;
         this.customProductRepository = customProductRepository;
         this.productRepository = productRepository;
@@ -81,7 +80,7 @@ public class CustomProductServiceImpl implements CustomProductService {
                 List<Product> products = productRepository.findProjectedByIdIn(customProductDetailedDTO.getId_products());
 
                 if (products.stream().allMatch(Objects::nonNull) && !products.isEmpty()) {
-                    CustomProductDTO customProductDTO = customProductMapper.convToDtoWithObjects(customProductDetailedDTO,user,products);
+                    CustomProductDTO customProductDTO = customProductMapper.convToDtoWithObjects(customProductDetailedDTO, user, products);
                     customProductRepository.save(customProductMapper.convertToEntity(customProductDTO));
                     return Utils.getResponseEntity(CustomProductConstants.CUSTOM_PRODUCT_CREATED, HttpStatus.CREATED);
                 } else {

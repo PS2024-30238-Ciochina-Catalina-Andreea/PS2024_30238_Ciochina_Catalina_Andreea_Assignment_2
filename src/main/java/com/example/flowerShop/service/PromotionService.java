@@ -1,8 +1,5 @@
 package com.example.flowerShop.service;
 
-
-import com.example.flowerShop.dto.order.OrderDTO;
-import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.promotion.PromotionDTO;
 import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
 import org.springframework.http.ResponseEntity;

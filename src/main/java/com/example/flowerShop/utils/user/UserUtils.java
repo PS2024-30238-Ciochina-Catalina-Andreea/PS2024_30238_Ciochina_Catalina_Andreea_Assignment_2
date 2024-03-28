@@ -3,8 +3,6 @@ package com.example.flowerShop.utils.user;
 import com.example.flowerShop.dto.user.UserPostDTO;
 import com.example.flowerShop.entity.User;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;

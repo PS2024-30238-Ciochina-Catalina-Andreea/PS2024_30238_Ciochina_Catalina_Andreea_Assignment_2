@@ -31,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * Dependency Injection in constructor with help of @Autowired
+     *
      * @param categoryRepository
      * @param categoryUtils
      * @param categoryMapper
@@ -44,7 +45,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * Retrieves list of all categories
-     * @return ResponseEntity<List<CategoryDTO>>
+     *
+     * @return ResponseEntity<List < CategoryDTO>>
      */
     @Override
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
@@ -63,6 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * Gets category from db by id, if it does not exist returns null
+     *
      * @param id
      * @return ResponseEntity<CategoryDTO>
      */
@@ -89,6 +92,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * Creates a new entry in the category table
+     *
      * @param categoryDetailedDTO
      * @return ResponseEntity<String>
      */
@@ -120,6 +124,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * Updates an existing entry from the db by given id
+     *
      * @param id
      * @param categoryDetailedDTO
      * @return ResponseEntity<String>
@@ -135,7 +140,7 @@ public class CategoryServiceImpl implements CategoryService {
                 if (Objects.nonNull(categoryDetailedDTO.getName())) {
                     LOGGER.error("You cannot update the name of category!");
                 }
-                CategoryUtils.updateCategoryValues(categoryExisting,categoryDetailedDTO);
+                CategoryUtils.updateCategoryValues(categoryExisting, categoryDetailedDTO);
                 LOGGER.info("Completed category update");
                 categoryRepository.save(categoryExisting);
                 return Utils.getResponseEntity(CategoryConstants.DATA_MODIFIED, HttpStatus.OK);
@@ -152,6 +157,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     /**
      * Deletes an entry by id if found
+     *
      * @param id
      * @return ResponseEntity<String>
      */

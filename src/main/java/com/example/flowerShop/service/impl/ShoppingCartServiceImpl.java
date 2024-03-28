@@ -1,10 +1,8 @@
 package com.example.flowerShop.service.impl;
 
-import com.example.flowerShop.constants.OrderConstants;
 import com.example.flowerShop.constants.ShoppingCartConstants;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDTO;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDetailedDTO;
-import com.example.flowerShop.entity.Order;
 import com.example.flowerShop.entity.OrderItem;
 import com.example.flowerShop.entity.ShoppingCart;
 import com.example.flowerShop.entity.User;
@@ -39,7 +37,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                                    ShoppingCartUtils shoppingCartUtils,
                                    UserRepository userRepository,
                                    OrderItemRepository orderItemRepository,
-                                   OrderRepository orderRepository){
+                                   OrderRepository orderRepository) {
         this.shoppingCartMapper = shoppingCartMapper;
         this.shoppingCartRepository = shoppingCartRepository;
         this.shoppingCartUtils = shoppingCartUtils;

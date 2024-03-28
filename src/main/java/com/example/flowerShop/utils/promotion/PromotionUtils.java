@@ -14,8 +14,8 @@ import java.util.Objects;
 public class PromotionUtils {
 
     public boolean validatePromotionMap(PromotionDetailedDTO promotionDetailedDTO) {
-        return  !Objects.equals(promotionDetailedDTO.getName(), null)
-                && !Objects.equals(promotionDetailedDTO.getDiscountPercentage(), null) ;
+        return !Objects.equals(promotionDetailedDTO.getName(), null)
+                && !Objects.equals(promotionDetailedDTO.getDiscountPercentage(), null);
     }
 
     public static void updatePromotion(Promotion promotion, PromotionDetailedDTO promotionDetailedDTO, List<Product> products) {

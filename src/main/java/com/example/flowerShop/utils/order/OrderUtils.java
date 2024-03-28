@@ -12,7 +12,7 @@ import java.util.Objects;
 public class OrderUtils {
 
     public boolean validateOrderMap(OrderDetailedDTO orderDetailedDTO) {
-        return  orderDetailedDTO.getId_user() != null
+        return orderDetailedDTO.getId_user() != null
                 && orderDetailedDTO.getId_orderItems() != null
                 && !orderDetailedDTO.getId_orderItems().isEmpty();
     }

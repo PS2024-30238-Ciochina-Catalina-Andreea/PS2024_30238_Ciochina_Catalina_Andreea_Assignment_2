@@ -14,7 +14,7 @@ import java.util.Objects;
 public class ShoppingCartUtils {
 
     public boolean validateCartMap(ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
-        return  !Objects.equals(shoppingCartDetailedDTO.getId_user(), null);
+        return !Objects.equals(shoppingCartDetailedDTO.getId_user(), null);
     }
 
     public static void updateCartValues(ShoppingCart shoppingCart, ShoppingCartDetailedDTO shoppingCartDetailedDTO, List<OrderItem> orderItemList) {

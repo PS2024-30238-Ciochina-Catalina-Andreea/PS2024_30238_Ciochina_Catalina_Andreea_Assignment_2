@@ -15,7 +15,7 @@ import java.util.Objects;
 public class CustomProductUtils {
 
     public boolean validateCustomProductMap(CustomProductDetailedDTO customProductDetailedDTO) {
-        return  !Objects.equals(customProductDetailedDTO.getName(), null)
+        return !Objects.equals(customProductDetailedDTO.getName(), null)
                 && !Objects.equals(customProductDetailedDTO.getId_products(), null)
                 && !Objects.equals(customProductDetailedDTO.getQuantities(), null)
                 && !Objects.equals(customProductDetailedDTO.getId_user(), null);

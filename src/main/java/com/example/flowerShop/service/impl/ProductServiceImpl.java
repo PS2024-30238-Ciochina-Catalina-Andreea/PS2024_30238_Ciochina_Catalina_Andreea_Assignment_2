@@ -37,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Injected constructor
+     *
      * @param productRepository
      * @param categoryRepository
      * @param productUtils
@@ -52,7 +53,8 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Retrieves a list of products entries from the db
-     * @return ResponseEntity<List<ProductDetailedDTO>>
+     *
+     * @return ResponseEntity<List < ProductDetailedDTO>>
      */
     @Override
     public ResponseEntity<List<ProductDetailedDTO>> getAllProducts() {
@@ -71,6 +73,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Gets a product given by id
+     *
      * @param id
      * @return ResponseEntity<ProductDetailedDTO>
      */
@@ -97,6 +100,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Creates a new product entry in the db
+     *
      * @param productDetailedDTO
      * @return ResponseEntity<String>
      */
@@ -109,12 +113,12 @@ public class ProductServiceImpl implements ProductService {
                 Optional<Product> productOptional = productRepository.findByName(productDetailedDTO.getName());
                 if (productOptional.isEmpty()) {
                     Optional<Category> category = categoryRepository.findByName(CategoryName.valueOf(productDetailedDTO.getCategory()));
-                    if(category.isPresent()) {
+                    if (category.isPresent()) {
                         ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
                         LOGGER.info("Product created");
                         productRepository.save(productMapper.convertToEntity(productDTO));
                         return Utils.getResponseEntity(ProductConstants.PRODUCT_CREATED, HttpStatus.CREATED);
-                    }else{
+                    } else {
                         LOGGER.error("Category with this name does not exist");
                         return Utils.getResponseEntity(ProductConstants.INVALID_DATA_AT_CREATING_PRODUCT, HttpStatus.BAD_REQUEST);
                     }
@@ -135,6 +139,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Updates an existing product from the db given by an id
+     *
      * @param id
      * @param productDetailedDTO
      * @return ResponseEntity<String>
@@ -148,12 +153,12 @@ public class ProductServiceImpl implements ProductService {
             Optional<Category> category;
             if (productOptional.isPresent()) {
                 Product productExisting = productOptional.get();
-                if(Objects.nonNull(productDetailedDTO.getCategory()))
+                if (Objects.nonNull(productDetailedDTO.getCategory()))
                     category = categoryRepository.findByName(CategoryName.valueOf(productDetailedDTO.getCategory()));
                 else
                     category = categoryRepository.findByName(productExisting.getCategory().getName());
-                ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO,category);
-                ProductUtils.updateProductValues(productExisting,productDTO);
+                ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
+                ProductUtils.updateProductValues(productExisting, productDTO);
                 LOGGER.info("Completed product update");
                 productRepository.save(productExisting);
                 return Utils.getResponseEntity(ProductConstants.DATA_MODIFIED, HttpStatus.OK);
@@ -170,6 +175,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Deletes an existing product given by an id
+     *
      * @param id
      * @return ResponseEntity<String>
      */
