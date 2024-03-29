@@ -1,0 +1,89 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+    background-image: url('floral-background.jpg');
+    background-size: cover;
+    backdrop-filter: opacity(0.5);
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 50%;
+    background-color: #f0cecc;
+    border-radius: 20px;
+    box-shadow: 0 0 10px #7e98a9;
+    padding: 20px;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+form {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: inline-block;
+    width: 4rem;
+    margin-right: 20px;
+    color: #723b38;
+}
+
+.input-group {
+    display: inline-block;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: calc(60% - 20px);
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.radio-buttons {
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+    display: inline-block;
+}
+
+button[type="submit"] {
+    background-color: #7e98a9;
+    color: #fff;
+    border: none;
+    margin-top: 0.6rem;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 15px 30px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #723b38;
+    color: #f0cecc;
+    margin-top: 0.6rem;
+    padding: 15px 30px;
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        max-width: 50%;
+    }
+
+    label {
+        width: 60%;
+        text-align: left;
+    }
+}
+
+h2 {
+    font-family: 'Segoe UI', sans-serif;
+    color: #723b38;
+    margin-bottom: 1.5rem;
+}

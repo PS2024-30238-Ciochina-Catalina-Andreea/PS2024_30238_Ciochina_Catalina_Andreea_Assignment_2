@@ -1,6 +1,7 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.UserConstants;
+import com.example.flowerShop.dto.user.LoginDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.dto.user.UserPostDTO;
 import com.example.flowerShop.mapper.UserMapper;
@@ -178,5 +179,15 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(UserConstants.SOMETHING_WENT_WRONG_AT_DELETING_USER, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<UserGetDTO> getUserByEmailAndPassword(LoginDTO loginDTO) {
+        Optional<User> user = userRepository.findByEmail(loginDTO.getEmail());
+        if (user.isPresent() && user.get().getPassword().equals(loginDTO.getPassword())) {
+            return new ResponseEntity<>(userMapper.convertToDTO(user.get()), HttpStatus.OK);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cont user</title>
+    <link th:href="@{/styles/cssandjs/profile.css}" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="navbar">
+    <ul>
+        <li th:if="${user.getRole().toString()} == 'ADMIN'">
+            <form th:action="@{/listOfUsers}" method="get">
+                <button type="submit">Users</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/userProfile}" method="get">
+                <button type="submit">Profil</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/logout}" method="get">
+                <button type="submit">Log Out</button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div>
+    <div class="container">
+        <h2>Profil user</h2>
+        <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
+        <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>
+        <p><strong>Contact Number:</strong> <span th:text="${user.contactNumber}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+        <p><strong>Address:</strong> <span th:text="${user.address}"></span></p>
+        <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+        <div class="buttons">
+            <form th:action="@{/updateUser}" method="get">
+                <button type="submit">Modifica</button>
+            </form>
+            <form th:if="${user.getRole().toString()} != 'ADMIN'" th:action="@{/deleteUser}" method="get">
+                <button type="submit">Sterge</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
