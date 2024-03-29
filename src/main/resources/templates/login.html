@@ -19,9 +19,11 @@
             <label for="password">Parola:</label>
             <input type="password" id="password" name="password" th:field="*{password}" required>
         </div>
-
         <button type="submit">Logare</button>
     </form>
 </div>
+<form class="another" th:action="@{/signUp}" method="get">
+    <button type="submit">Creaza cont</button>
+</form>
 </body>
 </html>

@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Update User</title>
     <link th:href="@{/styles/cssandjs/create.css}" rel="stylesheet"/>
 </head>
 <body>
-<form class="another" th:action="@{/login}" method="get">
-    <button type="submit">Am cont</button>
-</form>
 <div class="container">
-    <h2>Creaza cont</h2>
-    <form th:action="@{/createUser}" th:object="${user}" method="POST">
+    <h2>Modifica date profil</h2>
+    <form th:action="@{/update/__${user.id}__}" th:object="${user}" method="POST">
         <div class="form-group">
             <label for="name">Nume:</label>
-            <input type="text" id="name" name="name" th:field="*{name}" required>
+            <input type="text" id="name" name="name" th:field="*{name}" required th:value="${user.name}">
         </div>
 
         <div class="form-group">
@@ -29,11 +26,6 @@
         </div>
 
         <div class="form-group">
-            <label for="password">Parola:</label>
-            <input type="password" id="password" name="password" th:field="*{password}" required>
-        </div>
-
-        <div class="form-group">
             <label for="address">Adresa:</label>
             <input type="text" id="address" name="address" th:field="*{address}" required>
         </div>
@@ -41,13 +33,14 @@
         <div class="form-group">
             <div class="radio-buttons">
                 <label for="role_customer">Customer</label>
-                <input type="radio" id="role_customer" name="role" value="CUSTOMER"
+                <input type="radio" id="role_customer" name="role" value="CUSTOMER" th:field="*{role}"
                        th:checked="${user.role == 'CUSTOMER'}">
                 <label for="role_admin">Admin</label>
-                <input type="radio" id="role_admin" name="role" value="ADMIN" th:checked="${user.role == 'ADMIN'}">
+                <input type="radio" id="role_admin" name="role" value="ADMIN" th:field="*{role}"
+                       th:checked="${user.role == 'ADMIN'}">
             </div>
         </div>
-        <button type="submit">Creaza</button>
+        <button type="submit">Modifica</button>
     </form>
 </div>
 </body>

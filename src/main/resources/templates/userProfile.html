@@ -32,17 +32,16 @@
 <div>
     <div class="container">
         <h2>Profil user</h2>
-        <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
         <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>
         <p><strong>Contact Number:</strong> <span th:text="${user.contactNumber}"></span></p>
         <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
         <p><strong>Address:</strong> <span th:text="${user.address}"></span></p>
         <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
         <div class="buttons">
-            <form th:action="@{/updateUser}" method="get">
+            <form th:action="@{/updateUser/__${user.id}__}" method="get">
                 <button type="submit">Modifica</button>
             </form>
-            <form th:if="${user.getRole().toString()} != 'ADMIN'" th:action="@{/deleteUser}" method="get">
+            <form th:action="@{/delete/__${user.id}__}" method="post">
                 <button type="submit">Sterge</button>
             </form>
         </div>

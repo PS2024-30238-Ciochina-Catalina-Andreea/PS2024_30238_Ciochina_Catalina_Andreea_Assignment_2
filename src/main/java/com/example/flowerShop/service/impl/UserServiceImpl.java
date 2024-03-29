@@ -190,4 +190,18 @@ public class UserServiceImpl implements UserService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    public User convertToModelObject(UUID id) {
+        UserGetDTO userGetDTO = this.getUserById(id).getBody();
+        User user = new User();
+        if (userGetDTO != null) {
+            user.setName(userGetDTO.getName());
+            user.setAddress(userGetDTO.getAddress());
+            user.setEmail(userGetDTO.getEmail());
+            user.setContactNumber(userGetDTO.getContactNumber());
+            user.setRole(userGetDTO.getRole());
+            user.setId(userGetDTO.getId());
+        }
+        return user;
+    }
 }
