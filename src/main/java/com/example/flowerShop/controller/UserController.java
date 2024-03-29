@@ -5,6 +5,7 @@ import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.dto.user.UserPostDTO;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.UserServiceImpl;
+import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,8 +189,12 @@ public class UserController {
     @PostMapping("/delete/{id}")
     public RedirectView deleteUserById(@PathVariable UUID id) {
         LOGGER.info("Request for deleting a user by id");
-        session.invalidate();
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         this.userServiceImpl.deleteUserById(id);
-        return new RedirectView("/login");
+        if(currentUser.getRole().equals(UserRole.CUSTOMER)) {
+            session.invalidate();
+            return new RedirectView("/login");
+        }
+        return new RedirectView("/listOfUsers");
     }
 }

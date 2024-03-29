@@ -8,6 +8,11 @@
 </head>
 <div class="navbar">
     <ul>
+        <li th:if="${user.getRole().toString()} == 'ADMIN'">
+            <form th:action="@{/listOfUsers}" method="get">
+                <button type="submit">Users</button>
+            </form>
+        </li>
         <li>
             <form th:action="@{/userProfile}" method="get">
                 <button type="submit">Profil</button>
@@ -16,11 +21,6 @@
         <li>
             <form th:action="@{/logout}" method="get">
                 <button type="submit">Log Out</button>
-            </form>
-        </li>
-        <li th:if="${user.getRole().toString()} == 'ADMIN'">
-            <form th:action="@{/listOfUsers}" method="get">
-                <button type="submit">Users</button>
             </form>
         </li>
     </ul>
@@ -37,6 +37,8 @@
             <th scope="col">Adresa</th>
             <th scope="col">Email</th>
             <th scope="col">Rol</th>
+            <th scope="col">Update user</th>
+            <th scope="col">Delete user</th>
         </tr>
         </thead>
         <tbody>
@@ -47,6 +49,16 @@
             <td th:text="${user.getAddress()}">Adresa</td>
             <td th:text="${user.getEmail()}">Email</td>
             <td th:text="${user.getRole().toString()}">Role</td>
+            <td>
+                <form th:action="@{/update/{userId}(userId=${user.getId()})}" method="get">
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{/delete/{userId}(userId=${user.getId()})}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
