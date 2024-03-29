@@ -23,8 +23,8 @@ public class ReviewController {
     }
 
     @GetMapping("/getAllByProduct/{id}")
-    public ResponseEntity<List<ReviewDTO>> getAllReviewsByProductId() {
-        return this.reviewService.getAllReviewsByProductId();
+    public ResponseEntity<List<ReviewDTO>> getAllReviewsByProductId(@PathVariable UUID id) {
+        return this.reviewService.getAllReviewsByProductId(id);
     }
 
     @GetMapping("/get/{id}")

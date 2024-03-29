@@ -7,7 +7,10 @@ import com.example.flowerShop.entity.Review;
 import com.example.flowerShop.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class ReviewMapper implements Mapper<Review, ReviewDTO, ReviewDetailedDTO> {
@@ -40,17 +43,38 @@ public class ReviewMapper implements Mapper<Review, ReviewDTO, ReviewDetailedDTO
         return null;
     }
 
-    public ReviewDTO convToReviewWithUserAndProduct(ReviewDetailedDTO reviewDetailedDTO, Optional<User> user, Optional<Product> product) {
+    public ReviewDTO convToReviewWithUserAndProduct(ReviewDetailedDTO reviewDetailedDTO, User user, Product product) {
 
         if (reviewDetailedDTO != null) {
             return ReviewDTO.builder()
                     .id(reviewDetailedDTO.getId())
                     .text(reviewDetailedDTO.getText())
-                    .user(user.get())
-                    .product(product.get())
+                    .user(user)
+                    .product(product)
                     .rating(reviewDetailedDTO.getRating())
                     .build();
         }
         return null;
+    }
+
+    public ReviewDTO convertEntToDtoWithObjects(Review review) {
+
+        if (review != null) {
+            return ReviewDTO.builder()
+                    .id(review.getId())
+                    .text(review.getText())
+                    .user(review.getUser())
+                    .product(review.getProduct())
+                    .rating(review.getRating())
+                    .build();
+        }
+        return null;
+    }
+
+    public List<ReviewDTO> convertListToDtoWithObjects(List<Review> source) {
+        return source.stream()
+                .map(this::convertEntToDtoWithObjects)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

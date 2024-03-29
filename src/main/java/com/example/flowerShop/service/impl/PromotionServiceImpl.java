@@ -84,7 +84,6 @@ public class PromotionServiceImpl implements PromotionService {
             exception.printStackTrace();
         }
         return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_CREATING_PROMOTION, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     @Override

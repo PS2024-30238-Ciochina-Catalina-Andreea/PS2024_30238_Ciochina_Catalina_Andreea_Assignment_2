@@ -19,7 +19,7 @@ public class ReviewUtils {
                 && !Objects.equals(reviewDetailedDTO.getId_product(), null);
     }
 
-    public static void updateReview(Review review, ReviewDetailedDTO reviewDetailedDTO) {
+    public void updateReview(Review review, ReviewDetailedDTO reviewDetailedDTO) {
 
         if (Objects.nonNull(reviewDetailedDTO.getText())) {
             review.setText(reviewDetailedDTO.getText());

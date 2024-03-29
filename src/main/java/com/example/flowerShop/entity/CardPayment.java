@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -19,24 +20,29 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "reviews")
-public class Review {
+@Table(name = "payments")
+public class CardPayment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @Column(name = "numar_card", nullable = false)
+    private String numarCard;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "cvv", nullable = false)
+    private Integer cvv;
 
-    @Column(name = "text", nullable = false)
-    private String text;
+    @Column(name = "totalPrice", nullable = false)
+    private Long totalPrice;
 
-    @Column(name = "rating", nullable = false)
-    private int rating;
+    @PrePersist
+    protected void onCreate() {
+        orderDate = LocalDateTime.now();
+    }
+
+    @Column(name = "order_date")
+    private LocalDateTime orderDate;
 }
+
+

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ReviewService {
-    ResponseEntity<List<ReviewDTO>> getAllReviewsByProductId();
+    ResponseEntity<List<ReviewDTO>> getAllReviewsByProductId(UUID id);
 
     ResponseEntity<ReviewDTO> getReviewById(UUID id);
 
