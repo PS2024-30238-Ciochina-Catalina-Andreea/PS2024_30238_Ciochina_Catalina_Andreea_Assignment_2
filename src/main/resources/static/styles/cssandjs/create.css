@@ -94,3 +94,47 @@ h2 {
     margin-right: 45px;
     float: right;
 }
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f0cecc;
+    opacity: 0.6;
+    color: #333333;
+    height: 3.5rem;
+}
+
+.navbar ul {
+    display: flex;
+    list-style: none;
+}
+
+.navbar li {
+    margin-right: 10px;
+}
+
+.logout-form {
+    display: inline;
+}
+
+button {
+    width: 5rem;
+    background-color: #723b38;
+    color: #ffffff;
+    margin-top: 0;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.logout-form button {
+    background-color: #f0cecc;
+    color: #723b38;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.logout-form button:hover {
+    background-color: #7e98a9;
+}

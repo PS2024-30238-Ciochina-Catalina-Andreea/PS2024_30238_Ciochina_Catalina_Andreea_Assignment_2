@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping()
 @CrossOrigin("*")
 public class UserController {
 
@@ -27,6 +28,7 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    @Autowired
     private HttpSession session;
 
     /**
@@ -35,8 +37,7 @@ public class UserController {
      * @param userServiceImpl
      */
     @Autowired
-    public UserController(UserServiceImpl userServiceImpl, HttpSession session) {
-        this.session = session;
+    public UserController(UserServiceImpl userServiceImpl) {
         this.userServiceImpl = userServiceImpl;
     }
 
@@ -133,7 +134,7 @@ public class UserController {
         ResponseEntity<UserGetDTO> response = this.userServiceImpl.getUserByEmailAndPassword(loginDTO);
         if (response.getStatusCode() == HttpStatus.OK) {
             session.setAttribute("loggedInUser", response.getBody());
-            return new RedirectView("/userProfile");
+            return new RedirectView("/product/listOfProducts");
         }
         return new RedirectView("/login");
     }
@@ -173,7 +174,11 @@ public class UserController {
     public RedirectView updateUserById(@PathVariable UUID id, @ModelAttribute("user") @RequestBody UserPostDTO user) {
         LOGGER.info("Request for updating data for a user by id");
         ResponseEntity<String> response = this.userServiceImpl.updateUserById(id, user);
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         if (response.getStatusCode() == HttpStatus.OK) {
+            if(currentUser.getRole().equals(UserRole.ADMIN)) {
+                return new RedirectView("/listOfUsers");
+            }
             session.setAttribute("loggedInUser", getUserById(user.getId()).getBody());
             return new RedirectView("/userProfile");
         }

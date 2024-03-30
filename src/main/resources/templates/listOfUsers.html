@@ -8,6 +8,11 @@
 </head>
 <div class="navbar">
     <ul>
+        <li>
+            <form th:action="@{/product/listOfProducts}" method="get">
+                <button type="submit">Produse</button>
+            </form>
+        </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
                 <button type="submit">Users</button>
@@ -50,7 +55,7 @@
             <td th:text="${user.getEmail()}">Email</td>
             <td th:text="${user.getRole().toString()}">Role</td>
             <td>
-                <form th:action="@{/update/{userId}(userId=${user.getId()})}" method="get">
+                <form th:action="@{/updateUser/{userId}(userId=${user.getId()})}" method="get">
                     <button type="submit">Update</button>
                 </form>
             </td>

@@ -24,7 +24,7 @@ body {
 }
 
 .table th {
-    background-color:#7e98a9;
+    background-color: #7e98a9;
     color: #723b38;
 }
 
@@ -44,7 +44,7 @@ body {
     text-align: center;
     font-size: 36px;
     margin-bottom: 30px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 2px 2px 4px #723b38;
 }
 
 @media screen and (max-width: 768px) {
@@ -95,4 +95,40 @@ button {
 
 .logout-form button:hover {
     background-color: #7e98a9;
+}
+
+.product-container {
+    margin-bottom: 20px;
+    border: 1px solid hotpink;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.product {
+    font-size: 16px;
+}
+
+.product div {
+    margin-bottom: 5px;
+}
+
+.product span {
+    font-weight: bold;
+}
+
+.product-container:hover {
+    box-shadow: 0 0 5px #723b38;
+}
+
+.product-container:last-child {
+    margin-bottom: 0;
+}
+
+.add-to-cart-btn {
+    float: right;
+    width: 9rem;
+    margin-bottom: 2rem;
+}
+div{
+    color:#723b38;
 }

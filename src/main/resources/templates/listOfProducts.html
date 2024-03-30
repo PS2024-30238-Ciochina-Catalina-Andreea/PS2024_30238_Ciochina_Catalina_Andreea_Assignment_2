@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista produse</title>
+    <link th:href="@{/styles/cssandjs/listOfProducts.css}" rel="stylesheet"/>
+</head>
+<body class="floral-background">
+<div class="navbar">
+    <ul>
+        <li>
+            <form th:action="@{/product/listOfProducts}" method="get">
+                <button type="submit">Produse</button>
+            </form>
+        </li>
+        <li th:if="${user.getRole().toString()} == 'ADMIN'">
+            <form th:action="@{/listOfUsers}" method="get">
+                <button type="submit">Users</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/userProfile}" method="get">
+                <button type="submit">Profil</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/logout}" method="get">
+                <button type="submit">Log Out</button>
+            </form>
+        </li>
+    </ul>
+</div>
+<div class="container">
+    <h1>Lista produse</h1>
+    <div class="product-container" th:each="product : ${products}">
+        <div class="product">
+            <div>ID: <span th:text="${product.id}">ID</span></div>
+            <div>Nume: <span th:text="${product.name}">Nume</span></div>
+            <div>Descriere: <span th:text="${product.description}">Descriere</span></div>
+            <div>Pret: <span th:text="${product.price}">Pret</span></div>
+            <div>Stoc: <span th:text="${product.stock}">Stoc</span></div>
+            <div>Categorie: <span th:text="${product.category}">Categorie</span></div>
+            <div class="quantity-counter">
+                <span>Cantitate:</span>
+                <input type="number" class="quantity-input" th:value="1" th:min="1" th:max="${product.stock}">
+                <button class="add-to-cart-btn" data-product-id="${product.id}">
+                    Adauga in cos
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

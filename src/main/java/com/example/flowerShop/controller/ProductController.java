@@ -1,12 +1,15 @@
 package com.example.flowerShop.controller;
 
 import com.example.flowerShop.dto.product.ProductDetailedDTO;
+import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.service.impl.ProductServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,8 +23,12 @@ public class ProductController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
+    @Autowired
+    private HttpSession session;
+
     /**
      * Injected constructor
+     *
      * @param productServiceImpl
      */
     @Autowired
@@ -31,16 +38,23 @@ public class ProductController {
 
     /**
      * Gets list of products from db
-     * @return ResponseEntity<List<ProductDetailedDTO>>
+     *
+     * @return ResponseEntity<List < ProductDetailedDTO>>
      */
-    @GetMapping("/get/all")
-    public ResponseEntity<List<ProductDetailedDTO>> getAllProducts() {
+    @GetMapping("/listOfProducts")
+    public ModelAndView getAllProducts() {
         LOGGER.info("Request for list of products");
-        return this.productServiceImpl.getAllProducts();
+        ModelAndView modelAndView = new ModelAndView("listOfProducts");
+        List<ProductDetailedDTO> products = this.productServiceImpl.getAllProducts().getBody();
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        modelAndView.addObject("products", products);
+        modelAndView.addObject("user", currentUser);
+        return modelAndView;
     }
 
     /**
      * Gets product by id
+     *
      * @param id
      * @return ResponseEntity<ProductDetailedDTO>
      */
@@ -52,6 +66,7 @@ public class ProductController {
 
     /**
      * Creates a new product
+     *
      * @param productDetailedDTO
      * @return ResponseEntity<String>
      */
@@ -63,6 +78,7 @@ public class ProductController {
 
     /**
      * Updates an existing product by id
+     *
      * @param id
      * @param productDetailedDTO
      * @return ResponseEntity<String>
@@ -75,6 +91,7 @@ public class ProductController {
 
     /**
      * Deletes a product by id
+     *
      * @param id
      * @return ResponseEntity<String>
      */

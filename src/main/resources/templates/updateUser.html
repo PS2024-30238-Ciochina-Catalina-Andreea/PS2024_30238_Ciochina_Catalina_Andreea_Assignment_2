@@ -7,6 +7,30 @@
     <link th:href="@{/styles/cssandjs/create.css}" rel="stylesheet"/>
 </head>
 <body>
+<div class="navbar">
+    <ul>
+        <li>
+            <form th:action="@{/product/listOfProducts}" method="get">
+                <button type="submit">Produse</button>
+            </form>
+        </li>
+        <li th:if="${user.getRole().toString()} == 'ADMIN'">
+            <form th:action="@{/listOfUsers}" method="get">
+                <button type="submit">Users</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/userProfile}" method="get">
+                <button type="submit">Profil</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/logout}" method="get">
+                <button type="submit">Log Out</button>
+            </form>
+        </li>
+    </ul>
+</div>
 <div class="container">
     <h2>Modifica date profil</h2>
     <form th:action="@{/update/__${user.id}__}" th:object="${user}" method="POST">
