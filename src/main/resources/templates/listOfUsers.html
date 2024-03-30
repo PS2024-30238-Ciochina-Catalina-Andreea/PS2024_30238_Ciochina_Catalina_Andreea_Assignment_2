@@ -13,6 +13,11 @@
                 <button type="submit">Produse</button>
             </form>
         </li>
+        <li>
+            <form th:action="@{/cart/getByUser}" method="get">
+                <button type="submit">Cos</button>
+            </form>
+        </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
                 <button type="submit">Useri</button>

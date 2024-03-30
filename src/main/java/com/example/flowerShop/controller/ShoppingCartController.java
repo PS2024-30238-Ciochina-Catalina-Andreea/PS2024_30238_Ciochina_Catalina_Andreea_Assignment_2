@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/")
 @CrossOrigin("*")
 public class ShoppingCartController {
 
@@ -30,14 +29,17 @@ public class ShoppingCartController {
         this.shoppingCartService = shoppingCartService;
     }
 
-    @GetMapping("cart/get/all")
+    @GetMapping("/cart/get/all")
     public ResponseEntity<List<ShoppingCartDTO>> getAllCarts() {
         return this.shoppingCartService.getAllCarts();
     }
 
-    @GetMapping("cart/getByUser/{id}")
-    public ResponseEntity<ShoppingCartDTO> getCartByUserId(@PathVariable UUID id) {
-        return this.shoppingCartService.getCartByUserId(id);
+    @GetMapping("/cart/getByUser")
+    public ModelAndView getCartByUserId() {
+        ModelAndView modelAndView = new ModelAndView("shoppingCart");
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        modelAndView.addObject("shoppingCart",this.shoppingCartService.getCartByUserId(currentUser.getId()).getBody());
+        return modelAndView;
     }
 
     @GetMapping("/home")
@@ -50,7 +52,7 @@ public class ShoppingCartController {
         return modelAndView;
     }
 
-    @PostMapping("cart/add")
+    @PostMapping("/cart/add")
     public RedirectView addCart(@RequestBody ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
         ResponseEntity<String> response = this.shoppingCartService.addCart(shoppingCartDetailedDTO);
         if (response.getStatusCode() == HttpStatus.CREATED) {
@@ -59,12 +61,12 @@ public class ShoppingCartController {
         return new RedirectView("/userProfile");
     }
 
-    @PutMapping("cart/update/{id}")
+    @PutMapping("/cart/update/{id}")
     public ResponseEntity<String> updateCartByID(@PathVariable UUID id, @RequestBody ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
         return this.shoppingCartService.updateCartById(id, shoppingCartDetailedDTO);
     }
 
-    @DeleteMapping("cart/delete/{id}")
+    @DeleteMapping("/cart/delete/{id}")
     public ResponseEntity<String> deleteCartByID(@PathVariable UUID id) {
         return this.shoppingCartService.deleteCartById(id);
     }

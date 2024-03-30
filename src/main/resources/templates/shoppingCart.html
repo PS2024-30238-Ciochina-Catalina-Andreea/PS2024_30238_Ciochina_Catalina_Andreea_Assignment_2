@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cos cumparaturi</title>
+    <link th:href="@{/styles/cssandjs/shopping-cart.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="navbar">
+    <ul>
+        <li>
+            <form th:action="@{/product/listOfProducts}" method="get">
+                <button type="submit">Produse</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/cart/getByUser}" method="get">
+                <button type="submit">Cos</button>
+            </form>
+        </li>
+        <li th:if="${shoppingCart.user.getRole().toString()} == 'ADMIN'">
+            <form th:action="@{/listOfUsers}" method="get">
+                <button type="submit">Users</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/userProfile}" method="get">
+                <button type="submit">Profil</button>
+            </form>
+        </li>
+        <li>
+            <form th:action="@{/logout}" method="get">
+                <button type="submit">Log Out</button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+<div class="container" th:if="${shoppingCart}">
+    <h1>Cos de cumparaturi</h1>
+    <h2>User: <span th:text="${shoppingCart.user.name}"></span></h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Nume produs</th>
+            <th>Pret</th>
+            <th>Cantitate</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${shoppingCart.orderItems}">
+            <td th:text="${item.product.name}"></td>
+            <td th:text="${item.product.price}"></td>
+            <td th:text="${item.getQuantity()}"></td>
+            <td th:text="${item.product.price * item.quantity}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div>Total Price: <span th:text="${shoppingCart.totalPrice}"></span></div>
+    <form class="command" th:action="@{/checkout}" method="get">
+        <button type="submit">Plaseaza comanda</button>
+    </form>
+</div>
+
+<div th:unless="${shoppingCart}">
+    <p>Cosul este gol.</p>
+</div>
+</body>
+</html>

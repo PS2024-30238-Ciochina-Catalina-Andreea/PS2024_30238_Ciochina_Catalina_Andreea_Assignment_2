@@ -1,6 +1,7 @@
 package com.example.flowerShop.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,5 +40,6 @@ public class ShoppingCart {
     private Order order;
 
     @OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JsonManagedReference("orderItems_shoppingCarts")
     private List<OrderItem> orderItems;
 }

@@ -3,6 +3,7 @@ package com.example.flowerShop.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,18 +44,18 @@ public class Product {
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    @JsonBackReference
+    @JsonBackReference("category")
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonManagedReference("orderItem_product")
     private List<OrderItem> orderItems;
 
     @ManyToMany(mappedBy = "products", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference("promotions")
     private List<Promotion> promotions;
 
     @ManyToMany(mappedBy = "products", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonBackReference("customProducts")
     private List<CustomProduct> customProducts;
 }

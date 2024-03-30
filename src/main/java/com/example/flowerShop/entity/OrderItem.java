@@ -1,7 +1,9 @@
 package com.example.flowerShop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
@@ -29,21 +31,20 @@ public class OrderItem {
     private UUID id;
 
     @Column(name = "quantity", nullable = false)
-    private Long quantity;
+    private int quantity;
 
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonBackReference("orderItem_product")
     private Product product;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
-    @JsonIgnore
+    @JsonBackReference("orderItems_order")
     private Order order;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "shoppingCart_id")
-    @JsonIgnore
+    @JsonBackReference("orderItems_shoppingCarts")
     private ShoppingCart shoppingCart;
-
-
 }

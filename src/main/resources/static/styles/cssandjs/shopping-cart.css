@@ -1,0 +1,132 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f0cecc;
+    opacity: 0.6;
+    color: #333333;
+    height: 3.5rem;
+}
+
+.navbar ul {
+    display: flex;
+    list-style: none;
+}
+
+.navbar li {
+    margin-right: 10px;
+}
+
+.logout-form {
+    display: inline;
+}
+
+button {
+    width: 5rem;
+    background-color: #723b38;
+    color: #ffffff;
+    margin-top: 0;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.logout-form button {
+    background-color: #f0cecc;
+    color: #723b38;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.logout-form button:hover {
+    background-color: #7e98a9;
+}
+
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+    background-image: url('floral-background.jpg');
+    background-size: cover;
+    backdrop-filter: opacity(0.5);
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 50%;
+    background-color: #f0cecc;
+    border-radius: 20px;
+    box-shadow: 0 0 10px #7e98a9;
+    padding: 20px;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.profile-details {
+    margin-bottom: 20px;
+}
+
+.profile-details p {
+    margin: 5px 0;
+}
+
+.profile-details strong {
+    margin-right: 5px;
+}
+
+.profile-details span {
+    font-weight: bold;
+    color: #333;
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        max-width: 50%;
+    }
+}
+
+h2 {
+    font-family: 'Segoe UI', sans-serif;
+    color: #723b38;
+    margin-bottom: 1.5rem;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttons button {
+    margin-left: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table th,
+table td {
+    border: 1px solid #723b38;
+    text-align: left;
+    padding: 8px;
+}
+
+table tr:nth-child(even) {
+    background-color: #723b38;
+}
+
+table td {
+    color: #723b38;
+}
+
+.command button{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 10rem !important;
+    margin: 0 auto !important;
+}

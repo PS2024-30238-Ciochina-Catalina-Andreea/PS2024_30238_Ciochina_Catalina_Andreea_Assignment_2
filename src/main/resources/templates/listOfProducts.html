@@ -14,6 +14,11 @@
                 <button type="submit">Produse</button>
             </form>
         </li>
+        <li>
+            <form th:action="@{/cart/getByUser}" method="get">
+                <button type="submit">Cos</button>
+            </form>
+        </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
                 <button type="submit">Users</button>
@@ -40,20 +45,31 @@
 
     <div class="product-container" th:each="product : ${products}">
         <div class="product">
+
             <div>ID: <span th:text="${product.id}">ID</span></div>
             <div>Nume: <span th:text="${product.name}">Nume</span></div>
             <div>Descriere: <span th:text="${product.description}">Descriere</span></div>
             <div>Pret: <span th:text="${product.price}">Pret</span></div>
             <div>Stoc: <span th:text="${product.stock}">Stoc</span></div>
             <div>Categorie: <span th:text="${product.category}">Categorie</span></div>
+
+
             <div class="quantity-counter">
                 <span>Cantitate:</span>
-                <input type="number" class="quantity-input" th:value="1" th:min="1" th:max="${product.stock}">
+                <label th:for="${'quantity-' + product.id}"></label>
+                <input th:id="${'quantity-' + product.id}" type="number"
+                       class="quantity-input" th:value="1" th:min="1" th:max="${product.stock}">
             </div>
+
+
             <div class="buttonsModif">
+
                 <form>
-                    <button class="buttons-product">Adauga in cos</button>
+                    <button class="buttons-product"
+                            th:data-name="${product.id}"
+                            onclick="addProductToCart(this.getAttribute('data-name'))">Adauga in cos</button>
                 </form>
+
                 <div class="adminButtons" th:if="${user.getRole().toString()} == 'ADMIN'">
                     <form th:action="@{/product/updateProduct/{productId}(productId=${product.getId()})}" method="get">
                         <button class="buttons-product" type="submit">Modifica produs</button>
@@ -62,12 +78,34 @@
                         <button class="buttons-product" type="submit">Sterge produs</button>
                     </form>
                 </div>
+
             </div>
 
         </div>
     </div>
 </div>
-</div>
-
 </body>
+
+<script>
+    function addProductToCart(productId) {
+        let quantity = document.getElementById(`quantity-${productId}`).value;
+
+        console.log(productId);
+        console.log(quantity)
+        const orderItemData = {
+            id_product: productId,
+            quantity: quantity
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/orderItem/add", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            if (xhr.status === 201) {
+                window.location.reload();
+            }
+        };
+        xhr.send(JSON.stringify(orderItemData));
+    }
+</script>
 </html>

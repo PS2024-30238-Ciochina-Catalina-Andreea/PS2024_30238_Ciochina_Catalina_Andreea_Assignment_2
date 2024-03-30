@@ -150,7 +150,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                     product = productRepository.findById(orderItemDetailedDTO.getId_product());
                 }
 
-                if (orderItemDetailedDTO.getQuantity() == null) {
+                if (orderItemDetailedDTO.getQuantity() == 0) {
                     orderItemDetailedDTO.setQuantity(orderItemExisting.getQuantity());
                 }
                 OrderItemDTO orderItem = orderItemMapper.convToDtoWithObjects(orderItemDetailedDTO, product);
