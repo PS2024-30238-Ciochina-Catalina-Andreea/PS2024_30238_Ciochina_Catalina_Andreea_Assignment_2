@@ -67,7 +67,9 @@
                 <form>
                     <button class="buttons-product"
                             th:data-name="${product.id}"
-                            onclick="addProductToCart(this.getAttribute('data-name'))">Adauga in cos</button>
+                            th:data-user="${user.getId().toString()}"
+                            onclick="addProductToCart(this.getAttribute('data-name'),this.getAttribute('data-user'))">Adauga in cos
+                    </button>
                 </form>
 
                 <div class="adminButtons" th:if="${user.getRole().toString()} == 'ADMIN'">
@@ -87,11 +89,8 @@
 </body>
 
 <script>
-    function addProductToCart(productId) {
+    function addProductToCart(productId,userId) {
         let quantity = document.getElementById(`quantity-${productId}`).value;
-
-        console.log(productId);
-        console.log(quantity)
         const orderItemData = {
             id_product: productId,
             quantity: quantity
@@ -101,11 +100,41 @@
         xhr.open("POST", "/orderItem/add", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
-            if (xhr.status === 201) {
-                window.location.reload();
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 201) {
+                    let responseData = JSON.parse(xhr.response);
+                    let id = responseData.message;
+                    console.log("Order item ID:", id);
+                    console.log("User ID:", userId);
+
+                    // Once order item is created, update the cart
+                    const shopCartData = {
+                        id_orderItems: [id]
+                    };
+
+                    var xhr2 = new XMLHttpRequest();
+                    xhr2.open("PUT", "/cart/updateByUserId/" + userId);
+                    xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                    xhr2.onreadystatechange = function () {
+                        if (xhr2.readyState === XMLHttpRequest.DONE) {
+                            if (xhr2.status === 200 || xhr2.status === 204) {
+                                // Handle successful cart update
+                                console.log("Cart updated successfully");
+                            } else {
+                                // Handle unsuccessful cart update
+                                console.error("Failed to update cart");
+                            }
+                        }
+                    };
+                    xhr2.send(JSON.stringify(shopCartData));
+                } else {
+                    // Handle error in creating order item
+                    console.error("Failed to create order item");
+                }
             }
         };
         xhr.send(JSON.stringify(orderItemData));
     }
+
 </script>
 </html>

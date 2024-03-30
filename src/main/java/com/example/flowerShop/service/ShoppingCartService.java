@@ -15,7 +15,7 @@ public interface ShoppingCartService {
 
     ResponseEntity<String> addCart(ShoppingCartDetailedDTO shoppingCartDetailedDTO);
 
-    ResponseEntity<String> updateCartById(UUID id, ShoppingCartDetailedDTO shoppingCartDetailedDTO);
+    ResponseEntity<String> updateCartByUserID(UUID id, ShoppingCartDetailedDTO shoppingCartDetailedDTO);
 
     ResponseEntity<String> deleteCartById(UUID id);
 }

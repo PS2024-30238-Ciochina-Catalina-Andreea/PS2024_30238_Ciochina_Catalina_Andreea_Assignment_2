@@ -113,8 +113,8 @@ public class OrderItemServiceImpl implements OrderItemService {
                 productRepository.save(product.get());
                 LOGGER.info("Order item created");
                 OrderItemDTO orderItemDTO = orderItemMapper.convToDtoWithObjects(orderItemDetailedDTO, product);
-                orderItemRepository.save(orderItemMapper.convertToEntity(orderItemDTO));
-                return Utils.getResponseEntity(OrderItemConstants.ORDER_ITEM_CREATED, HttpStatus.CREATED);
+                OrderItem savedOrderItem = orderItemRepository.save(orderItemMapper.convertToEntity(orderItemDTO));
+                return Utils.getResponseEntity(String.valueOf(savedOrderItem.getId()), HttpStatus.CREATED);
             } else {
                 LOGGER.error("Invalid data was sent for creating the order item");
                 return Utils.getResponseEntity(OrderItemConstants.INVALID_DATA_AT_CREATING_ORDER_ITEM, HttpStatus.BAD_REQUEST);

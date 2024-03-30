@@ -114,10 +114,6 @@ table td {
     padding: 8px;
 }
 
-table tr:nth-child(even) {
-    background-color: #723b38;
-}
-
 table td {
     color: #723b38;
 }

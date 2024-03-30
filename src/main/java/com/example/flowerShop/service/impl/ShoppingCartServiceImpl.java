@@ -91,31 +91,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_CREATING_CART, HttpStatus.BAD_REQUEST);
                     }
                 }
-                else{
-                    shoppingCartDetailedDTO.setId_orderItems(new ArrayList<>());
-                    shoppingCartDetailedDTO.setId_order(null);
-                    shoppingCartDetailedDTO.setTotalPrice((long) 0);
-                    this.updateCartById(cart.get().getId(),shoppingCartDetailedDTO);
-                }
+                return Utils.getResponseEntity(ShoppingCartConstants.CART_EXISTS, HttpStatus.OK);
             } else {
                 return Utils.getResponseEntity(ShoppingCartConstants.INVALID_DATA_AT_CREATING_CART, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception exception) {
             exception.printStackTrace();
+            return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_CREATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_CREATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
-    public ResponseEntity<String> updateCartById(UUID id, ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
+    public ResponseEntity<String> updateCartByUserID(UUID id, ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
         try {
-            Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findById(id);
-            List<OrderItem> items = orderItemRepository.findProjectedByIdIn(shoppingCartDetailedDTO.getId_orderItems());
+            Optional<User> user = userRepository.findById(id);
+            Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByUser(user.get());
+            List<OrderItem> items = shoppingCart.get().getOrderItems();
+            items.addAll(orderItemRepository.findProjectedByIdIn(shoppingCartDetailedDTO.getId_orderItems()));
             if (shoppingCart.isPresent()) {
                 ShoppingCart existingCart = shoppingCart.get();
-                if (shoppingCartDetailedDTO.getId_user() != null || shoppingCartDetailedDTO.getId_order() != null) {
-
-                }
                 ShoppingCartUtils.updateCartValues(existingCart, shoppingCartDetailedDTO, items);
                 shoppingCartRepository.save(existingCart);
                 return Utils.getResponseEntity(ShoppingCartConstants.DATA_MODIFIED, HttpStatus.OK);
