@@ -58,9 +58,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ResponseEntity<ShoppingCartDTO> getCartById(UUID id) {
+    public ResponseEntity<ShoppingCartDTO> getCartByUserId(UUID id) {
         try {
-            Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findById(id);
+            Optional<User> user = userRepository.findById(id);
+            Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByUser(user.get());
             if (shoppingCart.isPresent()) {
                 ShoppingCart cartExisting = shoppingCart.get();
                 return new ResponseEntity<>(shoppingCartMapper.convertEntToDtoWithObjects(cartExisting), HttpStatus.OK);
@@ -79,14 +80,22 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             if (this.shoppingCartUtils.validateCartMap(shoppingCartDetailedDTO)) {
 
                 Optional<User> user = userRepository.findById(shoppingCartDetailedDTO.getId_user());
-                List<OrderItem> items = orderItemRepository.findProjectedByIdIn(shoppingCartDetailedDTO.getId_orderItems());
-
-                if (user.isPresent() && items.stream().allMatch(Objects::nonNull) && !items.isEmpty()) {
-                    ShoppingCartDTO shoppingCartDTO = shoppingCartMapper.convToDtoWithObjects(shoppingCartDetailedDTO, items, user);
-                    shoppingCartRepository.save(shoppingCartMapper.convertToEntity(shoppingCartDTO));
-                    return Utils.getResponseEntity(ShoppingCartConstants.CART_CREATED, HttpStatus.CREATED);
-                } else {
-                    return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_CREATING_CART, HttpStatus.BAD_REQUEST);
+                Optional<ShoppingCart> cart = shoppingCartRepository.findByUser(user.get());
+                if (cart.isEmpty()) {
+                    List<OrderItem> items = orderItemRepository.findProjectedByIdIn(shoppingCartDetailedDTO.getId_orderItems());
+                    if (user.isPresent()) {
+                        ShoppingCartDTO shoppingCartDTO = shoppingCartMapper.convToDtoWithObjects(shoppingCartDetailedDTO, items, user);
+                        shoppingCartRepository.save(shoppingCartMapper.convertToEntity(shoppingCartDTO));
+                        return Utils.getResponseEntity(ShoppingCartConstants.CART_CREATED, HttpStatus.CREATED);
+                    } else {
+                        return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_CREATING_CART, HttpStatus.BAD_REQUEST);
+                    }
+                }
+                else{
+                    shoppingCartDetailedDTO.setId_orderItems(new ArrayList<>());
+                    shoppingCartDetailedDTO.setId_order(null);
+                    shoppingCartDetailedDTO.setTotalPrice((long) 0);
+                    this.updateCartById(cart.get().getId(),shoppingCartDetailedDTO);
                 }
             } else {
                 return Utils.getResponseEntity(ShoppingCartConstants.INVALID_DATA_AT_CREATING_CART, HttpStatus.BAD_REQUEST);

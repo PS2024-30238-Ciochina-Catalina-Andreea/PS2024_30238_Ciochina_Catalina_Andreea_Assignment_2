@@ -134,7 +134,7 @@ public class UserController {
         ResponseEntity<UserGetDTO> response = this.userServiceImpl.getUserByEmailAndPassword(loginDTO);
         if (response.getStatusCode() == HttpStatus.OK) {
             session.setAttribute("loggedInUser", response.getBody());
-            return new RedirectView("/product/listOfProducts");
+            return new RedirectView("/home");
         }
         return new RedirectView("/login");
     }

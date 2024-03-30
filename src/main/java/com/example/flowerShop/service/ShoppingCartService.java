@@ -11,7 +11,7 @@ public interface ShoppingCartService {
 
     ResponseEntity<List<ShoppingCartDTO>> getAllCarts();
 
-    ResponseEntity<ShoppingCartDTO> getCartById(UUID id);
+    ResponseEntity<ShoppingCartDTO> getCartByUserId(UUID id);
 
     ResponseEntity<String> addCart(ShoppingCartDetailedDTO shoppingCartDetailedDTO);
 
