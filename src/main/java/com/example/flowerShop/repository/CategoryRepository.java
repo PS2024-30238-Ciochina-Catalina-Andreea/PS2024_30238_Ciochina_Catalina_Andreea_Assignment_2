@@ -13,7 +13,6 @@ import java.util.UUID;
 public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     Optional<Category> findById(@Param("id") UUID id);
-
     Optional<Category> findByName(CategoryName name);
 
 }

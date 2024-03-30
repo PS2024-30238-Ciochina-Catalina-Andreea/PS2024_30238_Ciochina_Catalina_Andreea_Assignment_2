@@ -82,7 +82,7 @@ public class UserController {
         if (stringResponseEntity.getStatusCode() == HttpStatus.CREATED) {
             return new RedirectView("/login");
         }
-        return new RedirectView("/createUser");
+        return new RedirectView("/signUp");
     }
 
     /**
@@ -182,7 +182,7 @@ public class UserController {
             session.setAttribute("loggedInUser", getUserById(user.getId()).getBody());
             return new RedirectView("/userProfile");
         }
-        return new RedirectView("/updateUser");
+        return new RedirectView("/updateUser/"+id);
     }
 
     /**

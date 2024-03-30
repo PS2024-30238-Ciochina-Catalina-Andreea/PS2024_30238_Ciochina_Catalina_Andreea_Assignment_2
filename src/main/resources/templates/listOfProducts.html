@@ -32,7 +32,12 @@
     </ul>
 </div>
 <div class="container">
+    <form class="addProduct" th:if="${user.getRole().toString()} == 'ADMIN'" th:action="@{/product/add}" method="get">
+        <button type="submit">Adauga produs</button>
+    </form>
+
     <h1>Lista produse</h1>
+
     <div class="product-container" th:each="product : ${products}">
         <div class="product">
             <div>ID: <span th:text="${product.id}">ID</span></div>
@@ -44,13 +49,24 @@
             <div class="quantity-counter">
                 <span>Cantitate:</span>
                 <input type="number" class="quantity-input" th:value="1" th:min="1" th:max="${product.stock}">
-                <button class="add-to-cart-btn" data-product-id="${product.id}">
-                    Adauga in cos
-                </button>
+            </div>
+            <div class="buttonsModif">
+                <form>
+                    <button class="buttons-product">Adauga in cos</button>
+                </form>
+                <div class="adminButtons" th:if="${user.getRole().toString()} == 'ADMIN'">
+                    <form th:action="@{/product/updateProduct/{productId}(productId=${product.getId()})}" method="get">
+                        <button class="buttons-product" type="submit">Modifica produs</button>
+                    </form>
+                    <form th:action="@{/product/delete/{productId}(productId=${product.getId()})}" method="post">
+                        <button class="buttons-product" type="submit">Sterge produs</button>
+                    </form>
+                </div>
             </div>
 
         </div>
     </div>
+</div>
 </div>
 
 </body>

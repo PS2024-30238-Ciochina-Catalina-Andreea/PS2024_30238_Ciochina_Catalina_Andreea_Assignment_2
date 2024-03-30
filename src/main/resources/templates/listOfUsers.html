@@ -15,7 +15,7 @@
         </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
-                <button type="submit">Users</button>
+                <button type="submit">Useri</button>
             </form>
         </li>
         <li>
@@ -42,8 +42,8 @@
             <th scope="col">Adresa</th>
             <th scope="col">Email</th>
             <th scope="col">Rol</th>
-            <th scope="col">Update user</th>
-            <th scope="col">Delete user</th>
+            <th scope="col">Modifica user</th>
+            <th scope="col">Sterge user</th>
         </tr>
         </thead>
         <tbody>
@@ -56,12 +56,12 @@
             <td th:text="${user.getRole().toString()}">Role</td>
             <td>
                 <form th:action="@{/updateUser/{userId}(userId=${user.getId()})}" method="get">
-                    <button type="submit">Update</button>
+                    <button type="submit">Modifica</button>
                 </form>
             </td>
             <td>
                 <form th:action="@{/delete/{userId}(userId=${user.getId()})}" method="post">
-                    <button type="submit">Delete</button>
+                    <button type="submit">Sterge</button>
                 </form>
             </td>
         </tr>

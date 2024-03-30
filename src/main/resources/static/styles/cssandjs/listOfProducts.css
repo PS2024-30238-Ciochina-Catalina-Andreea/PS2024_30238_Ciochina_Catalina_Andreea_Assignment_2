@@ -124,11 +124,30 @@ button {
     margin-bottom: 0;
 }
 
-.add-to-cart-btn {
+.buttons-product {
     float: right;
     width: 9rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
-div{
-    color:#723b38;
+
+div {
+    color: #723b38;
+}
+
+.buttonsModif {
+    display: flex;
+    flex-direction: column;
+}
+
+.adminButtons {
+    flex-direction: row;
+
+    .buttons-product {
+        margin-left: 10px;
+    }
+}
+
+.addProduct{
+    float: right;
+    margin-left: 20px;
 }

@@ -1,6 +1,8 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.ProductConstants;
+import com.example.flowerShop.dto.user.UserGetDTO;
+import com.example.flowerShop.entity.User;
 import com.example.flowerShop.mapper.ProductMapper;
 import com.example.flowerShop.dto.product.ProductDTO;
 import com.example.flowerShop.dto.product.ProductDetailedDTO;
@@ -153,8 +155,9 @@ public class ProductServiceImpl implements ProductService {
             Optional<Category> category;
             if (productOptional.isPresent()) {
                 Product productExisting = productOptional.get();
-                if (Objects.nonNull(productDetailedDTO.getCategory()))
+                if (Objects.nonNull(productDetailedDTO.getCategory())) {
                     category = categoryRepository.findByName(CategoryName.valueOf(productDetailedDTO.getCategory()));
+                }
                 else
                     category = categoryRepository.findByName(productExisting.getCategory().getName());
                 ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
@@ -198,5 +201,20 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(ProductConstants.SOMETHING_WENT_WRONG_AT_DELETING_PRODUCT, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public Product convertToModelObject(UUID id) {
+        ProductDetailedDTO productDTO = this.getProductById(id).getBody();
+        Optional<Category> categoryOptional = categoryRepository.findByName(CategoryName.valueOf(productDTO.getCategory()));
+        Product product = new Product();
+        if (productDTO != null) {
+            product.setId(productDTO.getId());
+            product.setName(productDTO.getName());
+            product.setDescription(productDTO.getDescription());
+            product.setStock(productDTO.getStock());
+            product.setPrice(productDTO.getPrice());
+            product.setCategory(categoryOptional.get());
+        }
+        return product;
     }
 }

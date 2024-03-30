@@ -2,14 +2,18 @@ package com.example.flowerShop.controller;
 
 import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
+import com.example.flowerShop.entity.Product;
+import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.ProductServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.UUID;
@@ -64,16 +68,34 @@ public class ProductController {
         return this.productServiceImpl.getProductById(id);
     }
 
+    @GetMapping("/add")
+    public ModelAndView createProduct() {
+        ModelAndView modelAndView = new ModelAndView("createProduct");
+        modelAndView.addObject("product", new Product());
+        return modelAndView;
+    }
+
     /**
      * Creates a new product
      *
      * @param productDetailedDTO
      * @return ResponseEntity<String>
      */
-    @PostMapping("/add")
-    public ResponseEntity<String> addProduct(@RequestBody ProductDetailedDTO productDetailedDTO) {
+    @PostMapping("/createProduct")
+    public RedirectView addProduct(@ModelAttribute("product") ProductDetailedDTO productDetailedDTO) {
         LOGGER.info("Request for creating a new product");
-        return this.productServiceImpl.addProduct(productDetailedDTO);
+        ResponseEntity<String> stringResponseEntity = this.productServiceImpl.addProduct(productDetailedDTO);
+        if (stringResponseEntity.getStatusCode() == HttpStatus.CREATED) {
+            return new RedirectView("/product/listOfProducts");
+        }
+        return new RedirectView("/product/add");
+    }
+
+    @GetMapping("/updateProduct/{id}")
+    public ModelAndView updateUser(@PathVariable UUID id) {
+        ModelAndView modelAndView = new ModelAndView("updateProduct");
+        modelAndView.addObject("product", this.getProductById(id).getBody());
+        return modelAndView;
     }
 
     /**
@@ -81,23 +103,28 @@ public class ProductController {
      *
      * @param id
      * @param productDetailedDTO
-     * @return ResponseEntity<String>
+     * @return RedirectView
      */
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateProductById(@PathVariable UUID id, @RequestBody ProductDetailedDTO productDetailedDTO) {
+    @PostMapping("/update/{id}")
+    public RedirectView updateProductById(@PathVariable UUID id, @ModelAttribute("product") ProductDetailedDTO productDetailedDTO) {
         LOGGER.info("Request for updating of a product by id");
-        return this.productServiceImpl.updateProductById(id, productDetailedDTO);
+        ResponseEntity<String> response = this.productServiceImpl.updateProductById(id, productDetailedDTO);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new RedirectView("/product/listOfProducts");
+        }
+        return new RedirectView("/product/updateProduct/" + id);
     }
 
     /**
      * Deletes a product by id
      *
      * @param id
-     * @return ResponseEntity<String>
+     * @return RedirectView
      */
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteProductById(@PathVariable UUID id) {
+    @PostMapping("/delete/{id}")
+    public RedirectView deleteProductById(@PathVariable UUID id) {
         LOGGER.info("Request for deleting an user by id");
-        return this.productServiceImpl.deleteProductById(id);
+        this.productServiceImpl.deleteProductById(id);
+        return new RedirectView("/product/listOfProducts");
     }
 }
