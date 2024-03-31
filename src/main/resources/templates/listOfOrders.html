@@ -53,7 +53,9 @@
             <th scope="col">Total</th>
             <th scope="col">Utilizator</th>
             <th scope="col">Data comanda</th>
-            <th scope="col">Elimina comanda</th>
+            <th scope="col">Elimina</th>
+            <th th:if="${user.getRole().toString()} == 'ADMIN'" scope="col">Modifica</th>
+
         </tr>
         </thead>
         <tbody>
@@ -68,6 +70,11 @@
             <td>
                 <form th:action="@{/order/delete/{orderId}(orderId=${order.getId()})}" method="post">
                     <button type="submit">Sterge</button>
+                </form>
+            </td>
+            <td th:if="${user.getRole().toString()} == 'ADMIN'">
+                <form  th:action="@{/order/update/{orderId}(orderId=${order.getId()})}" method="get">
+                    <button type="submit">Modifica</button>
                 </form>
             </td>
         </tr>

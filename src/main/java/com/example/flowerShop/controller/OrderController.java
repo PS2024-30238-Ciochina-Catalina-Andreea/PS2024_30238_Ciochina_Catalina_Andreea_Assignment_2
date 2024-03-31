@@ -3,12 +3,16 @@ package com.example.flowerShop.controller;
 import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
+import com.example.flowerShop.entity.Order;
+import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.OrderServiceImpl;
+import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,8 +58,13 @@ public class OrderController {
     public ModelAndView getAllOrdersByUser(@PathVariable UUID id) {
         LOGGER.info("Request for list of orders by user");
         ModelAndView modelAndView = new ModelAndView("listOfOrders");
-        List<OrderDTO> orders = this.orderServiceImpl.getAllOrdersByUser(id).getBody();
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        List<OrderDTO> orders = null;
+        if (currentUser.getRole().equals(UserRole.ADMIN))
+            orders = this.orderServiceImpl.getAllOrders().getBody();
+        else
+            orders = this.orderServiceImpl.getAllOrdersByUser(id).getBody();
+
         modelAndView.addObject("user", currentUser);
         modelAndView.addObject("orders", orders);
         return modelAndView;
@@ -86,6 +95,13 @@ public class OrderController {
         return new RedirectView("/order/getByUser/all/" + orderDetailedDTO.getId_user());
     }
 
+    @GetMapping("/update/{id}")
+    public ModelAndView updateUser(@PathVariable UUID id) {
+        ModelAndView modelAndView = new ModelAndView("updateOrder");
+        modelAndView.addObject("order", this.getOrderById(id).getBody());
+        return modelAndView;
+    }
+
     /**
      * Updates an existing order searched by id
      *
@@ -93,10 +109,14 @@ public class OrderController {
      * @param orderDetailedDTO
      * @return ResponseEntity<String>
      */
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateOrderById(@PathVariable UUID id, @RequestBody OrderDetailedDTO orderDetailedDTO) {
+    @PostMapping("/update/{id}")
+    public RedirectView updateOrderById(@PathVariable UUID id, @ModelAttribute("order") OrderDetailedDTO orderDetailedDTO) {
         LOGGER.info("Request for updating an order by id");
-        return this.orderServiceImpl.updateOrderById(id, orderDetailedDTO);
+        ResponseEntity<String> response = this.orderServiceImpl.updateOrderById(id, orderDetailedDTO);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new RedirectView("/order/getByUser/all/" + id);
+        }
+        return new RedirectView("/order/update/" + id);
     }
 
     /**
