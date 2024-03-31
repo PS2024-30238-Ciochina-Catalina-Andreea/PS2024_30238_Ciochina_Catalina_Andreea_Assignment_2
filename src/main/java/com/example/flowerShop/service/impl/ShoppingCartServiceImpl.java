@@ -5,13 +5,11 @@ import com.example.flowerShop.constants.UserConstants;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDTO;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDetailedDTO;
 import com.example.flowerShop.entity.OrderItem;
+import com.example.flowerShop.entity.Product;
 import com.example.flowerShop.entity.ShoppingCart;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.mapper.ShoppingCartMapper;
-import com.example.flowerShop.repository.OrderItemRepository;
-import com.example.flowerShop.repository.OrderRepository;
-import com.example.flowerShop.repository.ShoppingCartRepository;
-import com.example.flowerShop.repository.UserRepository;
+import com.example.flowerShop.repository.*;
 import com.example.flowerShop.service.ShoppingCartService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.shoppingCart.ShoppingCartUtils;
@@ -30,6 +28,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
 
     @Autowired
@@ -38,13 +37,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                                    ShoppingCartUtils shoppingCartUtils,
                                    UserRepository userRepository,
                                    OrderItemRepository orderItemRepository,
-                                   OrderRepository orderRepository) {
+                                   OrderRepository orderRepository,
+                                   ProductRepository productRepository) {
         this.shoppingCartMapper = shoppingCartMapper;
         this.shoppingCartRepository = shoppingCartRepository;
         this.shoppingCartUtils = shoppingCartUtils;
         this.userRepository = userRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderRepository = orderRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -142,11 +143,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
                     if (orderItemOptional.isPresent()) {
                         OrderItem orderItem = orderItemOptional.get();
+                        Product product = orderItem.getProduct();
                         items.remove(orderItem);
                         shoppingCart.setOrderItems(items);
-                        ShoppingCartUtils.updatePrice(shoppingCart,items);
+                        ShoppingCartUtils.updatePrice(shoppingCart, items);
+                        product.setStock(product.getStock() + orderItem.getQuantity());
+                        productRepository.save(product);
                         shoppingCartRepository.save(shoppingCart);
-
                         orderItemRepository.deleteById(orderItemId);
 
                         return Utils.getResponseEntity(ShoppingCartConstants.ORDER_ITEM_DELETED_FROM_CART, HttpStatus.OK);
@@ -164,7 +167,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
         return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_UPDATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
 
     @Override

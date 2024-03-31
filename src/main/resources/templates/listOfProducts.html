@@ -107,7 +107,6 @@
                     console.log("Order item ID:", id);
                     console.log("User ID:", userId);
 
-                    // Once order item is created, update the cart
                     const shopCartData = {
                         id_orderItems: [id]
                     };
@@ -118,17 +117,14 @@
                     xhr2.onreadystatechange = function () {
                         if (xhr2.readyState === XMLHttpRequest.DONE) {
                             if (xhr2.status === 200 || xhr2.status === 204) {
-                                // Handle successful cart update
                                 console.log("Cart updated successfully");
                             } else {
-                                // Handle unsuccessful cart update
                                 console.error("Failed to update cart");
                             }
                         }
                     };
                     xhr2.send(JSON.stringify(shopCartData));
                 } else {
-                    // Handle error in creating order item
                     console.error("Failed to create order item");
                 }
             }
