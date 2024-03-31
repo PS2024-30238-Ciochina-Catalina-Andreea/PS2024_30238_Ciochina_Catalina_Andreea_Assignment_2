@@ -24,6 +24,7 @@ public class OrderItemController {
 
     /**
      * Dep injection in constructor by using Autowired annotation
+     *
      * @param orderItemServiceImpl
      */
     @Autowired
@@ -33,7 +34,8 @@ public class OrderItemController {
 
     /**
      * Gets list of all order items
-     * @return ResponseEntity<List<OrderItemDTO>>
+     *
+     * @return ResponseEntity<List < OrderItemDTO>>
      */
     @GetMapping("/get/all")
     public ResponseEntity<List<OrderItemDTO>> getAllOrderItems() {
@@ -43,6 +45,7 @@ public class OrderItemController {
 
     /**
      * Gets order item by id
+     *
      * @param id
      * @return ResponseEntity<OrderItemDTO>
      */
@@ -54,6 +57,7 @@ public class OrderItemController {
 
     /**
      * Creates a new order item
+     *
      * @param orderItemDetailedDTO
      * @return ResponseEntity<String>
      */
@@ -65,6 +69,7 @@ public class OrderItemController {
 
     /**
      * Updates an existing order item given by id
+     *
      * @param id
      * @param orderItemDetailedDTO
      * @return ResponseEntity<String>
@@ -75,8 +80,16 @@ public class OrderItemController {
         return this.orderItemServiceImpl.updateOrderItemById(id, orderItemDetailedDTO);
     }
 
+    @PostMapping("/updateQuantityOfOrderItem/{id}")
+    public RedirectView updateQuantityOrderItemById(@PathVariable UUID id, @RequestParam("cartId") UUID id_cart, @RequestParam("action") String action) {
+        LOGGER.info("Request for updating an order item by id");
+        this.orderItemServiceImpl.updateQuantityOrderItemById(id, id_cart, action);
+        return new RedirectView("/cart/getByUser");
+    }
+
     /**
      * Deletes an existing item given by id
+     *
      * @param id
      * @return ResponseEntity<String>
      */

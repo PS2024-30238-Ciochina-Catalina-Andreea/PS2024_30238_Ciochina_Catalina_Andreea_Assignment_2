@@ -18,4 +18,6 @@ public interface OrderItemService {
     ResponseEntity<String> updateOrderItemById(UUID id, OrderItemDetailedDTO orderItemDetailedDTO);
 
     ResponseEntity<String> deleteOrderItemById(UUID id);
+
+    ResponseEntity<String> updateQuantityOrderItemById(UUID id, UUID id_cart, String action);
 }

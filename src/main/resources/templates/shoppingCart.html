@@ -56,11 +56,16 @@
             <td th:text="${item.product.price}"></td>
             <td>
                 <span th:text="${item.quantity}"></span>
+                <form th:action="@{/orderItem/updateQuantityOfOrderItem/{itemId}(itemId=${item.id})}" method="post">
+                    <input type="hidden" name="action" th:value="'increase'" />
+                    <input type="hidden" name="cartId" th:value="${shoppingCart.getId()}" />
+                    <button class="plusMinus" type="submit">+</button>
+                </form>
 
-                <form th:action="@{/cart/updateQuantity}" method="post">
-                    <input type="hidden" name="itemId" th:value="${item.id}"/>
-                    <button class="plusMinus" type="submit" name="action" value="increase">+</button>
-                    <button class="plusMinus" type="submit" name="action" value="decrease">-</button>
+                <form th:action="@{/orderItem/updateQuantityOfOrderItem/{itemId}(itemId=${item.id})}" method="post">
+                    <input type="hidden" name="action" th:value="'decrease'" />
+                    <input type="hidden" name="cartId" th:value="${shoppingCart.getId()}" />
+                    <button class="plusMinus" type="submit">-</button>
                 </form>
             </td>
             <td th:text="${item.product.price * item.quantity}"></td>

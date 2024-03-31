@@ -5,6 +5,7 @@ import com.example.flowerShop.dto.orderItem.OrderItemDTO;
 import com.example.flowerShop.dto.orderItem.OrderItemDetailedDTO;
 import com.example.flowerShop.entity.OrderItem;
 import com.example.flowerShop.entity.Product;
+import com.example.flowerShop.entity.ShoppingCart;
 import com.example.flowerShop.mapper.OrderItemMapper;
 import com.example.flowerShop.repository.OrderItemRepository;
 import com.example.flowerShop.repository.ProductRepository;
@@ -12,6 +13,7 @@ import com.example.flowerShop.repository.ShoppingCartRepository;
 import com.example.flowerShop.service.OrderItemService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.order.OrderItemUtils;
+import com.example.flowerShop.utils.shoppingCart.ShoppingCartUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
 
     private final ProductRepository productRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
 
     private final OrderItemUtils orderItemUtils;
 
@@ -44,11 +47,13 @@ public class OrderItemServiceImpl implements OrderItemService {
      */
     @Autowired
     public OrderItemServiceImpl(OrderItemRepository orderItemRepository, ProductRepository productRepository,
-                                OrderItemUtils orderItemUtils, OrderItemMapper orderItemMapper) {
+                                OrderItemUtils orderItemUtils, OrderItemMapper orderItemMapper,
+                                ShoppingCartRepository shoppingCartRepository) {
         this.orderItemRepository = orderItemRepository;
         this.productRepository = productRepository;
         this.orderItemUtils = orderItemUtils;
         this.orderItemMapper = orderItemMapper;
+        this.shoppingCartRepository = shoppingCartRepository;
     }
 
     /**
@@ -201,4 +206,47 @@ public class OrderItemServiceImpl implements OrderItemService {
         }
         return Utils.getResponseEntity(OrderItemConstants.SOMETHING_WENT_WRONG_AT_DELETING_ORDER_ITEM, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<String> updateQuantityOrderItemById(UUID id, UUID id_cart, String action) {
+        try {
+            Optional<OrderItem> orderItemOptional = orderItemRepository.findById(id);
+            if (orderItemOptional.isPresent()) {
+                OrderItem orderItemExisting = orderItemOptional.get();
+                Product product = orderItemExisting.getProduct();
+                switch (action) {
+                    case "increase":
+                        if ((product.getStock() - 1) >= 0) {
+                            orderItemExisting.setQuantity(orderItemExisting.getQuantity() + 1);
+                            product.setStock(product.getStock() - 1);
+                        }
+                        break;
+                    case "decrease":
+                        int newQuantity = orderItemExisting.getQuantity() - 1;
+                        product.setStock(product.getStock() + 1);
+                        if (newQuantity >= 1) {
+                            orderItemExisting.setQuantity(newQuantity);
+                        } else {
+                            return Utils.getResponseEntity(OrderItemConstants.INVALID_QUANTITY, HttpStatus.BAD_REQUEST);
+                        }
+                        break;
+                    default:
+                        return Utils.getResponseEntity(OrderItemConstants.INVALID_ACTION, HttpStatus.BAD_REQUEST);
+                }
+                ShoppingCart shoppingCart = shoppingCartRepository.findById(id_cart).get();
+                ShoppingCartUtils.updatePrice(shoppingCart, shoppingCart.getOrderItems());
+                shoppingCartRepository.save(shoppingCart);
+                productRepository.save(product);
+                orderItemRepository.save(orderItemExisting);
+                return Utils.getResponseEntity(OrderItemConstants.DATA_MODIFIED, HttpStatus.OK);
+            } else {
+                return Utils.getResponseEntity(OrderItemConstants.INVALID_ORDER_ITEM, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception exception) {
+            LOGGER.error("Something went wrong at updating the order item");
+            exception.printStackTrace();
+            return Utils.getResponseEntity(OrderItemConstants.SOMETHING_WENT_WRONG_AT_UPDATING_ORDER_ITEM, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

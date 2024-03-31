@@ -42,7 +42,7 @@ public class ShoppingCartController {
         return modelAndView;
     }
 
-    @GetMapping("/home")
+    @GetMapping("/createCart")
     public ModelAndView createCart() {
         ModelAndView modelAndView = new ModelAndView("home");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");

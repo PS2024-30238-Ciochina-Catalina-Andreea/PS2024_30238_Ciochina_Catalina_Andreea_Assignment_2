@@ -130,6 +130,10 @@ table td {
 .plusMinus {
     margin-left: 0.5rem;
     width: 2rem !important;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 form {
