@@ -18,4 +18,6 @@ public interface ShoppingCartService {
     ResponseEntity<String> updateCartByUserID(UUID id, ShoppingCartDetailedDTO shoppingCartDetailedDTO);
 
     ResponseEntity<String> deleteCartById(UUID id);
+
+    ResponseEntity<String> deleteOrderItemFromCart(UUID userId, UUID orderItemId);
 }

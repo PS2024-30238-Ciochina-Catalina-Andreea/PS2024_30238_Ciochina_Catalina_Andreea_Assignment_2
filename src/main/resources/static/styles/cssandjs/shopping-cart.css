@@ -118,11 +118,25 @@ table td {
     color: #723b38;
 }
 
-.command button{
+.command button {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     width: 10rem !important;
     margin: 0 auto !important;
+}
+
+.plusMinus {
+    margin-left: 0.5rem;
+    width: 2rem !important;
+}
+
+form {
+    display: flex;
+    align-items: center;
+}
+span{
+    text-align: center;
+    margin-left: 2.3rem;
 }

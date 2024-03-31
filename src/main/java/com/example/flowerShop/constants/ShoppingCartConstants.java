@@ -12,4 +12,6 @@ public class ShoppingCartConstants {
     public static final String INVALID_CART = "Cosul nu exista. Date incorecte!";
     public static final String SOMETHING_WENT_WRONG_AT_UPDATING_CART = "Ceva nu a mers bine la modificarea cosului!";
     public static final String SOMETHING_WENT_WRONG_AT_DELETING_CART = "Ceva nu a mers bine la ștergerea cosului.";
+    public static final String ORDER_ITEM_DELETED_FROM_CART = "OrderItemul a fost sters din cos.";
+    public static final String ORDER_ITEM_NOT_FOUND_IN_CART = "Ceva nu a mers bine la gasirea orderItemului din cos.";
 }

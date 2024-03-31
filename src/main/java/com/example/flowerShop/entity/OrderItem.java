@@ -43,7 +43,7 @@ public class OrderItem {
     @JsonBackReference("orderItems_order")
     private Order order;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "shoppingCart_id")
     @JsonBackReference("orderItems_shoppingCarts")
     private ShoppingCart shoppingCart;

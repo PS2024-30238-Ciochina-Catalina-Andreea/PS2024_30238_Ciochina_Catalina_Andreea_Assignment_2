@@ -18,18 +18,21 @@ public class ShoppingCartUtils {
     }
 
     public static void updateCartValues(ShoppingCart shoppingCart, ShoppingCartDetailedDTO shoppingCartDetailedDTO, List<OrderItem> orderItemList) {
-        double totalPrice = 0.0;
-
         if (Objects.nonNull(shoppingCartDetailedDTO.getTotalPrice())) {
             shoppingCart.setTotalPrice(shoppingCartDetailedDTO.getTotalPrice());
         }
         if (Objects.nonNull(shoppingCartDetailedDTO.getId_orderItems())) {
-
-            for (OrderItem orderItem : orderItemList) {
-                totalPrice += (orderItem.getQuantity() * orderItem.getProduct().getPrice());
-            }
-            shoppingCart.setTotalPrice((long) totalPrice);
+            updatePrice(shoppingCart, orderItemList);
             shoppingCart.setOrderItems(orderItemList);
         }
     }
+
+    public static void updatePrice(ShoppingCart shoppingCart, List<OrderItem> orderItemList) {
+        double totalPrice = 0L;
+        for (OrderItem orderItem : orderItemList) {
+            totalPrice += (orderItem.getQuantity() * orderItem.getProduct().getPrice());
+        }
+        shoppingCart.setTotalPrice((long) totalPrice);
+    }
+
 }

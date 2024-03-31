@@ -1,6 +1,7 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.ShoppingCartConstants;
+import com.example.flowerShop.constants.UserConstants;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDTO;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDetailedDTO;
 import com.example.flowerShop.entity.OrderItem;
@@ -120,8 +121,51 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             exception.printStackTrace();
         }
         return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_UPDATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
+
+    @Override
+    public ResponseEntity<String> deleteOrderItemFromCart(UUID userId, UUID orderItemId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Optional<ShoppingCart> shoppingCartOptional = shoppingCartRepository.findByUser(user);
+
+                if (shoppingCartOptional.isPresent()) {
+                    ShoppingCart shoppingCart = shoppingCartOptional.get();
+                    List<OrderItem> items = shoppingCart.getOrderItems();
+
+                    Optional<OrderItem> orderItemOptional = items.stream()
+                            .filter(item -> item.getId().equals(orderItemId))
+                            .findFirst();
+
+                    if (orderItemOptional.isPresent()) {
+                        OrderItem orderItem = orderItemOptional.get();
+                        items.remove(orderItem);
+                        shoppingCart.setOrderItems(items);
+                        ShoppingCartUtils.updatePrice(shoppingCart,items);
+                        shoppingCartRepository.save(shoppingCart);
+
+                        orderItemRepository.deleteById(orderItemId);
+
+                        return Utils.getResponseEntity(ShoppingCartConstants.ORDER_ITEM_DELETED_FROM_CART, HttpStatus.OK);
+                    } else {
+                        return Utils.getResponseEntity(ShoppingCartConstants.ORDER_ITEM_NOT_FOUND_IN_CART, HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    return Utils.getResponseEntity(ShoppingCartConstants.INVALID_CART, HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return Utils.getResponseEntity(UserConstants.INVALID_USER, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_UPDATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 
     @Override
     public ResponseEntity<String> deleteCartById(UUID id) {

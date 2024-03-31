@@ -1,5 +1,5 @@
 package com.example.flowerShop.controller;
-
+;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDTO;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
@@ -38,7 +38,7 @@ public class ShoppingCartController {
     public ModelAndView getCartByUserId() {
         ModelAndView modelAndView = new ModelAndView("shoppingCart");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        modelAndView.addObject("shoppingCart",this.shoppingCartService.getCartByUserId(currentUser.getId()).getBody());
+        modelAndView.addObject("shoppingCart", this.shoppingCartService.getCartByUserId(currentUser.getId()).getBody());
         return modelAndView;
     }
 
@@ -69,5 +69,14 @@ public class ShoppingCartController {
     @DeleteMapping("/cart/delete/{id}")
     public ResponseEntity<String> deleteCartByID(@PathVariable UUID id) {
         return this.shoppingCartService.deleteCartById(id);
+    }
+
+    @PostMapping("/delete/orderItemFromCart/{id_user}")
+    public RedirectView deleteOrderItemFromCart(@PathVariable UUID id_user, @RequestParam("orderItemId") UUID orderItemId) {
+        ResponseEntity<String> response = this.shoppingCartService.deleteOrderItemFromCart(id_user, orderItemId);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new RedirectView("/product/listOfProducts");
+        }
+        return new RedirectView("/cart/getByUser");
     }
 }

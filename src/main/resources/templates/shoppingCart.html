@@ -47,14 +47,29 @@
             <th>Pret</th>
             <th>Cantitate</th>
             <th>Total</th>
+            <th>Elimina</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="item : ${shoppingCart.orderItems}">
             <td th:text="${item.product.name}"></td>
             <td th:text="${item.product.price}"></td>
-            <td th:text="${item.getQuantity()}"></td>
+            <td>
+                <span th:text="${item.quantity}"></span>
+
+                <form th:action="@{/cart/updateQuantity}" method="post">
+                    <input type="hidden" name="itemId" th:value="${item.id}"/>
+                    <button class="plusMinus" type="submit" name="action" value="increase">+</button>
+                    <button class="plusMinus" type="submit" name="action" value="decrease">-</button>
+                </form>
+            </td>
             <td th:text="${item.product.price * item.quantity}"></td>
+            <td>
+                <form th:action="@{/delete/orderItemFromCart/{userId}(userId=${shoppingCart.user.getId()})}" method="post">
+                    <input type="hidden" name="orderItemId" th:value="${item.id}" />
+                    <button type="submit">Sterge</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>

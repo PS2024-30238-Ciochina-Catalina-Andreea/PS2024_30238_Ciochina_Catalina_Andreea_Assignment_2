@@ -8,6 +8,7 @@ import com.example.flowerShop.entity.Product;
 import com.example.flowerShop.mapper.OrderItemMapper;
 import com.example.flowerShop.repository.OrderItemRepository;
 import com.example.flowerShop.repository.ProductRepository;
+import com.example.flowerShop.repository.ShoppingCartRepository;
 import com.example.flowerShop.service.OrderItemService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.order.OrderItemUtils;
@@ -42,7 +43,8 @@ public class OrderItemServiceImpl implements OrderItemService {
      * @param orderItemMapper
      */
     @Autowired
-    public OrderItemServiceImpl(OrderItemRepository orderItemRepository, ProductRepository productRepository, OrderItemUtils orderItemUtils, OrderItemMapper orderItemMapper) {
+    public OrderItemServiceImpl(OrderItemRepository orderItemRepository, ProductRepository productRepository,
+                                OrderItemUtils orderItemUtils, OrderItemMapper orderItemMapper) {
         this.orderItemRepository = orderItemRepository;
         this.productRepository = productRepository;
         this.orderItemUtils = orderItemUtils;
@@ -109,7 +111,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         try {
             if (this.orderItemUtils.validateOrderItemMap(orderItemDetailedDTO)) {
                 Optional<Product> product = productRepository.findById(orderItemDetailedDTO.getId_product());
-                product.get().setStock((int) (product.get().getStock() - orderItemDetailedDTO.getQuantity()));
+                product.get().setStock(product.get().getStock() - orderItemDetailedDTO.getQuantity());
                 productRepository.save(product.get());
                 LOGGER.info("Order item created");
                 OrderItemDTO orderItemDTO = orderItemMapper.convToDtoWithObjects(orderItemDetailedDTO, product);
@@ -184,7 +186,7 @@ public class OrderItemServiceImpl implements OrderItemService {
             if (orderItemOptional.isPresent()) {
                 OrderItem orderItemExisting = orderItemOptional.get();
                 Product product = orderItemExisting.getProduct();
-                product.setStock((int) (product.getStock() + orderItemExisting.getQuantity()));
+                product.setStock(product.getStock() + orderItemExisting.getQuantity());
                 productRepository.save(product);
                 orderItemRepository.deleteById(id);
                 LOGGER.info("Order item deleted successfully");

@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.UUID;
@@ -79,7 +80,7 @@ public class OrderItemController {
      * @param id
      * @return ResponseEntity<String>
      */
-    @DeleteMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public ResponseEntity<String> deleteOrderItemById(@PathVariable UUID id) {
         LOGGER.info("Request for deleting an order item by id");
         return this.orderItemServiceImpl.deleteOrderItemById(id);
