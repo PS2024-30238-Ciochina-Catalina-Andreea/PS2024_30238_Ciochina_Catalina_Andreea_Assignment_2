@@ -39,7 +39,7 @@ public class ShoppingCart {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonManagedReference("orderItems_shoppingCarts")
     private List<OrderItem> orderItems;
 }

@@ -144,3 +144,6 @@ span{
     text-align: center;
     margin-left: 2.3rem;
 }
+.submit{
+    float: right;
+}

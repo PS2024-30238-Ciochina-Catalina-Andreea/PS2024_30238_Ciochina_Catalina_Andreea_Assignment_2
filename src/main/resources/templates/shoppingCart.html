@@ -19,6 +19,11 @@
                 <button type="submit">Cos</button>
             </form>
         </li>
+        <li>
+            <form th:action="@{/order/getByUser/all/{userId}(userId=${shoppingCart.user.getId()})}" method="get">
+                <button type="submit">Comenzi</button>
+            </form>
+        </li>
         <li th:if="${shoppingCart.user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
                 <button type="submit">Users</button>
@@ -57,35 +62,85 @@
             <td>
                 <span th:text="${item.quantity}"></span>
                 <form th:action="@{/orderItem/updateQuantityOfOrderItem/{itemId}(itemId=${item.id})}" method="post">
-                    <input type="hidden" name="action" th:value="'increase'" />
-                    <input type="hidden" name="cartId" th:value="${shoppingCart.getId()}" />
+                    <input type="hidden" name="action" th:value="'increase'"/>
+                    <input type="hidden" name="cartId" th:value="${shoppingCart.getId()}"/>
                     <button class="plusMinus" type="submit">+</button>
                 </form>
 
                 <form th:action="@{/orderItem/updateQuantityOfOrderItem/{itemId}(itemId=${item.id})}" method="post">
-                    <input type="hidden" name="action" th:value="'decrease'" />
-                    <input type="hidden" name="cartId" th:value="${shoppingCart.getId()}" />
+                    <input type="hidden" name="action" th:value="'decrease'"/>
+                    <input type="hidden" name="cartId" th:value="${shoppingCart.getId()}"/>
                     <button class="plusMinus" type="submit">-</button>
                 </form>
             </td>
             <td th:text="${item.product.price * item.quantity}"></td>
             <td>
-                <form th:action="@{/delete/orderItemFromCart/{userId}(userId=${shoppingCart.user.getId()})}" method="post">
-                    <input type="hidden" name="orderItemId" th:value="${item.id}" />
+                <form th:action="@{/delete/orderItemFromCart/{userId}(userId=${shoppingCart.user.getId()})}"
+                      method="post">
+                    <input type="hidden" name="orderItemId" th:value="${item.id}"/>
                     <button type="submit">Sterge</button>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
-    <div>Total Price: <span th:text="${shoppingCart.totalPrice}"></span></div>
-    <form class="command" th:action="@{/checkout}" method="get">
-        <button type="submit">Plaseaza comanda</button>
+    <div>Total Price: <span th:text="${shoppingCart.totalPrice}"><br></span></div>
+    <form>
+        <input type="hidden" name="status" th:value="PROCESSING"/>
+        <input type="hidden" name="address" th:value="${shoppingCart.user.address}"/>
+        <label for="pay">Selectați tipul de plată:</label>
+        <select id="pay" name="pay">
+            <option value="CASH_ON_DELIVERY">Cash</option>
+            <option value="CARD">Card</option>
+        </select>
+        <input type="hidden" name="totalPrice" th:value="${shoppingCart.totalPrice}"/>
+        <input type="hidden" name="id_user" th:value="${shoppingCart.user.id}"/>
+        <input type="hidden" th:each="item : ${shoppingCart.orderItems}"
+               name="id_orderItems" th:value="${item.id}"/>
+        <br>
+        <button class="submit" type="submit" onclick="sendOrder()">Plaseaza comanda</button>
     </form>
-</div>
 
+</div>
 <div th:unless="${shoppingCart}">
     <p>Cosul este gol.</p>
 </div>
 </body>
+<script>
+    function sendOrder() {
+        var status = "PROCESSING";
+        var address = document.querySelector("[name='address']").value;
+        var pay = document.getElementById("pay").value;
+        var totalPrice = document.querySelector("[name='totalPrice']").value;
+        var id_user = document.querySelector("[name='id_user']").value;
+        var id_orderItems = Array.from(document.querySelectorAll("[name='id_orderItems']"))
+            .map(function (element) {
+                return element.value;
+            });
+        const orderData = {
+            status: status,
+            address: address,
+            pay: pay,
+            totalPrice: totalPrice,
+            id_user: id_user,
+            id_orderItems: id_orderItems
+        };
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/order/add", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 201) {
+                    let responseData = JSON.parse(xhr.response);
+                    console.log('Comanda a fost trimisa cu succes:', responseData);
+                } else {
+                    console.error('A aparut o eroare in timpul trimiterii comenzii:', xhr.statusText);
+                }
+                window.location.href = "/order/getByUser/all/" + id_user;
+            }
+        };
+        xhr.send(JSON.stringify(orderData));
+    }
+</script>
 </html>
+ 

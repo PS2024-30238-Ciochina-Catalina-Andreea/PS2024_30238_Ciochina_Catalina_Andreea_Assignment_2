@@ -5,11 +5,14 @@ import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.entity.Order;
 import com.example.flowerShop.entity.OrderItem;
+import com.example.flowerShop.entity.ShoppingCart;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.mapper.OrderMapper;
 import com.example.flowerShop.repository.OrderItemRepository;
 import com.example.flowerShop.repository.OrderRepository;
+import com.example.flowerShop.repository.ShoppingCartRepository;
 import com.example.flowerShop.repository.UserRepository;
+import com.example.flowerShop.service.OrderItemService;
 import com.example.flowerShop.service.OrderService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.order.OrderUtils;
@@ -30,9 +33,13 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderItemRepository orderItemRepository;
 
+    private final ShoppingCartRepository shoppingCartRepository;
+
     private final UserRepository userRepository;
 
     private final OrderUtils orderUtils;
+
+    private OrderItemService orderItemService;
 
     private final OrderMapper orderMapper;
 
@@ -40,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Injected cosntructor
+     *
      * @param orderRepository
      * @param orderItemRepository
      * @param userRepository
@@ -47,17 +55,22 @@ public class OrderServiceImpl implements OrderService {
      * @param orderMapper
      */
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository, UserRepository userRepository, OrderUtils orderUtils, OrderMapper orderMapper) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
+                            UserRepository userRepository, OrderUtils orderUtils, OrderMapper orderMapper,
+                            ShoppingCartRepository shoppingCartRepository, OrderItemService orderItemService) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.userRepository = userRepository;
         this.orderUtils = orderUtils;
         this.orderMapper = orderMapper;
+        this.shoppingCartRepository = shoppingCartRepository;
+        this.orderItemService = orderItemService;
     }
 
     /**
      * Gets a list of the orders from the db
-     * @return ResponseEntity<List<OrderDTO>>
+     *
+     * @return ResponseEntity<List < OrderDTO>>
      */
     @Override
     public ResponseEntity<List<OrderDTO>> getAllOrders() {
@@ -76,6 +89,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Gets an order by a given id
+     *
      * @param id
      * @return ResponseEntity<OrderDTO>
      */
@@ -101,8 +115,29 @@ public class OrderServiceImpl implements OrderService {
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Override
+    public ResponseEntity<List<OrderDTO>> getAllOrdersByUser(UUID id) {
+        LOGGER.info("Fetching orders for user with id_user = " + id);
+        try {
+            User user = userRepository.findById(id).get();
+            List<Order> orders = orderRepository.findByUser(user);
+            if (!orders.isEmpty()) {
+                LOGGER.info("Fetching completed, orders retrieved");
+                return new ResponseEntity<>(orderMapper.convertListToDtoWithObjects(orders), HttpStatus.OK);
+            } else {
+                LOGGER.error("No orders for user with id = {}", id);
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception exception) {
+            LOGGER.error("Error while retrieving the user's orders");
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /**
      * Creates a new order entry in the db
+     *
      * @param orderDetailedDTO
      * @return ResponseEntity<String>
      */
@@ -115,10 +150,13 @@ public class OrderServiceImpl implements OrderService {
 
                 Optional<User> user = userRepository.findById(orderDetailedDTO.getId_user());
                 List<OrderItem> items = orderItemRepository.findProjectedByIdIn(orderDetailedDTO.getId_orderItems());
-
+                Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByUser(user.get());
+                shoppingCart.get().setOrderItems(new ArrayList<>());
+                shoppingCart.get().setTotalPrice(0L);
                 if (user.isPresent() && items.stream().allMatch(Objects::nonNull) && !items.isEmpty()) {
                     OrderDTO orderDTO = orderMapper.convToDtoWithObjects(orderDetailedDTO, items, user);
                     LOGGER.info("Order created");
+                    shoppingCartRepository.save(shoppingCart.get());
                     orderRepository.save(orderMapper.convertToEntity(orderDTO));
                     return Utils.getResponseEntity(OrderConstants.ORDER_CREATED, HttpStatus.CREATED);
                 } else {
@@ -138,6 +176,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Updates an existing order by a given id
+     *
      * @param id
      * @param orderDetailedDTO
      * @return ResponseEntity<String>
@@ -170,6 +209,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Deletes an existing order given by an id
+     *
      * @param id
      * @return ResponseEntity<String>
      */
@@ -180,6 +220,9 @@ public class OrderServiceImpl implements OrderService {
         try {
             Optional<Order> orderOptional = orderRepository.findById(id);
             if (orderOptional.isPresent()) {
+                for (OrderItem orderItem : orderOptional.get().getOrderItems()) {
+                   this.orderItemService.deleteOrderItemById(orderItem.getId());
+                }
                 orderRepository.deleteById(id);
                 LOGGER.info("Order deleted successfully");
                 return Utils.getResponseEntity(OrderConstants.ORDER_DELETED, HttpStatus.OK);
