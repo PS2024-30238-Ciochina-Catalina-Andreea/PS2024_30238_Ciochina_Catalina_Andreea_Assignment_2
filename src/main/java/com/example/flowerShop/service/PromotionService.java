@@ -1,5 +1,6 @@
 package com.example.flowerShop.service;
 
+import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.promotion.PromotionDTO;
 import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
 import org.springframework.http.ResponseEntity;
@@ -18,4 +19,6 @@ public interface PromotionService {
     ResponseEntity<String> updatePromotionById(UUID id, PromotionDetailedDTO promotionDetailedDTO);
 
     ResponseEntity<String> deletePromotionById(UUID id);
+
+    ResponseEntity<List<ProductDetailedDTO>> getAllProductsForPromotion();
 }

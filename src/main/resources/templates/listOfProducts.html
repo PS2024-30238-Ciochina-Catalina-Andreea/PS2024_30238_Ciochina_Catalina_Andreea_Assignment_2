@@ -29,6 +29,11 @@
                 <button type="submit">Useri</button>
             </form>
         </li>
+        <li th:if="${user.getRole().toString()} == 'ADMIN'">
+            <form th:action="@{/promotion/get/all}" method="get">
+                <button type="submit">Promotii</button>
+            </form>
+        </li>
         <li>
             <form th:action="@{/userProfile}" method="get">
                 <button type="submit">Profil</button>

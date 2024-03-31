@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista useri</title>
-    <link th:href="@{/styles/cssandjs/listOfUsers.css}" rel="stylesheet" />
+    <link th:href="@{/styles/cssandjs/listOfUsers.css}" rel="stylesheet"/>
 </head>
 <div class="navbar">
     <ul>
@@ -26,6 +26,11 @@
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
                 <button type="submit">Useri</button>
+            </form>
+        </li>
+        <li th:if="${user.getRole().toString()} == 'ADMIN'">
+            <form th:action="@{/promotion/get/all}" method="get">
+                <button type="submit">Promotii</button>
             </form>
         </li>
         <li>

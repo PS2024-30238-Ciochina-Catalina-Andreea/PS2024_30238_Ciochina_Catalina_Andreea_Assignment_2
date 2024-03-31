@@ -1,11 +1,16 @@
 package com.example.flowerShop.controller;
 
+import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.promotion.PromotionDTO;
 import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
+import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.service.impl.PromotionServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,13 +23,21 @@ public class PromotionController {
     private final PromotionServiceImpl promotionService;
 
     @Autowired
-    public PromotionController(PromotionServiceImpl promotionService){
+    private HttpSession session;
+
+    @Autowired
+    public PromotionController(PromotionServiceImpl promotionService) {
         this.promotionService = promotionService;
     }
 
     @GetMapping("/get/all")
-    public ResponseEntity<List<PromotionDTO>> getAllPromotions() {
-        return this.promotionService.getAllPromotions();
+    public ModelAndView getAllPromotions() {
+        ModelAndView modelAndView = new ModelAndView("listOfPromotions");
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        List<PromotionDTO> promotions = this.promotionService.getAllPromotions().getBody();
+        modelAndView.addObject("promotions", promotions);
+        modelAndView.addObject("user", currentUser);
+        return modelAndView;
     }
 
     @GetMapping("/get/{id}")
@@ -32,9 +45,19 @@ public class PromotionController {
         return this.promotionService.getPromotionById(id);
     }
 
+    @GetMapping("/createPromotion")
+    public ModelAndView getAllProductsForPromotion() {
+        ModelAndView modelAndView = new ModelAndView("createPromotion");
+        List<ProductDetailedDTO> prods = this.promotionService.getAllProductsForPromotion().getBody();
+        modelAndView.addObject("products", prods);
+        return modelAndView;
+    }
+
+
     @PostMapping("/add")
-    public ResponseEntity<String> addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO) {
-        return this.promotionService.addPromotion(promotionDetailedDTO);
+    public RedirectView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO) {
+       this.promotionService.addPromotion(promotionDetailedDTO);
+       return new RedirectView("/promotion/get/all");
     }
 
     @PutMapping("/update/{id}")

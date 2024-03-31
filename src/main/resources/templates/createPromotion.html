@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Promotion</title>
+    <link th:href="@{/styles/cssandjs/create.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <h2>Create Promotion</h2>
+    <form id="promotionForm">
+        <div class="form-group">
+            <label for="name">Promotion Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="discountPercentage">Discount Percentage:</label>
+            <input type="number" id="discountPercentage" name="discountPercentage" step="0.01" required>
+        </div>
+
+        <div class="product-container" th:each="product : ${products}">
+            <div class="product">
+                <div>
+                    <input type="checkbox" class="product-checkbox" th:id="productss" th:name="'products'"
+                           th:value="${product.id}">
+                    <label th:for="productss">Select</label>
+                </div>
+                <div>ID: <span th:text="${product.id}">ID</span></div>
+                <div>Nume: <span th:text="${product.name}">Nume</span></div>
+                <div>Pret: <span th:text="${product.price}">Pret</span></div>
+                <div>Stoc: <span th:text="${product.stock}">Stoc</span></div>
+                <div>Categorie: <span th:text="${product.category}">Categorie</span></div>
+            </div>
+        </div>
+
+        <button type="button" onclick="submitPromotion()">Create Promotion</button>
+    </form>
+</div>
+
+<script>
+    function submitPromotion() {
+        var name = document.getElementById('name').value;
+        var discountPercentage = document.getElementById('discountPercentage').value;
+        var selectedProducts = Array.from(document.querySelectorAll('.product-checkbox:checked')).map(checkbox => checkbox.value);
+
+        var promotionData = {
+            name: name,
+            discountPercentage: discountPercentage,
+            id_products: selectedProducts
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/promotion/add", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 201) {
+                    console.log('Promotion created successfully');
+                } else {
+                    console.error('Failed to create promotion');
+                }
+            }
+        };
+        xhr.send(JSON.stringify(promotionData));
+        window.location.replace("/product/listOfProducts");
+        window.reload();
+    }
+</script>
+
+</body>
+</html>

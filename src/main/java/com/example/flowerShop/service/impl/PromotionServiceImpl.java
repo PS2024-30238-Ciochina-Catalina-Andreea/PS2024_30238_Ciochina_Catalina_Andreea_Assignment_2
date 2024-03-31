@@ -1,9 +1,12 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.PromotionConstants;
+import com.example.flowerShop.dto.product.ProductDTO;
+import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.promotion.PromotionDTO;
 import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
 import com.example.flowerShop.entity.*;
+import com.example.flowerShop.mapper.ProductMapper;
 import com.example.flowerShop.mapper.PromotionMapper;
 import com.example.flowerShop.repository.ProductRepository;
 import com.example.flowerShop.repository.PromotionRepository;
@@ -23,16 +26,19 @@ public class PromotionServiceImpl implements PromotionService {
     private final PromotionMapper promotionMapper;
     private final ProductRepository productRepository;
     private final PromotionUtils promotionUtils;
+    private final ProductMapper productMapper;
 
     @Autowired
     public PromotionServiceImpl(PromotionRepository promotionRepository,
                                 PromotionMapper promotionMapper,
                                 ProductRepository productRepository,
-                                PromotionUtils promotionUtils) {
+                                PromotionUtils promotionUtils,
+                                ProductMapper productMapper) {
         this.promotionMapper = promotionMapper;
         this.promotionRepository = promotionRepository;
         this.productRepository = productRepository;
         this.promotionUtils = promotionUtils;
+        this.productMapper = productMapper;
     }
 
     @Override
@@ -46,6 +52,18 @@ public class PromotionServiceImpl implements PromotionService {
         }
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @Override
+    public ResponseEntity<List<ProductDetailedDTO>> getAllProductsForPromotion() {
+        try {
+            List<Product> products = productRepository.findAll();
+            return new ResponseEntity<>(productMapper.convertListToDTO(products), HttpStatus.OK);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     @Override
     public ResponseEntity<PromotionDTO> getPromotionById(UUID id) {
