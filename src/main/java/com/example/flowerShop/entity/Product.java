@@ -51,7 +51,7 @@ public class Product {
     @JsonManagedReference("orderItem_product")
     private List<OrderItem> orderItems;
 
-    @ManyToMany(mappedBy = "products", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "products", cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JsonBackReference("promotions")
     private List<Promotion> promotions;
 

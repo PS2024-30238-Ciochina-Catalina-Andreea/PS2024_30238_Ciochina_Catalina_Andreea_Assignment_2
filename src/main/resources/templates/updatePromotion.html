@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifica Promotia</title>
+    <link th:href="@{/styles/cssandjs/create.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <h2>Modifica detalii promotie</h2>
+    <form th:action="@{/promotion/update/__${promotion.id}__}" th:object="${promotion}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Promotion Name:</label>
+            <input type="text" id="name" name="name" th:field="*{name}" required>
+        </div>
+        <div class="form-group">
+            <label for="discountPercentage">Discount Percentage:</label>
+            <input type="number" id="discountPercentage" name="discountPercentage" th:field="*{discountPercentage}" min="1" max="100" required>
+        </div>
+        <button type="submit">Update</button>
+    </form>
+</div>
+</body>
+</html>

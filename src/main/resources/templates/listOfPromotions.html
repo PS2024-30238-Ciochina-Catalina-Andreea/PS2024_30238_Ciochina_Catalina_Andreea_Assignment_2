@@ -69,7 +69,7 @@
 
             <div class="buttonsModif">
                 <div class="adminButtons" th:if="${user.getRole().toString()} == 'ADMIN'">
-                    <form th:action="@{/promotion/update/{promotionId}(promotionId=${promotion.getId()})}" method="get">
+                    <form th:action="@{/promotion/updatePromotion/{promotionId}(promotionId=${promotion.getId()})}" method="get">
                         <button class="buttons-product" type="submit">Modifica promotie</button>
                     </form>
                     <form th:action="@{/promotion/delete/{promotionId}(promotionId=${promotion.getId()})}"

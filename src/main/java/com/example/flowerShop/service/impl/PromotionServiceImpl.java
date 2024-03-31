@@ -85,12 +85,21 @@ public class PromotionServiceImpl implements PromotionService {
     public ResponseEntity<String> addPromotion(PromotionDetailedDTO promotionDetailedDTO) {
         try {
             if (this.promotionUtils.validatePromotionMap(promotionDetailedDTO)) {
-
                 List<Product> products = productRepository.findProjectedByIdIn(promotionDetailedDTO.getId_products());
 
                 if (products.stream().allMatch(Objects::nonNull) && !products.isEmpty()) {
                     PromotionDTO promotionDTO = promotionMapper.convToDtoWithObjects(promotionDetailedDTO, products);
+
+                    double discountPercentage = promotionDTO.getDiscountPercentage() / 100.0;
+
+                    for (Product product : products) {
+                        double discountedPrice = Math.floor(product.getPrice() * (1 - discountPercentage));
+                        product.setPrice(discountedPrice);
+                        productRepository.save(product);
+                    }
+
                     promotionRepository.save(promotionMapper.convertToEntity(promotionDTO));
+
                     return Utils.getResponseEntity(PromotionConstants.PROMOTION_CREATED, HttpStatus.CREATED);
                 } else {
                     return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_CREATING_PROMOTION, HttpStatus.BAD_REQUEST);
@@ -104,6 +113,7 @@ public class PromotionServiceImpl implements PromotionService {
         return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_CREATING_PROMOTION, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
     @Override
     public ResponseEntity<String> updatePromotionById(UUID id, PromotionDetailedDTO promotionDetailedDTO) {
         try {
@@ -111,7 +121,13 @@ public class PromotionServiceImpl implements PromotionService {
             List<Product> products = productRepository.findProjectedByIdIn(promotionDetailedDTO.getId_products());
             if (promotionOptional.isPresent()) {
                 Promotion promotionExisting = promotionOptional.get();
+                Double discountBefore = promotionExisting.getDiscountPercentage();
                 PromotionUtils.updatePromotion(promotionExisting, promotionDetailedDTO, products);
+                for (Product product : products) {
+                    double discountedPrice = Math.floor(product.getPrice() * (1 + discountBefore) * (1 - promotionDetailedDTO.getDiscountPercentage()));
+                    product.setPrice(discountedPrice);
+                    productRepository.save(product);
+                }
                 promotionRepository.save(promotionExisting);
                 return Utils.getResponseEntity(PromotionConstants.DATA_MODIFIED, HttpStatus.OK);
             } else {
@@ -128,6 +144,13 @@ public class PromotionServiceImpl implements PromotionService {
         try {
             Optional<Promotion> promotionOptional = promotionRepository.findById(id);
             if (promotionOptional.isPresent()) {
+                double discountPercentage = promotionOptional.get().getDiscountPercentage() / 100.0;
+
+                for (Product product : promotionOptional.get().getProducts()) {
+                    double discountedPrice = Math.ceil(product.getPrice() * (1 + discountPercentage));
+                    product.setPrice(discountedPrice + 1);
+                    productRepository.save(product);
+                }
                 promotionRepository.deleteById(id);
                 return Utils.getResponseEntity(PromotionConstants.PROMOTION_DELETED, HttpStatus.OK);
             } else {

@@ -34,7 +34,7 @@ public class Promotion {
     @Column(name = "discount_percentage", nullable = false)
     private Double discountPercentage;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "product_promotion",
             joinColumns = @JoinColumn(name = "promotion_id"),

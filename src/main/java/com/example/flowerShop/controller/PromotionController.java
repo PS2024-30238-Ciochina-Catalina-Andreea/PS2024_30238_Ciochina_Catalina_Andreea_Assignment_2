@@ -4,6 +4,7 @@ import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.promotion.PromotionDTO;
 import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
+import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.PromotionServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,17 +57,26 @@ public class PromotionController {
 
     @PostMapping("/add")
     public RedirectView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO) {
-       this.promotionService.addPromotion(promotionDetailedDTO);
-       return new RedirectView("/promotion/get/all");
+        this.promotionService.addPromotion(promotionDetailedDTO);
+        return new RedirectView("/promotion/get/all");
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updatePromotionById(@PathVariable UUID id, @RequestBody PromotionDetailedDTO promotionDetailedDTO) {
-        return this.promotionService.updatePromotionById(id, promotionDetailedDTO);
+    @GetMapping("/updatePromotion/{id}")
+    public ModelAndView updatePromotion(@PathVariable UUID id) {
+        ModelAndView modelAndView = new ModelAndView("updatePromotion");
+        modelAndView.addObject("promotion", this.promotionService.getPromotionById(id).getBody());
+        return modelAndView;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deletePromotionById(@PathVariable UUID id) {
-        return this.promotionService.deletePromotionById(id);
+    @PostMapping("/update/{id}")
+    public RedirectView updatePromotionById(@PathVariable UUID id, @ModelAttribute("promotion") PromotionDetailedDTO promotionDetailedDTO) {
+        this.promotionService.updatePromotionById(id, promotionDetailedDTO);
+        return new RedirectView("/promotion/get/all");
+    }
+
+    @PostMapping("/delete/{id}")
+    public RedirectView deletePromotionById(@PathVariable UUID id) {
+        this.promotionService.deletePromotionById(id);
+        return new RedirectView("/promotion/get/all");
     }
 }
