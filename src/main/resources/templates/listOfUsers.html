@@ -75,8 +75,8 @@
                 </form>
             </td>
             <td>
-                <form th:action="@{/delete/{userId}(userId=${user.getId()})}" method="post">
-                    <button type="submit">Sterge</button>
+                <form id="deleteUserForm" th:action="@{/delete/{userId}(userId=${user.getId()})}" method="post">
+                    <button id="deleteUser" type="submit">Sterge</button>
                 </form>
             </td>
         </tr>
@@ -84,4 +84,18 @@
     </table>
 </div>
 </body>
+
+<script>
+    document.getElementById('deleteUser').addEventListener('click', function(event) {
+        event.preventDefault();
+        var notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = 'User-ul a fost sters!';
+        document.body.appendChild(notification);
+
+        setTimeout(function() {
+            document.getElementById('deleteUserForm').submit();
+        }, 1500);
+    });
+</script>
 </html>

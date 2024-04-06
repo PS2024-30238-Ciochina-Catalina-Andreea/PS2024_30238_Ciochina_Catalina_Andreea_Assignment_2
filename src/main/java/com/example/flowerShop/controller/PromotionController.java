@@ -6,8 +6,10 @@ import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.PromotionServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,9 +58,11 @@ public class PromotionController {
 
 
     @PostMapping("/add")
-    public RedirectView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO) {
+    public ModelAndView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO) {
         this.promotionService.addPromotion(promotionDetailedDTO);
-        return new RedirectView("/promotion/get/all");
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setView(new RedirectView("/promotion/get/all"));
+        return modelAndView;
     }
 
     @GetMapping("/updatePromotion/{id}")
@@ -69,9 +73,14 @@ public class PromotionController {
     }
 
     @PostMapping("/update/{id}")
-    public RedirectView updatePromotionById(@PathVariable UUID id, @ModelAttribute("promotion") PromotionDetailedDTO promotionDetailedDTO) {
-        this.promotionService.updatePromotionById(id, promotionDetailedDTO);
-        return new RedirectView("/promotion/get/all");
+    public RedirectView updatePromotionById(@PathVariable UUID id, @ModelAttribute("promotion") PromotionDetailedDTO promotionDetailedDTO, HttpServletRequest request) {
+        ResponseEntity<String> response = this.promotionService.updatePromotionById(id, promotionDetailedDTO);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new RedirectView("/promotion/get/all");
+        }else{
+            String referer = request.getHeader("Referer");
+            return new RedirectView(referer);
+        }
     }
 
     @PostMapping("/delete/{id}")

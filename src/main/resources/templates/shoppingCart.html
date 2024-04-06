@@ -137,6 +137,7 @@
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     alert('Comanda a fost plasata cu succes!');
+                    window.location.href = "/order/getByUser/all/" + id_user;
                     document.body.innerHTML = xhr.response;
                 } else {
                     alert('Ceva nu a mers bine la plasarea comenzii!');

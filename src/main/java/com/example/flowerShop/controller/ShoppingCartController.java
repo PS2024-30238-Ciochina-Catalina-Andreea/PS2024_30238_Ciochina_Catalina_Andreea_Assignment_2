@@ -61,9 +61,12 @@ public class ShoppingCartController {
         return new RedirectView("/userProfile?");
     }
 
-    @PutMapping("/cart/updateByUserId/{id}")
-    public ResponseEntity<String> updateCartByUserID(@PathVariable UUID id, @RequestBody ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
-        return this.shoppingCartService.updateCartByUserID(id, shoppingCartDetailedDTO);
+    @PostMapping("/cart/updateByUserId/{id}")
+    public ModelAndView updateCartByUserID(@PathVariable UUID id, @RequestBody ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
+        this.shoppingCartService.updateCartByUserID(id, shoppingCartDetailedDTO);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setView(new RedirectView("/cart/getByUser"));
+        return modelAndView;
     }
 
     @DeleteMapping("/cart/delete/{id}")

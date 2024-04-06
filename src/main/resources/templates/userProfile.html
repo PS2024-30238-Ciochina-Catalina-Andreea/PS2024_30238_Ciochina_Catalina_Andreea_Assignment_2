@@ -61,11 +61,25 @@
             <form th:action="@{/updateUser/__${user.id}__}" method="get">
                 <button type="submit">Modifica</button>
             </form>
-            <form th:action="@{/delete/__${user.id}__}" method="post">
-                <button type="submit">Sterge</button>
+            <form id="deleteUserForm" th:action="@{/delete/__${user.id}__}" method="post">
+                <button class="deleteUser" type="submit">Sterge</button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('deleteUser').addEventListener('click', function(event) {
+        event.preventDefault();
+        var notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = 'Ti-ai sters profilul!';
+        document.body.appendChild(notification);
+
+        setTimeout(function() {
+            document.getElementById('deleteUserForm').submit();
+        }, 1500);
+    });
+</script>
 </body>
 </html>

@@ -120,12 +120,13 @@
                     };
 
                     var xhr2 = new XMLHttpRequest();
-                    xhr2.open("PUT", "/cart/updateByUserId/" + userId, false);
+                    xhr2.open("POST", "/cart/updateByUserId/" + userId, false);
                     xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                     xhr2.onreadystatechange = function () {
                         if (xhr2.readyState === XMLHttpRequest.DONE) {
-                            let responseData = JSON.parse(xhr2.response);
-                            window.alert(responseData.message);
+                            window.alert("Produsul a fost adaugat cu succes in cos!");
+                            window.location.href = "/cart/getByUser"
+                            document.body.innerHTML = xhr2.response;
                         }
                     };
                     xhr2.send(JSON.stringify(shopCartData));

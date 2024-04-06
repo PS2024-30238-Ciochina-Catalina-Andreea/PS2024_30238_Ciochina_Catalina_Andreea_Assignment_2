@@ -72,9 +72,9 @@
                     <form th:action="@{/promotion/updatePromotion/{promotionId}(promotionId=${promotion.getId()})}" method="get">
                         <button class="buttons-product" type="submit">Modifica promotie</button>
                     </form>
-                    <form th:action="@{/promotion/delete/{promotionId}(promotionId=${promotion.getId()})}"
+                    <form id="deleteProm" th:action="@{/promotion/delete/{promotionId}(promotionId=${promotion.getId()})}"
                           method="post">
-                        <button class="buttons-product" type="submit">Sterge promotie</button>
+                        <button id="deleteBtn" class="buttons-product" type="submit">Sterge promotie</button>
                     </form>
                 </div>
             </div>
@@ -82,4 +82,18 @@
     </div>
 </div>
 </body>
+
+<script>
+    document.getElementById('deleteBtn').addEventListener('click', function(event) {
+        event.preventDefault();
+        var notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = 'Promotia a fost stearsa!';
+        document.body.appendChild(notification);
+
+        setTimeout(function() {
+            document.getElementById('deleteProm').submit();
+        }, 1500);
+    });
+</script>
 </html>

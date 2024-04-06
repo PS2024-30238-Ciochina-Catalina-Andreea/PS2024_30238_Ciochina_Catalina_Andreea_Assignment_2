@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <h2>Modifica date profil</h2>
-    <form th:action="@{/update/__${user.id}__}" th:object="${user}" method="POST">
+    <form id="updateUserForm" th:action="@{/update/__${user.id}__}" th:object="${user}" method="POST">
         <div class="form-group">
             <label for="name">Nume:</label>
             <input type="text" id="name" name="name" th:field="*{name}" required th:value="${user.name}">
@@ -40,8 +40,40 @@
                        th:checked="${user.role == 'ADMIN'}">
             </div>
         </div>
-        <button type="submit">Modifica</button>
+        <button type="submit" id="submitBtn" >Modifica</button>
     </form>
 </div>
+
+<script>
+    document.getElementById('updateUserForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.redirected) {
+                    var notification = document.createElement('div');
+                    if (response.url.includes('/listOfUsers') || response.url.includes('/userProfile')) {
+                        setTimeout(function () {
+                            document.getElementById('updateUserForm').submit();
+                        }, 1000);
+                        notification.className = 'notification';
+                        notification.textContent = 'Datele profilului au fost modificate!';
+                        document.body.appendChild(notification);
+                    } else  {
+                        notification.className = 'notificationError';
+                        notification.textContent = 'Nu s-au modificat datele!';
+                        document.body.appendChild(notification);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+            })
+    });
+</script>
 </body>
 </html>

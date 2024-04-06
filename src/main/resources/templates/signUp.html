@@ -12,7 +12,7 @@
 </form>
 <div class="container">
     <h2>Creaza cont</h2>
-    <form th:action="@{/createUser}" th:object="${user}" method="POST">
+    <form id="signUpForm" th:action="@{/createUser}" th:object="${user}" method="POST">
         <div class="form-group">
             <label for="name">Nume:</label>
             <input type="text" id="name" name="name" th:field="*{name}" required>
@@ -47,8 +47,39 @@
                 <input type="radio" id="role_admin" name="role" value="ADMIN" th:checked="${user.role == 'ADMIN'}">
             </div>
         </div>
-        <button type="submit">Creaza</button>
+        <button id="submitBtn" type="submit">Creaza</button>
     </form>
 </div>
+<script>
+    document.getElementById('signUpForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.redirected) {
+                    var notification = document.createElement('div');
+                    if (response.url.includes('/login')) {
+                        notification.className = 'notification';
+                        notification.textContent = 'Contul a fost creat cu succes!';
+                        document.body.appendChild(notification);
+                        setTimeout(function () {
+                            window.location.href='/login';
+                        }, 1000);
+                    } else {
+                        notification.className = 'notificationError';
+                        notification.textContent = 'Datele introduse nu sunt corecte!';
+                        document.body.appendChild(notification);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+            })
+    });
+</script>
 </body>
 </html>

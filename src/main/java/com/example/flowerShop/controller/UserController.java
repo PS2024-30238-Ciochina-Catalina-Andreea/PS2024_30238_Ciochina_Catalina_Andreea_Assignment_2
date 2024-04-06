@@ -76,13 +76,15 @@ public class UserController {
      * @return RedirectView
      */
     @PostMapping("/createUser")
-    public RedirectView addUser(@ModelAttribute("user") UserPostDTO user) {
+    public ModelAndView addUser(@ModelAttribute("user") UserPostDTO user) {
         LOGGER.info("Request for creating a new user");
         ResponseEntity<String> stringResponseEntity = this.userServiceImpl.addUser(user);
+        ModelAndView modelAndView = new ModelAndView();
         if (stringResponseEntity.getStatusCode() == HttpStatus.CREATED) {
-            return new RedirectView("/login");
-        }
-        return new RedirectView("/signUp");
+            modelAndView.setView(new RedirectView("/login"));
+        } else
+            modelAndView.setView(new RedirectView("/signUp"));
+        return modelAndView;
     }
 
     /**
@@ -129,14 +131,16 @@ public class UserController {
      * @return RedirectView
      */
     @PostMapping("/login/user")
-    public RedirectView loginUser(@ModelAttribute("loginDTO") LoginDTO loginDTO) {
+    public ModelAndView loginUser(@ModelAttribute("loginDTO") LoginDTO loginDTO) {
         session.invalidate();
         ResponseEntity<UserGetDTO> response = this.userServiceImpl.getUserByEmailAndPassword(loginDTO);
+        ModelAndView modelAndView = new ModelAndView();
         if (response.getStatusCode() == HttpStatus.OK) {
             session.setAttribute("loggedInUser", response.getBody());
-            return new RedirectView("/createCart");
-        }
-        return new RedirectView("/login");
+            modelAndView.setView(new RedirectView("/createCart"));
+        } else
+            modelAndView.setView(new RedirectView("/login"));
+        return modelAndView;
     }
 
     /**
@@ -171,18 +175,22 @@ public class UserController {
      * @return ResponseEntity<String>
      */
     @PostMapping("/update/{id}")
-    public RedirectView updateUserById(@PathVariable UUID id, @ModelAttribute("user") @RequestBody UserPostDTO user) {
+    public ModelAndView updateUserById(@PathVariable UUID id, @ModelAttribute("user") @RequestBody UserPostDTO user) {
         LOGGER.info("Request for updating data for a user by id");
         ResponseEntity<String> response = this.userServiceImpl.updateUserById(id, user);
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView = new ModelAndView();
         if (response.getStatusCode() == HttpStatus.OK) {
-            if(currentUser.getRole().equals(UserRole.ADMIN)) {
-                return new RedirectView("/listOfUsers");
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView.setView(new RedirectView("/listOfUsers"));
+                return modelAndView;
             }
             session.setAttribute("loggedInUser", getUserById(user.getId()).getBody());
-            return new RedirectView("/userProfile");
+            modelAndView.setView(new RedirectView("/userProfile"));
         }
-        return new RedirectView("/updateUser/"+id);
+        else
+            modelAndView.setView(new RedirectView("/updateUser/" + id));
+        return modelAndView;
     }
 
     /**
@@ -192,14 +200,17 @@ public class UserController {
      * @return RedirectView
      */
     @PostMapping("/delete/{id}")
-    public RedirectView deleteUserById(@PathVariable UUID id) {
+    public ModelAndView deleteUserById(@PathVariable UUID id) {
         LOGGER.info("Request for deleting a user by id");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         this.userServiceImpl.deleteUserById(id);
-        if(currentUser.getRole().equals(UserRole.CUSTOMER)) {
+        ModelAndView modelAndView = new ModelAndView();
+        if (currentUser.getRole().equals(UserRole.CUSTOMER)) {
             session.invalidate();
-            return new RedirectView("/login");
+            modelAndView.setView(new RedirectView("/login"));
         }
-        return new RedirectView("/listOfUsers");
+        else
+            modelAndView.setView(new RedirectView("/listOfUsers"));
+        return modelAndView;
     }
 }

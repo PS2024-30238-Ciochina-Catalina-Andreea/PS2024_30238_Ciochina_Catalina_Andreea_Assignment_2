@@ -94,3 +94,30 @@ h2 {
     margin-right: 45px;
     float: right;
 }
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    background-color: #af7777;
+    border: 2px solid #7e98a9;
+    color: black;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    box-shadow: 0px 0px 10px rgb(55, 91, 114);
+}
+
+.notificationError{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #7e98a9;
+    border: 2px solid #af7777;
+    color: black;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    box-shadow: 0px 0px 10px rgb(55, 91, 114);
+}
+

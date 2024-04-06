@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <button type="button" onclick="submitPromotion()">Create Promotion</button>
+        <button type="button" id="submitBtn" onclick="submitPromotion()">Create Promotion</button>
     </form>
 </div>
 
@@ -56,17 +56,24 @@
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 201) {
-                    window.location.href = "/promotion/get/all?";
-                    console.log('Promotion created successfully');
+                event.preventDefault();
+                var notification = document.createElement('div');
+                if (xhr.status === 200) {
+                    notification.className = 'notification';
+                    notification.textContent = 'Promotia a fost creata!';
                 } else {
-                    console.error('Failed to create promotion');
+                    notification.className = 'notificationError';
+                    notification.textContent = 'Nu s-a creat promotia!';
                 }
+                document.body.appendChild(notification);
+                setTimeout(function () {
+                    document.body.innerHTML = xhr.response;
+                    window.location.href = "/promotion/get/all";
+                }, 1500);
             }
         };
         xhr.send(JSON.stringify(promotionData));
     }
 </script>
-
 </body>
 </html>
