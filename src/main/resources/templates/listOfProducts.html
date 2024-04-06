@@ -78,7 +78,8 @@
                     <button class="buttons-product"
                             th:data-name="${product.id}"
                             th:data-user="${user.getId().toString()}"
-                            onclick="addProductToCart(this.getAttribute('data-name'),this.getAttribute('data-user'))">Adauga in cos
+                            onclick="addProductToCart(this.getAttribute('data-name'),this.getAttribute('data-user'))">
+                        Adauga in cos
                     </button>
                 </form>
 
@@ -99,7 +100,7 @@
 </body>
 
 <script>
-    function addProductToCart(productId,userId) {
+    function addProductToCart(productId, userId) {
         let quantity = document.getElementById(`quantity-${productId}`).value;
         const orderItemData = {
             id_product: productId,
@@ -107,35 +108,29 @@
         };
 
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/orderItem/add", true);
+        xhr.open("POST", "/orderItem/add", false);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 201) {
                     let responseData = JSON.parse(xhr.response);
-                    let id = responseData.message;
-                    console.log("Order item ID:", id);
-                    console.log("User ID:", userId);
-
+                    let id = responseData.message.toString();
                     const shopCartData = {
                         id_orderItems: [id]
                     };
 
                     var xhr2 = new XMLHttpRequest();
-                    xhr2.open("PUT", "/cart/updateByUserId/" + userId);
+                    xhr2.open("PUT", "/cart/updateByUserId/" + userId, false);
                     xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
                     xhr2.onreadystatechange = function () {
                         if (xhr2.readyState === XMLHttpRequest.DONE) {
-                            if (xhr2.status === 200 || xhr2.status === 204) {
-                                console.log("Cart updated successfully");
-                            } else {
-                                console.error("Failed to update cart");
-                            }
+                            let responseData = JSON.parse(xhr2.response);
+                            window.alert(responseData.message);
                         }
                     };
                     xhr2.send(JSON.stringify(shopCartData));
                 } else {
-                    console.error("Failed to create order item");
+                    window.alert("Din pacate produsul nu a fost adaugat in cosul de cumparaturi!");
                 }
             }
         };

@@ -121,10 +121,11 @@ public class PromotionServiceImpl implements PromotionService {
             List<Product> products = productRepository.findProjectedByIdIn(promotionDetailedDTO.getId_products());
             if (promotionOptional.isPresent()) {
                 Promotion promotionExisting = promotionOptional.get();
-                Double discountBefore = promotionExisting.getDiscountPercentage();
+                Double discountBefore = promotionExisting.getDiscountPercentage() / 100.0;
                 PromotionUtils.updatePromotion(promotionExisting, promotionDetailedDTO, products);
-                for (Product product : products) {
-                    double discountedPrice = Math.floor(product.getPrice() * (1 + discountBefore) * (1 - promotionDetailedDTO.getDiscountPercentage()));
+                List<Product> productsExisting = promotionExisting.getProducts();
+                for (Product product : productsExisting) {
+                    double discountedPrice = Math.floor(product.getPrice() * (1 + discountBefore) * (1 - (promotionDetailedDTO.getDiscountPercentage() / 100.0)));
                     product.setPrice(discountedPrice);
                     productRepository.save(product);
                 }

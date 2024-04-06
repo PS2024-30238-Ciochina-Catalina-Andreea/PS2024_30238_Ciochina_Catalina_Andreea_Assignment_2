@@ -140,10 +140,18 @@ form {
     display: flex;
     align-items: center;
 }
-span{
+
+span {
     text-align: center;
     margin-left: 2.3rem;
 }
-.submit{
+
+.submit {
+    margin-top: 1rem;
+    margin-left: 3rem;
     float: right;
+}
+
+.total{
+    margin-top: 1rem;
 }

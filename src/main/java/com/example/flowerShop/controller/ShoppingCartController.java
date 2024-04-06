@@ -1,5 +1,5 @@
 package com.example.flowerShop.controller;
-;
+
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDTO;
 import com.example.flowerShop.dto.shoppingCart.ShoppingCartDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
@@ -56,9 +56,9 @@ public class ShoppingCartController {
     public RedirectView addCart(@RequestBody ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
         ResponseEntity<String> response = this.shoppingCartService.addCart(shoppingCartDetailedDTO);
         if (response.getStatusCode() == HttpStatus.CREATED) {
-            return new RedirectView("/product/listOfProducts");
+            return new RedirectView("/product/listOfProducts?");
         }
-        return new RedirectView("/userProfile");
+        return new RedirectView("/userProfile?");
     }
 
     @PutMapping("/cart/updateByUserId/{id}")
@@ -75,8 +75,8 @@ public class ShoppingCartController {
     public RedirectView deleteOrderItemFromCart(@PathVariable UUID id_user, @RequestParam("orderItemId") UUID orderItemId) {
         ResponseEntity<String> response = this.shoppingCartService.deleteOrderItemFromCart(id_user, orderItemId);
         if (response.getStatusCode() == HttpStatus.OK) {
-            return new RedirectView("/product/listOfProducts");
+            return new RedirectView("/product/listOfProducts?");
         }
-        return new RedirectView("/cart/getByUser");
+        return new RedirectView("/cart/getByUser?");
     }
 }

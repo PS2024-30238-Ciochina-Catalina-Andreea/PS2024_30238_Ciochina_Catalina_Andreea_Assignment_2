@@ -95,14 +95,14 @@
         <input type="hidden" name="address" th:value="${shoppingCart.user.address}"/>
         <label for="pay">Selectați tipul de plată:</label>
         <select id="pay" name="pay">
-            <option value="CASH_ON_DELIVERY">Cash</option>
+            <option value="CASH_ON_DELIVERY">Cash on delivery</option>
             <option value="CARD">Card</option>
         </select>
-        <input type="hidden" name="totalPrice" th:value="${shoppingCart.totalPrice}"/>
+        <input class="total" type="hidden" name="totalPrice" th:value="${shoppingCart.totalPrice}"/>
         <input type="hidden" name="id_user" th:value="${shoppingCart.user.id}"/>
         <input type="hidden" th:each="item : ${shoppingCart.orderItems}"
                name="id_orderItems" th:value="${item.id}"/>
-        <br>
+
         <button class="submit" type="submit" onclick="sendOrder()">Plaseaza comanda</button>
     </form>
 
@@ -131,17 +131,16 @@
             id_orderItems: id_orderItems
         };
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/order/add", true);
+        xhr.open("POST", "/order/add", false);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 201) {
-                    let responseData = JSON.parse(xhr.response);
-                    console.log('Comanda a fost trimisa cu succes:', responseData);
+                if (xhr.status === 200) {
+                    alert('Comanda a fost plasata cu succes!');
+                    document.body.innerHTML = xhr.response;
                 } else {
-                    console.error('A aparut o eroare in timpul trimiterii comenzii:', xhr.statusText);
+                    alert('Ceva nu a mers bine la plasarea comenzii!');
                 }
-                window.location.href = "/order/getByUser/all/" + id_user;
             }
         };
         xhr.send(JSON.stringify(orderData));

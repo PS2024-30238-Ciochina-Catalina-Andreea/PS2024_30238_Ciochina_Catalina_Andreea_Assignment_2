@@ -43,17 +43,6 @@ public class OrderController {
         this.orderServiceImpl = orderServiceImpl;
     }
 
-    /**
-     * Gets list of orders
-     *
-     * @return ResponseEntity<List < OrderDTO>>
-     */
-    @GetMapping("/get/all")
-    public ResponseEntity<List<OrderDTO>> getAllOrders() {
-        LOGGER.info("Request for list of orders");
-        return this.orderServiceImpl.getAllOrders();
-    }
-
     @GetMapping("/getByUser/all/{id}")
     public ModelAndView getAllOrdersByUser(@PathVariable UUID id) {
         LOGGER.info("Request for list of orders by user");
@@ -89,10 +78,12 @@ public class OrderController {
      * @return ResponseEntity<String>
      */
     @PostMapping("/add")
-    public RedirectView addOrder(@RequestBody OrderDetailedDTO orderDetailedDTO) {
+    public ModelAndView addOrder(@RequestBody OrderDetailedDTO orderDetailedDTO) {
         LOGGER.info("Request for creating a new order");
         this.orderServiceImpl.addOrder(orderDetailedDTO);
-        return new RedirectView("/order/getByUser/all/" + orderDetailedDTO.getId_user());
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setView(new RedirectView("/order/getByUser/all/" + orderDetailedDTO.getId_user()));
+        return modelAndView;
     }
 
     @GetMapping("/update/{id}")
