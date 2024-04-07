@@ -14,8 +14,13 @@ import java.util.Objects;
 public class PromotionUtils {
 
     public boolean validatePromotionMap(PromotionDetailedDTO promotionDetailedDTO) {
-        return !Objects.equals(promotionDetailedDTO.getName(), null)
-                && !Objects.equals(promotionDetailedDTO.getDiscountPercentage(), null);
+        if (promotionDetailedDTO.getName() == null || promotionDetailedDTO.getDiscountPercentage() == null) {
+            return false;
+        }
+        if (promotionDetailedDTO.getDiscountPercentage() < 1.0 || promotionDetailedDTO.getDiscountPercentage() > 100.0) {
+            return false;
+        }
+        return true;
     }
 
     public static void updatePromotion(Promotion promotion, PromotionDetailedDTO promotionDetailedDTO, List<Product> products) {

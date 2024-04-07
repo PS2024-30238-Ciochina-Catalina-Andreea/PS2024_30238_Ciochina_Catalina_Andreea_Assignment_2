@@ -1,8 +1,6 @@
 package com.example.flowerShop.repository;
 
 import com.example.flowerShop.entity.CustomProduct;
-import com.example.flowerShop.entity.Product;
-import com.example.flowerShop.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 

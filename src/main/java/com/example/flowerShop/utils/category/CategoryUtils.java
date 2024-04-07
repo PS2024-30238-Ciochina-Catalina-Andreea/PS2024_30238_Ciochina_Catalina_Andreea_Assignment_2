@@ -1,9 +1,7 @@
 package com.example.flowerShop.utils.category;
 
 import com.example.flowerShop.dto.category.CategoryDetailedDTO;
-import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.entity.Category;
-import com.example.flowerShop.entity.Product;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -13,7 +13,7 @@ public class ReviewUtils {
 
     public boolean validateReviewMap(ReviewDetailedDTO reviewDetailedDTO) {
         return !Objects.equals(reviewDetailedDTO.getText(), null)
-                && reviewDetailedDTO.getRating() >= 0
+                && reviewDetailedDTO.getRating() >= 1
                 && reviewDetailedDTO.getRating() <= 10
                 && !Objects.equals(reviewDetailedDTO.getId_user(), null)
                 && !Objects.equals(reviewDetailedDTO.getId_product(), null);
@@ -24,7 +24,7 @@ public class ReviewUtils {
         if (Objects.nonNull(reviewDetailedDTO.getText())) {
             review.setText(reviewDetailedDTO.getText());
         }
-        if (!(reviewDetailedDTO.getRating() < 0 || reviewDetailedDTO.getRating() > 10)) {
+        if (!(reviewDetailedDTO.getRating() < 1 || reviewDetailedDTO.getRating() > 10)) {
             review.setRating(reviewDetailedDTO.getRating());
         }
     }

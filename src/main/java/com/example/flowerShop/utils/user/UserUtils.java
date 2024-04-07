@@ -12,12 +12,32 @@ import java.util.Objects;
 public class UserUtils {
 
     public boolean validateSignUpMap(UserPostDTO user) {
-        return !Objects.equals(user.getName(), "")
-                && !Objects.equals(user.getContactNumber(), "")
-                && !Objects.equals(user.getAddress(), "")
-                && !Objects.equals(user.getRole(), "")
-                && !Objects.equals(user.getPassword(), "")
-                && !Objects.equals(user.getEmail(), "");
+
+        if (user.getName() == null || user.getName().trim().isEmpty() || user.getName().split("\\s+").length < 2) {
+            return false;
+        }
+
+        if (user.getContactNumber() == null || user.getContactNumber().trim().isEmpty() || !user.getContactNumber().matches("\\d{10}")) {
+            return false;
+        }
+
+        if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
+            return false;
+        }
+
+        if (user.getRole() == null) {
+            return false;
+        }
+
+        if (user.getPassword() == null || user.getPassword().length() < 4) {
+            return false;
+        }
+
+        if (user.getEmail() == null || !user.getEmail().matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
+            return false;
+        }
+
+        return true;
     }
 
 

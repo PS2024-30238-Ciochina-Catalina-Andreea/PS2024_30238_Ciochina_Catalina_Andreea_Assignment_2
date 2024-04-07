@@ -13,11 +13,27 @@ import java.util.Objects;
 public class ProductUtils {
 
     public boolean validateProductMap(ProductDetailedDTO productDetailedDTO) {
-        return !Objects.equals(productDetailedDTO.getName(), "")
-                && !Objects.equals(productDetailedDTO.getStock(), null)
-                && !Objects.equals(productDetailedDTO.getCategory(), null)
-                && !Objects.equals(productDetailedDTO.getPrice(), null)
-                && !Objects.equals(productDetailedDTO.getDescription(), "");
+
+        if (productDetailedDTO.getName() == null) {
+            return false;
+        }
+
+        Integer stock = productDetailedDTO.getStock();
+        if (stock == null || stock <= 1) {
+            return false;
+        }
+
+        Double price = productDetailedDTO.getPrice();
+        if (price == null || price <= 1) {
+            return false;
+        }
+
+        String description = productDetailedDTO.getDescription();
+        if (description == null || description.trim().isEmpty()) {
+            return false;
+        }
+
+        return productDetailedDTO.getCategory() != null;
     }
 
     public static void updateProductValues(Product productExisting, ProductDTO product) {
@@ -27,10 +43,10 @@ public class ProductUtils {
         if (Objects.nonNull(product.getDescription()) && !"".equalsIgnoreCase(product.getDescription())) {
             productExisting.setDescription(product.getDescription());
         }
-        if (Objects.nonNull(product.getPrice()) && product.getPrice() >= 0) {
+        if (Objects.nonNull(product.getPrice()) && product.getPrice() >= 5) {
             productExisting.setPrice(product.getPrice());
         }
-        if (Objects.nonNull(product.getStock()) && product.getStock() >= 0) {
+        if (Objects.nonNull(product.getStock()) && product.getStock() >= 1) {
             productExisting.setStock(product.getStock());
         }
         if (Objects.nonNull(product.getCategory())) {

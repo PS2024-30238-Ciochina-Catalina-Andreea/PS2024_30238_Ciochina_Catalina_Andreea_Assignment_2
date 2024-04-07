@@ -18,7 +18,7 @@ public class ShoppingCartUtils {
     }
 
     public static void updateCartValues(ShoppingCart shoppingCart, ShoppingCartDetailedDTO shoppingCartDetailedDTO, List<OrderItem> orderItemList) {
-        if (Objects.nonNull(shoppingCartDetailedDTO.getTotalPrice())) {
+        if (Objects.nonNull(shoppingCartDetailedDTO.getTotalPrice()) && shoppingCart.getTotalPrice() >= 1) {
             shoppingCart.setTotalPrice(shoppingCartDetailedDTO.getTotalPrice());
         }
         if (Objects.nonNull(shoppingCartDetailedDTO.getId_orderItems())) {
