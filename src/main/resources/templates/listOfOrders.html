@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista comenzi</title>
-    <link th:href="@{/styles/cssandjs/listOfProducts.css}" rel="stylesheet" />
+    <link th:href="@{/styles/cssandjs/listOfProducts.css}" rel="stylesheet"/>
 </head>
 <div class="navbar">
     <ul>
@@ -73,12 +73,13 @@
             <td th:text="${order.getUser().getName()}">Utilizator</td>
             <td th:text="${order.getOrderDate()}">Data comanda</td>
             <td>
-                <form th:action="@{/order/delete/{orderId}(orderId=${order.getId()})}" method="post">
+                <form th:id="'deleteOrder_' + ${order.getId()}"
+                      th:action="@{/order/delete/{orderId}(orderId=${order.getId()})}" method="post">
                     <button type="submit">Sterge</button>
                 </form>
             </td>
             <td th:if="${user.getRole().toString()} == 'ADMIN'">
-                <form  th:action="@{/order/update/{orderId}(orderId=${order.getId()})}" method="get">
+                <form th:action="@{/order/update/{orderId}(orderId=${order.getId()})}" method="get">
                     <button type="submit">Modifica</button>
                 </form>
             </td>
@@ -86,5 +87,42 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    document.querySelectorAll('[id^="deleteOrder_"]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        var notificationExists = document.querySelector('.notification');
+                        if (!notificationExists) {
+                            var notification = document.createElement('div');
+                            if (response.url.includes('/order/getByUser/all')) {
+                                setTimeout(function () {
+                                    window.location.href = response.url
+                                }, 1000);
+                                notification.className = 'notification';
+                                notification.textContent = 'Comanda a fost stearsa!';
+                                document.body.appendChild(notification);
+                            } else {
+                                notification.className = 'notificationError';
+                                notification.textContent = 'Nu s-a putut sterge comanda!';
+                                document.body.appendChild(notification);
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 1000);
+                            }
+                        }
+                    }
+                })
+        });
+    });
+</script>
 </body>
 </html>

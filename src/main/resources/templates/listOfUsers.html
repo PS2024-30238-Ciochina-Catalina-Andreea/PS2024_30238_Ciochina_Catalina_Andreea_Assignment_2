@@ -75,7 +75,8 @@
                 </form>
             </td>
             <td>
-                <form id="deleteUserForm" th:action="@{/delete/{userId}(userId=${user.getId()})}" method="post">
+                <form th:id="'deleteUser_' + ${user.getId()}" th:action="@{/delete/{userId}(userId=${user.getId()})}"
+                      method="post">
                     <button id="deleteUser" type="submit">Sterge</button>
                 </form>
             </td>
@@ -85,34 +86,36 @@
 </div>
 </body>
 <script>
-    document.getElementById('deleteUserForm').addEventListener('submit', function (event) {
-        event.preventDefault();
+    document.querySelectorAll('[id^="deleteUser_"]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-        var formData = new FormData(this);
-        fetch(this.action, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => {
-                if (response.redirected) {
-                    var notification = document.createElement('div');
-                    if (response.url.includes('/login') || response.url.includes('/listOfUsers')) {
-                        setTimeout(function () {
-                            window.location.href = response.url
-                        }, 1000);
-                        notification.className = 'notification';
-                        notification.textContent = 'Profilul a fost sters!';
-                        document.body.appendChild(notification);
-                    } else  {
-                        notification.className = 'notificationError';
-                        notification.textContent = 'Nu s-a putut sterge profilul!';
-                        document.body.appendChild(notification);
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 1000);
-                    }
-                }
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
             })
+                .then(response => {
+                    if (response.redirected) {
+                        var notification = document.createElement('div');
+                        if (response.url.includes('/login') || response.url.includes('/listOfUsers')) {
+                            setTimeout(function () {
+                                window.location.href = response.url
+                            }, 1000);
+                            notification.className = 'notification';
+                            notification.textContent = 'Profilul a fost sters!';
+                            document.body.appendChild(notification);
+                        } else {
+                            notification.className = 'notificationError';
+                            notification.textContent = 'Nu s-a putut sterge profilul!';
+                            document.body.appendChild(notification);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    }
+                })
+        });
     });
 </script>
 </html>

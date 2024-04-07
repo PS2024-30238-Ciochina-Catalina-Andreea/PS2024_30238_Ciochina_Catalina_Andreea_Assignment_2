@@ -69,10 +69,12 @@
 
             <div class="buttonsModif">
                 <div class="adminButtons" th:if="${user.getRole().toString()} == 'ADMIN'">
-                    <form th:action="@{/promotion/updatePromotion/{promotionId}(promotionId=${promotion.getId()})}" method="get">
+                    <form th:action="@{/promotion/updatePromotion/{promotionId}(promotionId=${promotion.getId()})}"
+                          method="get">
                         <button class="buttons-product" type="submit">Modifica promotie</button>
                     </form>
-                    <form id="deleteProm" th:action="@{/promotion/delete/{promotionId}(promotionId=${promotion.getId()})}"
+                    <form th:id="'deleteProm_' + ${promotion.getId()}"
+                          th:action="@{/promotion/delete/{promotionId}(promotionId=${promotion.getId()})}"
                           method="post">
                         <button id="deleteBtn" class="buttons-product" type="submit">Sterge promotie</button>
                     </form>
@@ -84,34 +86,36 @@
 </body>
 
 <script>
-    document.getElementById('deleteProm').addEventListener('submit', function (event) {
-        event.preventDefault();
+    document.querySelectorAll('[id^="deleteProm_"]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
 
-        var formData = new FormData(this);
-        fetch(this.action, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => {
-                if (response.redirected) {
-                    var notification = document.createElement('div');
-                    if (response.url.includes('/promotion/get/all')) {
-                        setTimeout(function () {
-                            window.location.href = response.url
-                        }, 1000);
-                        notification.className = 'notification';
-                        notification.textContent = 'Promotia a fost stearsa!';
-                        document.body.appendChild(notification);
-                    } else  {
-                        notification.className = 'notificationError';
-                        notification.textContent = 'Nu s-a putut sterge promotia!';
-                        document.body.appendChild(notification);
-                        setTimeout(function () {
-                            window.location.reload();
-                        }, 1000);
-                    }
-                }
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
             })
+                .then(response => {
+                    if (response.redirected) {
+                        var notification = document.createElement('div');
+                        if (response.url.includes('/promotion/get/all')) {
+                            setTimeout(function () {
+                                window.location.href = response.url
+                            }, 1000);
+                            notification.className = 'notification';
+                            notification.textContent = 'Promotia a fost stearsa!';
+                            document.body.appendChild(notification);
+                        } else {
+                            notification.className = 'notificationError';
+                            notification.textContent = 'Nu s-a putut sterge promotia!';
+                            document.body.appendChild(notification);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    }
+                })
+        });
     });
 </script>
 </html>

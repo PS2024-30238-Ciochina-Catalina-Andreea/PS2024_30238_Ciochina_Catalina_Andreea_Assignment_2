@@ -98,16 +98,18 @@ h2 {
     align-items: center;
     justify-content: center;
 }
-.buttons button{
+
+.buttons button {
     margin-left: 10px;
 }
 
 .notification {
     position: fixed;
-    bottom: 0;
-    right: 20px;
-    background-color: #af7777;
-    border: 2px solid #7e98a9;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #7e98a9;
+    border: 2px solid #af7777;
     color: black;
     padding: 15px;
     border-radius: 5px;
@@ -116,15 +118,17 @@ h2 {
     overflow-y: auto;
 }
 
-.notificationError{
+.notificationError {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #7e98a9;
-    border: 2px solid #af7777;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #af7777;
+    border: 2px solid #7e98a9;
     color: black;
     padding: 15px;
     border-radius: 5px;
     z-index: 1000;
     box-shadow: 0px 0px 10px rgb(55, 91, 114);
+    overflow-y: auto;
 }

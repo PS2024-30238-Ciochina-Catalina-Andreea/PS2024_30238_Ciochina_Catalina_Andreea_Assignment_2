@@ -97,8 +97,22 @@ button {
 .logout-form button:hover {
     background-color: #7e98a9;
 }
-
 .notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #7e98a9;
+    border: 2px solid #af7777;
+    color: black;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    box-shadow: 0px 0px 10px rgb(55, 91, 114);
+    overflow-y: auto;
+}
+
+.notificationError {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -113,15 +127,3 @@ button {
     overflow-y: auto;
 }
 
-.notificationError{
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #7e98a9;
-    border: 2px solid #af7777;
-    color: black;
-    padding: 15px;
-    border-radius: 5px;
-    z-index: 1000;
-    box-shadow: 0px 0px 10px rgb(55, 91, 114);
-}

@@ -119,8 +119,13 @@ public class OrderController {
     @PostMapping("/delete/{id}")
     public RedirectView deleteOrderById(@PathVariable UUID id, HttpServletRequest request) {
         LOGGER.info("Request for deleting an order by id");
-        this.orderServiceImpl.deleteOrderById(id);
-        String referer = request.getHeader("Referer");
-        return new RedirectView(referer);
+        ResponseEntity<String> response = this.orderServiceImpl.deleteOrderById(id);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+            return new RedirectView("/order/getByUser/all/" + currentUser.getId());
+        } else {
+            String referer = request.getHeader("Referer");
+            return new RedirectView(referer);
+        }
     }
 }

@@ -58,10 +58,15 @@ public class PromotionController {
 
 
     @PostMapping("/add")
-    public ModelAndView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO) {
-        this.promotionService.addPromotion(promotionDetailedDTO);
+    public ModelAndView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO, HttpServletRequest request) {
+        ResponseEntity<String> response = this.promotionService.addPromotion(promotionDetailedDTO);
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setView(new RedirectView("/promotion/get/all"));
+        if(response.getStatusCode() == HttpStatus.CREATED) {
+            modelAndView.setView(new RedirectView("/promotion/get/all"));
+        }else{
+            String referer = request.getHeader("Referer");
+            modelAndView.setView(new RedirectView(referer));
+        }
         return modelAndView;
     }
 
