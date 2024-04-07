@@ -56,7 +56,6 @@ public class PromotionController {
         return modelAndView;
     }
 
-
     @PostMapping("/add")
     public ModelAndView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO, HttpServletRequest request) {
         ResponseEntity<String> response = this.promotionService.addPromotion(promotionDetailedDTO);

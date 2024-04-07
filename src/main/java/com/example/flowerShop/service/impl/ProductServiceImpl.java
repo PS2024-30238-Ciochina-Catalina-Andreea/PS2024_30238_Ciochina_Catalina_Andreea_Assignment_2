@@ -1,8 +1,8 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.ProductConstants;
-import com.example.flowerShop.dto.user.UserGetDTO;
-import com.example.flowerShop.entity.User;
+import com.example.flowerShop.entity.Promotion;
+import com.example.flowerShop.entity.Review;
 import com.example.flowerShop.mapper.ProductMapper;
 import com.example.flowerShop.dto.product.ProductDTO;
 import com.example.flowerShop.dto.product.ProductDetailedDTO;
@@ -11,6 +11,8 @@ import com.example.flowerShop.entity.Product;
 
 import com.example.flowerShop.repository.CategoryRepository;
 import com.example.flowerShop.repository.ProductRepository;
+import com.example.flowerShop.repository.PromotionRepository;
+import com.example.flowerShop.repository.ReviewRepository;
 import com.example.flowerShop.service.ProductService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.category.CategoryName;
@@ -29,6 +31,10 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
+    private final PromotionRepository promotionsRepository;
+
+    private final ReviewRepository reviewRepository;
+
     private final CategoryRepository categoryRepository;
 
     private final ProductUtils productUtils;
@@ -46,11 +52,18 @@ public class ProductServiceImpl implements ProductService {
      * @param productMapper
      */
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductUtils productUtils, ProductMapper productMapper) {
+    public ProductServiceImpl(ProductRepository productRepository,
+                              CategoryRepository categoryRepository,
+                              ProductUtils productUtils,
+                              ProductMapper productMapper,
+                              ReviewRepository reviewRepository,
+                              PromotionRepository promotionsRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productUtils = productUtils;
         this.productMapper = productMapper;
+        this.reviewRepository = reviewRepository;
+        this.promotionsRepository = promotionsRepository;
     }
 
     /**
@@ -157,8 +170,7 @@ public class ProductServiceImpl implements ProductService {
                 Product productExisting = productOptional.get();
                 if (Objects.nonNull(productDetailedDTO.getCategory())) {
                     category = categoryRepository.findByName(CategoryName.valueOf(productDetailedDTO.getCategory()));
-                }
-                else
+                } else
                     category = categoryRepository.findByName(productExisting.getCategory().getName());
                 ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
                 ProductUtils.updateProductValues(productExisting, productDTO);
@@ -188,6 +200,10 @@ public class ProductServiceImpl implements ProductService {
         LOGGER.info("Deleting the product with id {}...", id);
         try {
             Optional<Product> productOptional = productRepository.findById(id);
+            List<Review> reviews = reviewRepository.findAllByProduct(productOptional.get());
+            List<Promotion> promotions = promotionsRepository.findAll();
+            this.deleteProductFromPromotion(promotions, productOptional.get());
+            reviewRepository.deleteAll(reviews);
             if (productOptional.isPresent()) {
                 productRepository.deleteById(id);
                 LOGGER.info("Product deleted successfully");
@@ -203,18 +219,22 @@ public class ProductServiceImpl implements ProductService {
         return Utils.getResponseEntity(ProductConstants.SOMETHING_WENT_WRONG_AT_DELETING_PRODUCT, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    public Product convertToModelObject(UUID id) {
-        ProductDetailedDTO productDTO = this.getProductById(id).getBody();
-        Optional<Category> categoryOptional = categoryRepository.findByName(CategoryName.valueOf(productDTO.getCategory()));
-        Product product = new Product();
-        if (productDTO != null) {
-            product.setId(productDTO.getId());
-            product.setName(productDTO.getName());
-            product.setDescription(productDTO.getDescription());
-            product.setStock(productDTO.getStock());
-            product.setPrice(productDTO.getPrice());
-            product.setCategory(categoryOptional.get());
+
+    private void deleteProductFromPromotion(List<Promotion> promotions, Product productDelete) {
+        for (Promotion promotion : promotions) {
+            List<Product> products = promotion.getProducts();
+            for (Iterator<Product> iterator = products.iterator(); iterator.hasNext(); ) {
+                Product product = iterator.next();
+                if (product.getId() == productDelete.getId()) {
+                    iterator.remove();
+                }
+            }
+            if (promotion.getProducts().isEmpty()) {
+                promotionsRepository.delete(promotion);
+            } else {
+                promotionsRepository.save(promotion);
+            }
         }
-        return product;
     }
+
 }

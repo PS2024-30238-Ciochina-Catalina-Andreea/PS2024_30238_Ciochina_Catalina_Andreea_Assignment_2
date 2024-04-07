@@ -184,3 +184,11 @@ span {
     z-index: 1000;
     box-shadow: 0px 0px 10px rgb(55, 91, 114);
 }
+
+.floral-header {
+    color: #723b38;
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgb(162, 115, 162);
+}

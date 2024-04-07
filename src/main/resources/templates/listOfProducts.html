@@ -15,6 +15,11 @@
             </form>
         </li>
         <li>
+            <form th:action="@{/review/listOfReviews}" method="get">
+                <button type="submit">Reviews</button>
+            </form>
+        </li>
+        <li>
             <form th:action="@{/cart/getByUser}" method="get">
                 <button type="submit">Cos</button>
             </form>
@@ -51,7 +56,7 @@
         <button type="submit">Adauga produs</button>
     </form>
 
-    <h1>Lista produse</h1>
+    <h1 class="floral-header">Lista produse</h1>
 
     <div class="product-container" th:each="product : ${products}">
         <div class="product">

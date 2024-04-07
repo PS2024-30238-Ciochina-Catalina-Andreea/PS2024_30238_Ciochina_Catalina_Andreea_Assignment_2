@@ -1,11 +1,13 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.ReviewConstants;
+import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.review.ReviewDTO;
 import com.example.flowerShop.dto.review.ReviewDetailedDTO;
 import com.example.flowerShop.entity.Product;
 import com.example.flowerShop.entity.Review;
 import com.example.flowerShop.entity.User;
+import com.example.flowerShop.mapper.ProductMapper;
 import com.example.flowerShop.mapper.ReviewMapper;
 import com.example.flowerShop.repository.ProductRepository;
 import com.example.flowerShop.repository.ReviewRepository;
@@ -27,6 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
+    private final ProductMapper productMapper;
     private final ReviewUtils reviewUtils;
 
     @Autowired
@@ -34,12 +37,14 @@ public class ReviewServiceImpl implements ReviewService {
                              ProductRepository productRepository,
                              ReviewRepository reviewRepository,
                              ReviewMapper reviewMapper,
-                             ReviewUtils reviewUtils) {
+                             ReviewUtils reviewUtils,
+                             ProductMapper productMapper) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.reviewMapper = reviewMapper;
         this.reviewUtils = reviewUtils;
+        this.productMapper = productMapper;
     }
 
     @Override
@@ -47,6 +52,18 @@ public class ReviewServiceImpl implements ReviewService {
         try {
             Optional<Product> product = productRepository.findById(id);
             List<Review> reviews = reviewRepository.findAllByProduct(product.get());
+            return new ResponseEntity<>(reviewMapper.convertListToDtoWithObjects(reviews), HttpStatus.OK);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+
+    @Override
+    public ResponseEntity<List<ReviewDTO>> getAllReviews() {
+        try {
+            List<Review> reviews = reviewRepository.findAll();
             return new ResponseEntity<>(reviewMapper.convertListToDtoWithObjects(reviews), HttpStatus.OK);
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -130,5 +147,16 @@ public class ReviewServiceImpl implements ReviewService {
         }
         return Utils.getResponseEntity(ReviewConstants.SOMETHING_WENT_WRONG_AT_DELETING_REVIEW, HttpStatus.INTERNAL_SERVER_ERROR);
 
+    }
+
+    @Override
+    public ResponseEntity<List<ProductDetailedDTO>> getAllProductsForReview() {
+        try {
+            List<Product> products = productRepository.findAll();
+            return new ResponseEntity<>(productMapper.convertListToDTO(products), HttpStatus.OK);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

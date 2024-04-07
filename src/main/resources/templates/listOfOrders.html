@@ -14,6 +14,11 @@
             </form>
         </li>
         <li>
+            <form th:action="@{/review/listOfReviews}" method="get">
+                <button type="submit">Reviews</button>
+            </form>
+        </li>
+        <li>
             <form th:action="@{/cart/getByUser}" method="get">
                 <button type="submit">Cos</button>
             </form>
@@ -47,7 +52,7 @@
 </div>
 <body class="floral-background">
 <div class="container floral-border">
-    <h1 class="floral-header">Lista comenzi</h1>
+    <h1 class="floral-header" style="margin-left: 3rem;">Lista comenzi</h1>
     <table class="table table-bordered">
         <thead class="thead-light">
         <tr>

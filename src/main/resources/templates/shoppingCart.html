@@ -15,6 +15,11 @@
             </form>
         </li>
         <li>
+            <form th:action="@{/review/listOfReviews}" method="get">
+                <button type="submit">Reviews</button>
+            </form>
+        </li>
+        <li>
             <form th:action="@{/cart/getByUser}" method="get">
                 <button type="submit">Cos</button>
             </form>
@@ -48,7 +53,7 @@
 </div>
 
 <div class="container" th:if="${shoppingCart}">
-    <h1>Cos de cumparaturi</h1>
+    <h1 class="floral-header">Cos de cumparaturi</h1>
     <h2>User: <span th:text="${shoppingCart.user.name}"></span></h2>
     <table>
         <thead>
