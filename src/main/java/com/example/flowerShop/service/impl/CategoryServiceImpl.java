@@ -37,7 +37,9 @@ public class CategoryServiceImpl implements CategoryService {
      * @param categoryMapper
      */
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryUtils categoryUtils, CategoryMapper categoryMapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository,
+                               CategoryUtils categoryUtils,
+                               CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
         this.categoryUtils = categoryUtils;
         this.categoryMapper = categoryMapper;

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista useri</title>
-    <link th:href="@{/styles/cssandjs/listOfUsers.css}" rel="stylesheet"/>
+    <title>Lista plati</title>
+    <link th:href="@{/styles/cssandjs/listOfProducts.css}" rel="stylesheet"/>
 </head>
 <div class="navbar">
     <ul>
@@ -57,46 +57,38 @@
 </div>
 <body class="floral-background">
 <div class="container floral-border">
-    <h1 class="floral-header">Lista useri</h1>
+    <h1 class="floral-header" style="margin-left: 3rem;">Lista plati</h1>
     <table class="table table-bordered">
         <thead class="thead-light">
         <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Nume</th>
-            <th scope="col">Contact</th>
-            <th scope="col">Adresa</th>
-            <th scope="col">Email</th>
-            <th scope="col">Rol</th>
-            <th scope="col">Modifica user</th>
-            <th scope="col">Sterge user</th>
+            <th scope="col">ID plata</th>
+            <th scope="col">Numar card</th>
+            <th scope="col">CVV card</th>
+            <th scope="col">Pret total platit</th>
+            <th scope="col">Data platii</th>
+            <th scope="col">Elimina plata</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.getId().toString()}">ID</td>
-            <td th:text="${user.getName()}">Nume</td>
-            <td th:text="${user.getContactNumber()}">Contact</td>
-            <td th:text="${user.getAddress()}">Adresa</td>
-            <td th:text="${user.getEmail()}">Email</td>
-            <td th:text="${user.getRole().toString()}">Role</td>
+        <tr th:each="payment : ${payments}">
+            <td th:text="${payment.getId()}">ID</td>
+            <td th:text="${payment.getNumarCard()}">Numar card</td>
+            <td th:text="${payment.getCvv()}">CVV</td>
+            <td th:text="${payment.getTotalPrice()}">Pret total</td>
+            <td th:text="${payment.getOrderDate()}">Data platii</td>
             <td>
-                <form th:action="@{/updateUser/{userId}(userId=${user.getId()})}" method="get">
-                    <button type="submit">Modifica</button>
-                </form>
-            </td>
-            <td>
-                <form th:id="'deleteUser_' + ${user.getId()}" th:action="@{/delete/{userId}(userId=${user.getId()})}"
-                      method="post">
-                    <button id="deleteUser" type="submit">Sterge</button>
+                <form th:id="'deletePayment_' + ${payment.getId()}"
+                      th:action="@{/card/delete/{paymentId}(paymentId=${payment.getId()})}" method="post">
+                    <button type="submit">Sterge</button>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-</body>
+
 <script>
-    document.querySelectorAll('[id^="deleteUser_"]').forEach(function (form) {
+    document.querySelectorAll('[id^="deletePayment_"]').forEach(function (form) {
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -107,25 +99,29 @@
             })
                 .then(response => {
                     if (response.redirected) {
-                        var notification = document.createElement('div');
-                        if (response.url.includes('/login') || response.url.includes('/listOfUsers')) {
-                            setTimeout(function () {
-                                window.location.href = response.url
-                            }, 1000);
-                            notification.className = 'notification';
-                            notification.textContent = 'Profilul a fost sters!';
-                            document.body.appendChild(notification);
-                        } else {
-                            notification.className = 'notificationError';
-                            notification.textContent = 'Nu s-a putut sterge profilul!';
-                            document.body.appendChild(notification);
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 1000);
+                        var notificationExists = document.querySelector('.notification');
+                        if (!notificationExists) {
+                            var notification = document.createElement('div');
+                            if (response.url.includes('/card/listOfPayments')) {
+                                setTimeout(function () {
+                                    window.location.href = response.url
+                                }, 1000);
+                                notification.className = 'notification';
+                                notification.textContent = 'Plata a fost stearsa!';
+                                document.body.appendChild(notification);
+                            } else {
+                                notification.className = 'notificationError';
+                                notification.textContent = 'Nu s-a putut sterge plata!';
+                                document.body.appendChild(notification);
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 1000);
+                            }
                         }
                     }
                 })
         });
     });
 </script>
+</body>
 </html>

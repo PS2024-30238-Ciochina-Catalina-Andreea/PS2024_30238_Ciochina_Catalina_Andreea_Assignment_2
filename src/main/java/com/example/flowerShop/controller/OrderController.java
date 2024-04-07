@@ -6,6 +6,7 @@ import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.entity.Order;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.OrderServiceImpl;
+import com.example.flowerShop.utils.order.PaymentType;
 import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -82,7 +83,11 @@ public class OrderController {
         LOGGER.info("Request for creating a new order");
         this.orderServiceImpl.addOrder(orderDetailedDTO);
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setView(new RedirectView("/order/getByUser/all/" + orderDetailedDTO.getId_user()));
+        if (orderDetailedDTO.getPay().equals(PaymentType.CARD)) {
+            modelAndView.setView(new RedirectView("/card/createPayment/"+orderDetailedDTO.getTotalPrice()));
+            modelAndView.addObject("totalPrice", orderDetailedDTO.getTotalPrice());
+        } else
+            modelAndView.setView(new RedirectView("/order/getByUser/all/" + orderDetailedDTO.getId_user()));
         return modelAndView;
     }
 
