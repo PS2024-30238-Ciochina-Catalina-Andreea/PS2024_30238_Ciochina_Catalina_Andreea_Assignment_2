@@ -87,7 +87,8 @@
                     <form th:action="@{/product/updateProduct/{productId}(productId=${product.getId()})}" method="get">
                         <button class="buttons-product" type="submit">Modifica produs</button>
                     </form>
-                    <form th:action="@{/product/delete/{productId}(productId=${product.getId()})}" method="post">
+                    <form th:id="'deleteProd_' + ${product.getId()}"
+                          th:action="@{/product/delete/{productId}(productId=${product.getId()})}" method="post">
                         <button class="buttons-product" type="submit">Sterge produs</button>
                     </form>
                 </div>
@@ -97,7 +98,33 @@
         </div>
     </div>
 </div>
-</body>
+<script>
+    document.querySelectorAll('[id^="deleteProd_"]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        var notificationExists = document.querySelector('.notification');
+                        if (!notificationExists) {
+                            var notification = document.createElement('div');
+                            notification.className = 'notification';
+                            notification.textContent = 'Produsul a fost sters!';
+                            document.body.appendChild(notification);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2000);
+                        }
+                    }
+                })
+        });
+    });
+</script>
 
 <script>
     function addProductToCart(productId, userId) {
@@ -139,4 +166,5 @@
     }
 
 </script>
+</body>
 </html>

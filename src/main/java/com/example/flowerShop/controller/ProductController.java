@@ -5,6 +5,7 @@ import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.entity.Product;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.ProductServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,9 +123,9 @@ public class ProductController {
      * @return RedirectView
      */
     @PostMapping("/delete/{id}")
-    public RedirectView deleteProductById(@PathVariable UUID id) {
+    public RedirectView deleteProductById(@PathVariable UUID id, HttpServletRequest request) {
         LOGGER.info("Request for deleting an user by id");
         this.productServiceImpl.deleteProductById(id);
-        return new RedirectView("/product/listOfProducts");
+        return new RedirectView("/product/listOfProducts?");
     }
 }

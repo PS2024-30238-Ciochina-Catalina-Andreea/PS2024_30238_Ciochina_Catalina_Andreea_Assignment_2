@@ -154,10 +154,10 @@ div {
 }
 
 .notification {
-    position: fixed;
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     background-color: #7e98a9;
     border: 2px solid #af7777;
     color: black;
@@ -165,14 +165,13 @@ div {
     border-radius: 5px;
     z-index: 1000;
     box-shadow: 0px 0px 10px rgb(55, 91, 114);
-    overflow-y: auto;
 }
 
 .notificationError {
-    position: fixed;
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     background-color: #af7777;
     border: 2px solid #7e98a9;
     color: black;
@@ -180,5 +179,4 @@ div {
     border-radius: 5px;
     z-index: 1000;
     box-shadow: 0px 0px 10px rgb(55, 91, 114);
-    overflow-y: auto;
 }

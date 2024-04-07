@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <h2>Modifica produs</h2>
-    <form th:action="@{/product/update/__${product.id}__}" th:object="${product}" method="POST">
+    <form id="updateProductForm" th:action="@{/product/update/__${product.id}__}" th:object="${product}" method="POST">
         <div class="form-group">
             <label for="name">Nume:</label>
             <input type="text" id="name" name="name" th:field="*{name}" required>
@@ -43,5 +43,36 @@
         <button type="submit">Modifica</button>
     </form>
 </div>
+<script>
+    document.getElementById('updateProductForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.redirected) {
+                    var notification = document.createElement('div');
+                    if (response.url.includes('/product/listOfProducts')) {
+                        setTimeout(function () {
+                            document.getElementById('updateProductForm').submit();
+                        }, 1000);
+                        notification.className = 'notification';
+                        notification.textContent = 'Produsul a fost modificat!';
+                        document.body.appendChild(notification);
+                    } else {
+                        notification.className = 'notificationError';
+                        notification.textContent = 'Nu s-a modificat produsul!';
+                        document.body.appendChild(notification);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+            })
+    });
+</script>
 </body>
 </html>

@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <h2>Modifica detalii comanda</h2>
-    <form th:action="@{/order/update/__${order.id}__}" th:object="${order}" method="POST">
+    <form id="orderForm" th:action="@{/order/update/__${order.id}__}" th:object="${order}" method="POST">
         <div class="form-group">
             <label for="status">Status:</label>
             <select id="status" name="status" th:field="*{status}">
@@ -44,5 +44,37 @@
         <button type="submit">Modifica</button>
     </form>
 </div>
+<script>
+    document.getElementById('orderForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.redirected) {
+                    var notification = document.createElement('div');
+                    if (response.url.includes('/order/getByUser/all/')) {
+                        setTimeout(function () {
+                            document.getElementById('orderForm').submit();
+                            window.location.href = response.url
+                        }, 1000);
+                        notification.className = 'notification';
+                        notification.textContent = 'Comanda a fost modificata!';
+                        document.body.appendChild(notification);
+                    } else {
+                        notification.className = 'notificationError';
+                        notification.textContent = 'Nu s-a modificat comanda!';
+                        document.body.appendChild(notification);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+            })
+    });
+</script>
 </body>
 </html>
