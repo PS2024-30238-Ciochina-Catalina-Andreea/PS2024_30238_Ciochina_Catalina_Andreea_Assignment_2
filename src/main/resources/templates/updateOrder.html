@@ -20,10 +20,9 @@
             </select>
         </div>
 
-
         <div class="form-group">
             <label for="address">Adresa:</label>
-            <input type="text" id="address" name="address" th:field="*{address}" required>
+            <input type="text" id="address" name="address" th:field="*{address}" required minlength="1">
         </div>
 
         <div class="form-group">
@@ -47,6 +46,11 @@
 <script>
     document.getElementById('orderForm').addEventListener('submit', function (event) {
         event.preventDefault();
+        var totalPrice = parseInt(document.getElementById('totalPrice').value);
+        if (isNaN(totalPrice) || totalPrice <= 1) {
+            alert("Pretul trebuie sa fie un numar mai mare de 1.");
+            return;
+        }
 
         var formData = new FormData(this);
         fetch(this.action, {
