@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make Payment</title>
+    <title>Executa plata comenzii</title>
     <link th:href="@{/styles/cssandjs/create.css}" rel="stylesheet"/>
 </head>
 <body>
@@ -12,12 +12,12 @@
     <form id="paymentForm" action="/card/add" method="POST">
         <div class="form-group">
             <label for="numarCard">Numar card:</label>
-            <input type="text" id="numarCard" name="numarCard" required>
+            <input type="text" id="numarCard" name="numarCard" pattern="\d{16}" title="Trebuie sa contina exact 16 cifre" required>
         </div>
 
         <div class="form-group">
             <label for="cvv">CVV:</label>
-            <input type="number" id="cvv" name="cvv" required>
+            <input type="text" id="cvv" name="cvv" pattern="\d{3}" title="Trebuie sa contina exact 3 cifre" required>
         </div>
 
         <div class="form-group">
@@ -25,7 +25,7 @@
             <input type="text" id="totalPrice" name="totalPrice" th:value="${price}" readonly required>
         </div>
 
-        <button type="submit">Plateste</button>
+    <button type="submit">Plateste</button>
     </form>
 </div>
 <script>
