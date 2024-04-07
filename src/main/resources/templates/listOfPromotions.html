@@ -84,16 +84,34 @@
 </body>
 
 <script>
-    document.getElementById('deleteBtn').addEventListener('click', function(event) {
+    document.getElementById('deleteProm').addEventListener('submit', function (event) {
         event.preventDefault();
-        var notification = document.createElement('div');
-        notification.className = 'notification';
-        notification.textContent = 'Promotia a fost stearsa!';
-        document.body.appendChild(notification);
 
-        setTimeout(function() {
-            document.getElementById('deleteProm').submit();
-        }, 1500);
+        var formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.redirected) {
+                    var notification = document.createElement('div');
+                    if (response.url.includes('/promotion/get/all')) {
+                        setTimeout(function () {
+                            window.location.href = response.url
+                        }, 1000);
+                        notification.className = 'notification';
+                        notification.textContent = 'Promotia a fost stearsa!';
+                        document.body.appendChild(notification);
+                    } else  {
+                        notification.className = 'notificationError';
+                        notification.textContent = 'Nu s-a putut sterge promotia!';
+                        document.body.appendChild(notification);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+            })
     });
 </script>
 </html>

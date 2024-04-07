@@ -6,6 +6,7 @@ import com.example.flowerShop.dto.user.UserPostDTO;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.UserServiceImpl;
 import com.example.flowerShop.utils.user.UserRole;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,8 +188,7 @@ public class UserController {
             }
             session.setAttribute("loggedInUser", getUserById(user.getId()).getBody());
             modelAndView.setView(new RedirectView("/userProfile"));
-        }
-        else
+        } else
             modelAndView.setView(new RedirectView("/updateUser/" + id));
         return modelAndView;
     }
@@ -200,17 +200,21 @@ public class UserController {
      * @return RedirectView
      */
     @PostMapping("/delete/{id}")
-    public ModelAndView deleteUserById(@PathVariable UUID id) {
+    public ModelAndView deleteUserById(@PathVariable UUID id, HttpServletRequest request) {
         LOGGER.info("Request for deleting a user by id");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        this.userServiceImpl.deleteUserById(id);
+        ResponseEntity<String> response = this.userServiceImpl.deleteUserById(id);
         ModelAndView modelAndView = new ModelAndView();
-        if (currentUser.getRole().equals(UserRole.CUSTOMER)) {
-            session.invalidate();
-            modelAndView.setView(new RedirectView("/login"));
+        if (response.getStatusCode() == HttpStatus.OK) {
+            if (currentUser.getRole().equals(UserRole.CUSTOMER)) {
+                session.invalidate();
+                modelAndView.setView(new RedirectView("/login"));
+            } else
+                modelAndView.setView(new RedirectView("/listOfUsers"));
+        } else {
+            String referer = request.getHeader("Referer");
+            modelAndView.setView(new RedirectView(referer));
         }
-        else
-            modelAndView.setView(new RedirectView("/listOfUsers"));
         return modelAndView;
     }
 }

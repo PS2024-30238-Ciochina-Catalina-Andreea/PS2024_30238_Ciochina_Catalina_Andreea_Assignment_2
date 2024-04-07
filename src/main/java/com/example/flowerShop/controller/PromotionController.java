@@ -77,15 +77,20 @@ public class PromotionController {
         ResponseEntity<String> response = this.promotionService.updatePromotionById(id, promotionDetailedDTO);
         if (response.getStatusCode() == HttpStatus.OK) {
             return new RedirectView("/promotion/get/all");
-        }else{
+        } else {
             String referer = request.getHeader("Referer");
             return new RedirectView(referer);
         }
     }
 
     @PostMapping("/delete/{id}")
-    public RedirectView deletePromotionById(@PathVariable UUID id) {
-        this.promotionService.deletePromotionById(id);
-        return new RedirectView("/promotion/get/all");
+    public RedirectView deletePromotionById(@PathVariable UUID id, HttpServletRequest request) {
+        ResponseEntity<String> response = this.promotionService.deletePromotionById(id);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new RedirectView("/promotion/get/all");
+        } else {
+            String referer = request.getHeader("Referer");
+            return new RedirectView(referer);
+        }
     }
 }

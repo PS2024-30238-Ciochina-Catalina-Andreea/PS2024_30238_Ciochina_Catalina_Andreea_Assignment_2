@@ -49,6 +49,7 @@ body {
     background-image: url('floral-background.jpg');
     background-size: cover;
     backdrop-filter: opacity(0.5);
+    background-attachment: fixed;
 }
 
 .container {
@@ -158,7 +159,7 @@ span {
 
 .notification {
     position: fixed;
-    bottom: 20px;
+    bottom: 0;
     right: 20px;
     background-color: #af7777;
     border: 2px solid #7e98a9;
@@ -167,6 +168,7 @@ span {
     border-radius: 5px;
     z-index: 1000;
     box-shadow: 0px 0px 10px rgb(55, 91, 114);
+    overflow-y: auto;
 }
 
 .notificationError{
