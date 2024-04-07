@@ -82,13 +82,32 @@ public class ReviewController {
 
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateReviewById(@PathVariable UUID id, @RequestBody ReviewDetailedDTO reviewDetailedDTO) {
-        return this.reviewService.updateReviewById(id, reviewDetailedDTO);
+    @GetMapping("/updateReview/{id}")
+    public ModelAndView updatePromotion(@PathVariable UUID id) {
+        ModelAndView modelAndView = new ModelAndView("updateReview");
+        modelAndView.addObject("review", this.reviewService.getReviewById(id).getBody());
+        return modelAndView;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteReviewById(@PathVariable UUID id) {
-        return this.reviewService.deleteReviewById(id);
+    @PostMapping("/update/{id}")
+    public RedirectView updateReviewById(@PathVariable UUID id, @ModelAttribute("review") ReviewDetailedDTO reviewDetailedDTO, HttpServletRequest request) {
+        ResponseEntity<String> response = this.reviewService.updateReviewById(id, reviewDetailedDTO);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new RedirectView("/review/listOfReviews");
+        } else {
+            String referer = request.getHeader("Referer");
+            return new RedirectView(referer);
+        }
+    }
+
+    @PostMapping("/delete/{id}")
+    public RedirectView deleteReviewById(@PathVariable UUID id, HttpServletRequest request) {
+        ResponseEntity<String> response = this.reviewService.deleteReviewById(id);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return new RedirectView("/review/listOfReviews");
+        } else {
+            String referer = request.getHeader("Referer");
+            return new RedirectView(referer);
+        }
     }
 }

@@ -66,12 +66,47 @@
                         <p>User: <span th:text="${review.getUser().getName()}"></span></p>
                         <p>Rating: <span th:text="${review.getRating()}"></span></p>
                         <p>Review: <span th:text="${review.getText()}"></span></p>
+                        <div class="buttonsModif adminButtons" style="padding-left: 15rem" th:if="${user.getId()} == ${review.getUser().getId()}">
+                            <form th:action="@{/review/updateReview/{reviewId}(reviewId=${review.getId()})}" method="get">
+                                <button class="buttons-product" type="submit">Modifica</button>
+                            </form>
+                            <form th:id="'deleteReview_' + ${review.getId()}"
+                                  th:action="@{/review/delete/{reviewId}(reviewId=${review.getId()})}" method="post">
+                                <button class="buttons-product" type="submit">Sterge</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
 </div>
+<script>
+    document.querySelectorAll('[id^="deleteReview"]').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
 
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.redirected) {
+                        var notificationExists = document.querySelector('.notification');
+                        if (!notificationExists) {
+                            var notification = document.createElement('div');
+                            notification.className = 'notification';
+                            notification.textContent = 'Review-ul a fost sters!';
+                            document.body.appendChild(notification);
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 2000);
+                        }
+                    }
+                })
+        });
+    });
+</script>
 </body>
 </html>
