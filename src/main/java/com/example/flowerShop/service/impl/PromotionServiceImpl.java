@@ -13,6 +13,8 @@ import com.example.flowerShop.repository.PromotionRepository;
 import com.example.flowerShop.service.PromotionService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.promotion.PromotionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,13 +29,19 @@ public class PromotionServiceImpl implements PromotionService {
     private final ProductRepository productRepository;
     private final PromotionUtils promotionUtils;
     private final ProductMapper productMapper;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PromotionServiceImpl.class);
 
+    /**
+     * Injected constructor
+     *
+     * @param promotionRepository
+     * @param promotionMapper
+     * @param productRepository
+     * @param promotionUtils
+     * @param productMapper
+     */
     @Autowired
-    public PromotionServiceImpl(PromotionRepository promotionRepository,
-                                PromotionMapper promotionMapper,
-                                ProductRepository productRepository,
-                                PromotionUtils promotionUtils,
-                                ProductMapper productMapper) {
+    public PromotionServiceImpl(PromotionRepository promotionRepository, PromotionMapper promotionMapper, ProductRepository productRepository, PromotionUtils promotionUtils, ProductMapper productMapper) {
         this.promotionMapper = promotionMapper;
         this.promotionRepository = promotionRepository;
         this.productRepository = productRepository;
@@ -41,10 +49,15 @@ public class PromotionServiceImpl implements PromotionService {
         this.productMapper = productMapper;
     }
 
+    /**
+     * Get all promotions
+     *
+     * @return ResponseEntity<List < PromotionDTO>>
+     */
     @Override
     public ResponseEntity<List<PromotionDTO>> getAllPromotions() {
-
         try {
+            LOGGER.info("Retrieves all promotions");
             List<Promotion> promotions = promotionRepository.findAll();
             return new ResponseEntity<>(promotionMapper.convertListToDtoWithObjects(promotions), HttpStatus.OK);
         } catch (Exception exception) {
@@ -53,9 +66,15 @@ public class PromotionServiceImpl implements PromotionService {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Get all products for a certain promotion
+     *
+     * @return ResponseEntity<List < ProductDetailedDTO>>
+     */
     @Override
     public ResponseEntity<List<ProductDetailedDTO>> getAllProductsForPromotion() {
         try {
+            LOGGER.info("Retrieves products for a cetain promotion");
             List<Product> products = productRepository.findAll();
             return new ResponseEntity<>(productMapper.convertListToDTO(products), HttpStatus.OK);
         } catch (Exception exception) {
@@ -64,15 +83,22 @@ public class PromotionServiceImpl implements PromotionService {
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
+    /**
+     * Get promotion by id
+     *
+     * @param id
+     * @return ResponseEntity<PromotionDTO>
+     */
     @Override
     public ResponseEntity<PromotionDTO> getPromotionById(UUID id) {
         try {
             Optional<Promotion> promotion = promotionRepository.findById(id);
             if (promotion.isPresent()) {
+                LOGGER.info("Get promotion with a certain id");
                 Promotion promotionExisting = promotion.get();
                 return new ResponseEntity<>(promotionMapper.convertEntToDtoWithObjects(promotionExisting), HttpStatus.OK);
             } else {
+                LOGGER.error("Promotion was not found");
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
         } catch (Exception exception) {
@@ -81,10 +107,17 @@ public class PromotionServiceImpl implements PromotionService {
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Create a new promotion with a set of products and a discount
+     *
+     * @param promotionDetailedDTO
+     * @return ResponseEntity<String>
+     */
     @Override
     public ResponseEntity<String> addPromotion(PromotionDetailedDTO promotionDetailedDTO) {
         try {
             if (this.promotionUtils.validatePromotionMap(promotionDetailedDTO)) {
+                LOGGER.info("Create promotion...");
                 List<Product> products = productRepository.findProjectedByIdIn(promotionDetailedDTO.getId_products());
 
                 if (products.stream().allMatch(Objects::nonNull) && !products.isEmpty()) {
@@ -105,6 +138,7 @@ public class PromotionServiceImpl implements PromotionService {
                     return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_CREATING_PROMOTION, HttpStatus.BAD_REQUEST);
                 }
             } else {
+                LOGGER.error("Promotion was not created");
                 return Utils.getResponseEntity(PromotionConstants.INVALID_DATA_AT_CREATING_PROMOTION, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception exception) {
@@ -113,13 +147,18 @@ public class PromotionServiceImpl implements PromotionService {
         return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_CREATING_PROMOTION, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
+    /**
+     * @param id
+     * @param promotionDetailedDTO
+     * @return ResponseEntity<String>
+     */
     @Override
     public ResponseEntity<String> updatePromotionById(UUID id, PromotionDetailedDTO promotionDetailedDTO) {
         try {
             Optional<Promotion> promotionOptional = promotionRepository.findById(id);
             List<Product> products = productRepository.findProjectedByIdIn(promotionDetailedDTO.getId_products());
             if (promotionOptional.isPresent()) {
+                LOGGER.info("Update promotion...");
                 Promotion promotionExisting = promotionOptional.get();
                 Double discountBefore = promotionExisting.getDiscountPercentage() / 100.0;
                 PromotionUtils.updatePromotion(promotionExisting, promotionDetailedDTO, products);
@@ -132,6 +171,7 @@ public class PromotionServiceImpl implements PromotionService {
                 promotionRepository.save(promotionExisting);
                 return Utils.getResponseEntity(PromotionConstants.DATA_MODIFIED, HttpStatus.OK);
             } else {
+                LOGGER.error("Promotion was not updated");
                 return Utils.getResponseEntity(PromotionConstants.INVALID_PROMOTION, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception exception) {
@@ -140,11 +180,18 @@ public class PromotionServiceImpl implements PromotionService {
         return Utils.getResponseEntity(PromotionConstants.SOMETHING_WENT_WRONG_AT_UPDATING_PROMOTION, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Delete promotion by id
+     *
+     * @param id
+     * @return ResponseEntity<String>
+     */
     @Override
     public ResponseEntity<String> deletePromotionById(UUID id) {
         try {
             Optional<Promotion> promotionOptional = promotionRepository.findById(id);
             if (promotionOptional.isPresent()) {
+                LOGGER.info("Promotion deleted");
                 double discountPercentage = promotionOptional.get().getDiscountPercentage() / 100.0;
 
                 for (Product product : promotionOptional.get().getProducts()) {
@@ -155,6 +202,7 @@ public class PromotionServiceImpl implements PromotionService {
                 promotionRepository.deleteById(id);
                 return Utils.getResponseEntity(PromotionConstants.PROMOTION_DELETED, HttpStatus.OK);
             } else {
+                LOGGER.error("Promotion was not found");
                 return Utils.getResponseEntity(PromotionConstants.INVALID_PROMOTION, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {

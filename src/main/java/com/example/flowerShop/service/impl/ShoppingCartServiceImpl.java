@@ -13,6 +13,8 @@ import com.example.flowerShop.repository.*;
 import com.example.flowerShop.service.ShoppingCartService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.shoppingCart.ShoppingCartUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,45 +31,68 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
-    private final OrderRepository orderRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingCartServiceImpl.class);
 
+    /**
+     * Injected constructor
+     *
+     * @param shoppingCartMapper
+     * @param shoppingCartRepository
+     * @param shoppingCartUtils
+     * @param userRepository
+     * @param orderItemRepository
+     * @param productRepository
+     */
     @Autowired
     public ShoppingCartServiceImpl(ShoppingCartMapper shoppingCartMapper,
                                    ShoppingCartRepository shoppingCartRepository,
                                    ShoppingCartUtils shoppingCartUtils,
                                    UserRepository userRepository,
                                    OrderItemRepository orderItemRepository,
-                                   OrderRepository orderRepository,
                                    ProductRepository productRepository) {
         this.shoppingCartMapper = shoppingCartMapper;
         this.shoppingCartRepository = shoppingCartRepository;
         this.shoppingCartUtils = shoppingCartUtils;
         this.userRepository = userRepository;
         this.orderItemRepository = orderItemRepository;
-        this.orderRepository = orderRepository;
         this.productRepository = productRepository;
     }
 
+    /**
+     * Retrieves the list with the existing shopping carts
+     *
+     * @return ResponseEntity<List < ShoppingCartDTO>>
+     */
     @Override
     public ResponseEntity<List<ShoppingCartDTO>> getAllCarts() {
         try {
+            LOGGER.info("Retrieves the list of carts");
             List<ShoppingCart> shoppingCarts = shoppingCartRepository.findAll();
             return new ResponseEntity<>(shoppingCartMapper.convertListToDtoWithObjects(shoppingCarts), HttpStatus.OK);
         } catch (Exception exception) {
+            LOGGER.error("Something went wrong at retrieving of carts");
             exception.printStackTrace();
         }
         return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Retrieves cart by user id
+     *
+     * @param id
+     * @return ResponseEntity<ShoppingCartDTO>
+     */
     @Override
     public ResponseEntity<ShoppingCartDTO> getCartByUserId(UUID id) {
         try {
             Optional<User> user = userRepository.findById(id);
             Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByUser(user.get());
             if (shoppingCart.isPresent()) {
+                LOGGER.info("Get cart by user id");
                 ShoppingCart cartExisting = shoppingCart.get();
                 return new ResponseEntity<>(shoppingCartMapper.convertEntToDtoWithObjects(cartExisting), HttpStatus.OK);
             } else {
+                LOGGER.info("Cart for user was not found");
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
         } catch (Exception exception) {
@@ -76,16 +101,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Creates a new cart
+     *
+     * @param shoppingCartDetailedDTO
+     * @return ResponseEntity<String>
+     */
     @Override
     public ResponseEntity<String> addCart(ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
         try {
             if (this.shoppingCartUtils.validateCartMap(shoppingCartDetailedDTO)) {
-
+                LOGGER.info("Cart is creating..");
                 Optional<User> user = userRepository.findById(shoppingCartDetailedDTO.getId_user());
                 Optional<ShoppingCart> cart = shoppingCartRepository.findByUser(user.get());
                 if (cart.isEmpty()) {
                     List<OrderItem> items = orderItemRepository.findProjectedByIdIn(shoppingCartDetailedDTO.getId_orderItems());
                     if (user.isPresent()) {
+                        LOGGER.info("Cart exists");
                         ShoppingCartDTO shoppingCartDTO = shoppingCartMapper.convToDtoWithObjects(shoppingCartDetailedDTO, items, user);
                         shoppingCartRepository.save(shoppingCartMapper.convertToEntity(shoppingCartDTO));
                         return Utils.getResponseEntity(ShoppingCartConstants.CART_CREATED, HttpStatus.CREATED);
@@ -95,6 +127,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 }
                 return Utils.getResponseEntity(ShoppingCartConstants.CART_EXISTS, HttpStatus.OK);
             } else {
+                LOGGER.error("Invalid data at creating the cart");
                 return Utils.getResponseEntity(ShoppingCartConstants.INVALID_DATA_AT_CREATING_CART, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception exception) {
@@ -103,6 +136,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
     }
 
+    /**
+     * Update the cart by user id
+     * @param id
+     * @param shoppingCartDetailedDTO
+     * @return
+     */
     @Override
     public ResponseEntity<String> updateCartByUserID(UUID id, ShoppingCartDetailedDTO shoppingCartDetailedDTO) {
         try {
@@ -124,6 +163,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_UPDATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Update cart by changing the order item
+     * @param userId
+     * @param orderItemId
+     * @return ResponseEntity<String>
+     */
     @Override
     public ResponseEntity<String> deleteOrderItemFromCart(UUID userId, UUID orderItemId) {
         try {
@@ -168,15 +213,21 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_UPDATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
+    /**
+     * Delete cart by id
+     * @param id
+     * @return
+     */
     @Override
     public ResponseEntity<String> deleteCartById(UUID id) {
         try {
             Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findById(id);
             if (shoppingCart.isPresent()) {
+                LOGGER.info("Cart was deleted");
                 shoppingCartRepository.deleteById(id);
                 return Utils.getResponseEntity(ShoppingCartConstants.CART_DELETED, HttpStatus.OK);
             } else {
+                LOGGER.error("Cart was not found");
                 return Utils.getResponseEntity(ShoppingCartConstants.INVALID_CART, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {

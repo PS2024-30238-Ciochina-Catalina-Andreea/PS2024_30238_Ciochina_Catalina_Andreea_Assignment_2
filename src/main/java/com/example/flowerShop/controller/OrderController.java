@@ -3,8 +3,6 @@ package com.example.flowerShop.controller;
 import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
-import com.example.flowerShop.entity.Order;
-import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.OrderServiceImpl;
 import com.example.flowerShop.utils.order.PaymentType;
 import com.example.flowerShop.utils.user.UserRole;
@@ -44,6 +42,12 @@ public class OrderController {
         this.orderServiceImpl = orderServiceImpl;
     }
 
+    /**
+     * Gets all orders placed by a user
+     *
+     * @param id
+     * @return ModelAndView
+     */
     @GetMapping("/getByUser/all/{id}")
     public ModelAndView getAllOrdersByUser(@PathVariable UUID id) {
         LOGGER.info("Request for list of orders by user");
@@ -73,10 +77,11 @@ public class OrderController {
     }
 
     /**
-     * Creates a new order
+     * Creates a new order and if the payment type is CARD, it redirects to Pay page, else to the list of
+     * placed orders by the current user
      *
      * @param orderDetailedDTO
-     * @return ResponseEntity<String>
+     * @return ModelAndView
      */
     @PostMapping("/add")
     public ModelAndView addOrder(@RequestBody OrderDetailedDTO orderDetailedDTO) {
@@ -84,13 +89,18 @@ public class OrderController {
         this.orderServiceImpl.addOrder(orderDetailedDTO);
         ModelAndView modelAndView = new ModelAndView();
         if (orderDetailedDTO.getPay().equals(PaymentType.CARD)) {
-            modelAndView.setView(new RedirectView("/card/createPayment/"+orderDetailedDTO.getTotalPrice()));
+            modelAndView.setView(new RedirectView("/card/createPayment/" + orderDetailedDTO.getTotalPrice()));
             modelAndView.addObject("totalPrice", orderDetailedDTO.getTotalPrice());
         } else
             modelAndView.setView(new RedirectView("/order/getByUser/all/" + orderDetailedDTO.getId_user()));
         return modelAndView;
     }
 
+    /**
+     * View for update user
+     * @param id
+     * @return ModelAndView
+     */
     @GetMapping("/update/{id}")
     public ModelAndView updateUser(@PathVariable UUID id) {
         ModelAndView modelAndView = new ModelAndView("updateOrder");
@@ -103,7 +113,7 @@ public class OrderController {
      *
      * @param id
      * @param orderDetailedDTO
-     * @return ResponseEntity<String>
+     * @return RedirectView
      */
     @PostMapping("/update/{id}")
     public RedirectView updateOrderById(@PathVariable UUID id, @ModelAttribute("order") OrderDetailedDTO orderDetailedDTO) {
@@ -119,7 +129,7 @@ public class OrderController {
      * Deletes an order by id
      *
      * @param id
-     * @return ResponseEntity<String>
+     * @return RedirectView
      */
     @PostMapping("/delete/{id}")
     public RedirectView deleteOrderById(@PathVariable UUID id, HttpServletRequest request) {

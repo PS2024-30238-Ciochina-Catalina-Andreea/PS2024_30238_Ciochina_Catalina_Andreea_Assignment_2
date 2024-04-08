@@ -39,7 +39,9 @@ public class UserServiceImpl implements UserService {
      * @param userMapper
      */
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserUtils userUtils, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository,
+                           UserUtils userUtils,
+                           UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userUtils = userUtils;
         this.userMapper = userMapper;
@@ -52,7 +54,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseEntity<List<UserGetDTO>> getAllUsers() {
-
         LOGGER.info("Fetching users list...");
         try {
             List<User> users = userRepository.findAll();
@@ -73,7 +74,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseEntity<UserGetDTO> getUserById(UUID id) {
-
         LOGGER.info("Fetching user with id = " + id);
         try {
             Optional<User> userOptional = userRepository.findById(id);
@@ -100,7 +100,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseEntity<String> addUser(UserPostDTO user) {
-
         LOGGER.info("Creating a new user...");
         try {
             if (this.userUtils.validateSignUpMap(user)) {
@@ -133,7 +132,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseEntity<String> updateUserById(UUID id, UserPostDTO user) {
-
         LOGGER.info("Updating the data for a user with id {}...", id);
         try {
             Optional<User> userOptional = userRepository.findById(id);
@@ -162,7 +160,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseEntity<String> deleteUserById(UUID id) {
-
         LOGGER.info("Deleting the user with id {}...", id);
         try {
             Optional<User> userOptional = userRepository.findById(id);
@@ -181,16 +178,30 @@ public class UserServiceImpl implements UserService {
         return Utils.getResponseEntity(UserConstants.SOMETHING_WENT_WRONG_AT_DELETING_USER, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Gets user by email and password for login
+     *
+     * @param loginDTO
+     * @return ResponseEntity<UserGetDTO>
+     */
     @Override
     public ResponseEntity<UserGetDTO> getUserByEmailAndPassword(LoginDTO loginDTO) {
         Optional<User> user = userRepository.findByEmail(loginDTO.getEmail());
         if (user.isPresent() && user.get().getPassword().equals(loginDTO.getPassword())) {
+            LOGGER.info("User exist, the loggin can be performed");
             return new ResponseEntity<>(userMapper.convertToDTO(user.get()), HttpStatus.OK);
         } else {
+            LOGGER.error("Incorect user");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
+    /**
+     * Conversion method from id to User object
+     *
+     * @param id
+     * @return User
+     */
     public User convertToModelObject(UUID id) {
         UserGetDTO userGetDTO = this.getUserById(id).getBody();
         User user = new User();

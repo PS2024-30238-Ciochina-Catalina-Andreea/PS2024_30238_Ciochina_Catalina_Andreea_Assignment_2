@@ -38,17 +38,6 @@
         var rating = document.getElementById('rating').value;
         var selectedProductId = document.getElementById('selectedProduct').value;
 
-        var textPattern = /^[a-zA-Z]+(?:\s?[0-9]*)$/;
-        if (text.length === 0 || text.length > 100 || !textPattern.test(text)) {
-            alert("Textul review-ului trebuie sa contina intre 1 si 100 de caractere");
-            return;
-        }
-
-        if (isNaN(rating) || rating < 1 || rating > 10) {
-            alert("Rating-ul trebuie sa fie un numar intre 1 si 10.");
-            return;
-        }
-
         var reviewData = {
             text: text,
             rating: rating,

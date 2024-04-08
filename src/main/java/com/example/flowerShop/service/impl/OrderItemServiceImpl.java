@@ -207,9 +207,17 @@ public class OrderItemServiceImpl implements OrderItemService {
         return Utils.getResponseEntity(OrderItemConstants.SOMETHING_WENT_WRONG_AT_DELETING_ORDER_ITEM, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Updates quantity of order item by id
+     * @param id
+     * @param id_cart
+     * @param action
+     * @return ResponseEntity<String>
+     */
     @Override
     public ResponseEntity<String> updateQuantityOrderItemById(UUID id, UUID id_cart, String action) {
         try {
+            LOGGER.info("The orderItem was updated");
             Optional<OrderItem> orderItemOptional = orderItemRepository.findById(id);
             if (orderItemOptional.isPresent()) {
                 OrderItem orderItemExisting = orderItemOptional.get();
@@ -227,6 +235,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                         if (newQuantity >= 1) {
                             orderItemExisting.setQuantity(newQuantity);
                         } else {
+                            LOGGER.error(OrderItemConstants.INVALID_QUANTITY);
                             return Utils.getResponseEntity(OrderItemConstants.INVALID_QUANTITY, HttpStatus.BAD_REQUEST);
                         }
                         break;
@@ -240,6 +249,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                 orderItemRepository.save(orderItemExisting);
                 return Utils.getResponseEntity(OrderItemConstants.DATA_MODIFIED, HttpStatus.OK);
             } else {
+                LOGGER.error(OrderItemConstants.INVALID_ORDER_ITEM);
                 return Utils.getResponseEntity(OrderItemConstants.INVALID_ORDER_ITEM, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception exception) {
@@ -248,5 +258,4 @@ public class OrderItemServiceImpl implements OrderItemService {
             return Utils.getResponseEntity(OrderItemConstants.SOMETHING_WENT_WRONG_AT_UPDATING_ORDER_ITEM, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

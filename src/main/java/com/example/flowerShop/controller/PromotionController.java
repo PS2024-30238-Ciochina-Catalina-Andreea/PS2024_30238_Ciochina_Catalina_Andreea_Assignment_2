@@ -4,10 +4,11 @@ import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.promotion.PromotionDTO;
 import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
-import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.PromotionServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +26,29 @@ public class PromotionController {
 
     private final PromotionServiceImpl promotionService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PromotionController.class);
+
     @Autowired
     private HttpSession session;
 
+    /**
+     * Injected constructor
+     *
+     * @param promotionService
+     */
     @Autowired
     public PromotionController(PromotionServiceImpl promotionService) {
         this.promotionService = promotionService;
     }
 
+    /**
+     * Retrieves the list of promotions
+     *
+     * @return ModelAndView
+     */
     @GetMapping("/get/all")
     public ModelAndView getAllPromotions() {
+        LOGGER.info("Retrieves the list of promotions");
         ModelAndView modelAndView = new ModelAndView("listOfPromotions");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         List<PromotionDTO> promotions = this.promotionService.getAllPromotions().getBody();
@@ -43,11 +57,23 @@ public class PromotionController {
         return modelAndView;
     }
 
+    /**
+     * Gets promotion by id
+     *
+     * @param id
+     * @return ResponseEntity<PromotionDTO>
+     */
     @GetMapping("/get/{id}")
     public ResponseEntity<PromotionDTO> getPromotionById(@PathVariable UUID id) {
+        LOGGER.info("Promotion with id {} was retrieved", id);
         return this.promotionService.getPromotionById(id);
     }
 
+    /**
+     * Redirects to the create promotion page
+     *
+     * @return ModelAndView
+     */
     @GetMapping("/createPromotion")
     public ModelAndView getAllProductsForPromotion() {
         ModelAndView modelAndView = new ModelAndView("createPromotion");
@@ -56,19 +82,32 @@ public class PromotionController {
         return modelAndView;
     }
 
+    /**
+     * Creates a new promotion with a set of 1 or more products and a discount
+     *
+     * @param promotionDetailedDTO
+     * @param request
+     * @return ModelAndView
+     */
     @PostMapping("/add")
     public ModelAndView addPromotion(@RequestBody PromotionDetailedDTO promotionDetailedDTO, HttpServletRequest request) {
         ResponseEntity<String> response = this.promotionService.addPromotion(promotionDetailedDTO);
         ModelAndView modelAndView = new ModelAndView();
-        if(response.getStatusCode() == HttpStatus.CREATED) {
+        if (response.getStatusCode() == HttpStatus.CREATED) {
             modelAndView.setView(new RedirectView("/promotion/get/all"));
-        }else{
+        } else {
             String referer = request.getHeader("Referer");
             modelAndView.setView(new RedirectView(referer));
         }
         return modelAndView;
     }
 
+    /**
+     * Update promotion view
+     *
+     * @param id
+     * @return ModelAndView
+     */
     @GetMapping("/updatePromotion/{id}")
     public ModelAndView updatePromotion(@PathVariable UUID id) {
         ModelAndView modelAndView = new ModelAndView("updatePromotion");
@@ -76,23 +115,42 @@ public class PromotionController {
         return modelAndView;
     }
 
+    /**
+     * Update promotion by id and in success case redirects to list of promotions, else remains on update page
+     *
+     * @param id
+     * @param promotionDetailedDTO
+     * @param request
+     * @return RedirectView
+     */
     @PostMapping("/update/{id}")
     public RedirectView updatePromotionById(@PathVariable UUID id, @ModelAttribute("promotion") PromotionDetailedDTO promotionDetailedDTO, HttpServletRequest request) {
         ResponseEntity<String> response = this.promotionService.updatePromotionById(id, promotionDetailedDTO);
         if (response.getStatusCode() == HttpStatus.OK) {
+            LOGGER.info("Promotion was successfully updated");
             return new RedirectView("/promotion/get/all");
         } else {
+            LOGGER.info("Promotion was not updated");
             String referer = request.getHeader("Referer");
             return new RedirectView(referer);
         }
     }
 
+    /**
+     * Delete promotion by id
+     *
+     * @param id
+     * @param request
+     * @return RedirectView
+     */
     @PostMapping("/delete/{id}")
     public RedirectView deletePromotionById(@PathVariable UUID id, HttpServletRequest request) {
         ResponseEntity<String> response = this.promotionService.deletePromotionById(id);
         if (response.getStatusCode() == HttpStatus.OK) {
+            LOGGER.info("Promotion was successfully deleted");
             return new RedirectView("/promotion/get/all");
         } else {
+            LOGGER.info("Promotion was not deleted");
             String referer = request.getHeader("Referer");
             return new RedirectView(referer);
         }

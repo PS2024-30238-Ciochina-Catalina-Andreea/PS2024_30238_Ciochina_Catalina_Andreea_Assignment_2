@@ -220,6 +220,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    /**
+     * Delete pproducts from promotion
+     * @param promotions
+     * @param productDelete
+     */
     private void deleteProductFromPromotion(List<Promotion> promotions, Product productDelete) {
         for (Promotion promotion : promotions) {
             List<Product> products = promotion.getProducts();

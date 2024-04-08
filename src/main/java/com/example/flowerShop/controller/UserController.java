@@ -43,7 +43,7 @@ public class UserController {
     }
 
     /**
-     * Gets list of users for admin only
+     * Retrieves list of users for admin only for listOfUsers page.
      *
      * @return ModelAndView
      */
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     /**
-     * Gets the page for creating a new account
+     * Gets the page for creating a new account (sign up)
      *
      * @return ModelAndView
      */
@@ -71,10 +71,10 @@ public class UserController {
     }
 
     /**
-     * Creates a new user in the db, redirects if success to login page, else back to signUp
+     * Creates a new user in the db and redirects if success to login page, else back to signUp
      *
      * @param user
-     * @return RedirectView
+     * @return ModelAndView
      */
     @PostMapping("/createUser")
     public ModelAndView addUser(@ModelAttribute("user") UserPostDTO user) {
@@ -101,12 +101,13 @@ public class UserController {
     }
 
     /**
-     * Gets user profile page for auto update or delete
+     * Gets user profile page for self update or delete of the profile
      *
      * @return ModelAndView
      */
     @GetMapping("/userProfile")
     public ModelAndView userProfile() {
+        LOGGER.info("Gets current logged user profile data");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         ModelAndView modelAndView = new ModelAndView("userProfile");
         modelAndView.addObject("user", currentUser);
@@ -129,11 +130,12 @@ public class UserController {
      * Logs the user in and redirects in positive case to list of products, else back to login
      *
      * @param loginDTO
-     * @return RedirectView
+     * @return ModelAndView
      */
     @PostMapping("/login/user")
     public ModelAndView loginUser(@ModelAttribute("loginDTO") LoginDTO loginDTO) {
         session.invalidate();
+        LOGGER.info("Invalidate session if exists and log in the new user");
         ResponseEntity<UserGetDTO> response = this.userServiceImpl.getUserByEmailAndPassword(loginDTO);
         ModelAndView modelAndView = new ModelAndView();
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -151,12 +153,13 @@ public class UserController {
      */
     @GetMapping("/logout")
     public RedirectView logout() {
+        LOGGER.info("Request for logging out");
         session.invalidate();
         return new RedirectView("/login");
     }
 
     /**
-     * Gets the page for creating a new account
+     * Gets page for update of a user by id
      *
      * @return ModelAndView
      */
@@ -169,11 +172,12 @@ public class UserController {
     }
 
     /**
-     * Updates user by given id and request body
+     * Updates user by given id and request body, when succes redirects to user profile in case of CUSTOMER
+     * and to list of users in case of ADMIN
      *
      * @param id
      * @param user
-     * @return ResponseEntity<String>
+     * @return ModelAndView
      */
     @PostMapping("/update/{id}")
     public ModelAndView updateUserById(@PathVariable UUID id, @ModelAttribute("user") @RequestBody UserPostDTO user) {
@@ -194,10 +198,11 @@ public class UserController {
     }
 
     /**
-     * Deletes user by given id and redirects to login
+     * Deletes user by given id and redirects to login if the current user is CUSTOMER,
+     * else redirects to list of users.
      *
      * @param id
-     * @return RedirectView
+     * @return ModelAndView
      */
     @PostMapping("/delete/{id}")
     public ModelAndView deleteUserById(@PathVariable UUID id, HttpServletRequest request) {

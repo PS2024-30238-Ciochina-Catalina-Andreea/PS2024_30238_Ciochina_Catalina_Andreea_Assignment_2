@@ -3,6 +3,8 @@ package com.example.flowerShop.controller;
 import com.example.flowerShop.dto.customProduct.CustomProductDTO;
 import com.example.flowerShop.dto.customProduct.CustomProductDetailedDTO;
 import com.example.flowerShop.service.impl.CustomProductServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,8 @@ import java.util.UUID;
 public class CustomProductController {
 
     private final CustomProductServiceImpl customProductService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomProductController.class);
 
     @Autowired
     public CustomProductController(CustomProductServiceImpl customProductService){

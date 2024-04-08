@@ -80,6 +80,13 @@ public class OrderItemController {
         return this.orderItemServiceImpl.updateOrderItemById(id, orderItemDetailedDTO);
     }
 
+    /**
+     * Updates the quantity of order item
+     * @param id
+     * @param id_cart
+     * @param action
+     * @return RedirectView
+     */
     @PostMapping("/updateQuantityOfOrderItem/{id}")
     public RedirectView updateQuantityOrderItemById(@PathVariable UUID id, @RequestParam("cartId") UUID id_cart, @RequestParam("action") String action) {
         LOGGER.info("Request for updating an order item by id");

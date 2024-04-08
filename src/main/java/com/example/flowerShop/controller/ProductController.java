@@ -3,7 +3,6 @@ package com.example.flowerShop.controller;
 import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.entity.Product;
-import com.example.flowerShop.entity.User;
 import com.example.flowerShop.service.impl.ProductServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -44,7 +43,7 @@ public class ProductController {
     /**
      * Gets list of products from db
      *
-     * @return ResponseEntity<List < ProductDetailedDTO>>
+     * @return ModelAndView
      */
     @GetMapping("/listOfProducts")
     public ModelAndView getAllProducts() {
@@ -65,10 +64,15 @@ public class ProductController {
      */
     @GetMapping("/get/{id}")
     public ResponseEntity<ProductDetailedDTO> getProductById(@PathVariable UUID id) {
-        LOGGER.info("Request for product by id");
+        LOGGER.info("Request for product with id={}", id);
         return this.productServiceImpl.getProductById(id);
     }
 
+    /**
+     * Create product view
+     *
+     * @return ModelAndView
+     */
     @GetMapping("/add")
     public ModelAndView createProduct() {
         ModelAndView modelAndView = new ModelAndView("createProduct");
@@ -92,6 +96,12 @@ public class ProductController {
         return new RedirectView("/product/add");
     }
 
+    /**
+     * Update product view
+     *
+     * @param id
+     * @return ModelAndView
+     */
     @GetMapping("/updateProduct/{id}")
     public ModelAndView updateUser(@PathVariable UUID id) {
         ModelAndView modelAndView = new ModelAndView("updateProduct");
