@@ -5,6 +5,7 @@ import com.example.flowerShop.dto.promotion.PromotionDTO;
 import com.example.flowerShop.dto.promotion.PromotionDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.service.impl.PromotionServiceImpl;
+import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -49,11 +50,21 @@ public class PromotionController {
     @GetMapping("/get/all")
     public ModelAndView getAllPromotions() {
         LOGGER.info("Retrieves the list of promotions");
-        ModelAndView modelAndView = new ModelAndView("listOfPromotions");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        List<PromotionDTO> promotions = this.promotionService.getAllPromotions().getBody();
-        modelAndView.addObject("promotions", promotions);
-        modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("listOfPromotions");
+                List<PromotionDTO> promotions = this.promotionService.getAllPromotions().getBody();
+                modelAndView.addObject("promotions", promotions);
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -76,9 +87,21 @@ public class PromotionController {
      */
     @GetMapping("/createPromotion")
     public ModelAndView getAllProductsForPromotion() {
-        ModelAndView modelAndView = new ModelAndView("createPromotion");
-        List<ProductDetailedDTO> prods = this.promotionService.getAllProductsForPromotion().getBody();
-        modelAndView.addObject("products", prods);
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("createPromotion");
+                List<ProductDetailedDTO> prods = this.promotionService.getAllProductsForPromotion().getBody();
+                modelAndView.addObject("products", prods);
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -110,8 +133,20 @@ public class PromotionController {
      */
     @GetMapping("/updatePromotion/{id}")
     public ModelAndView updatePromotion(@PathVariable UUID id) {
-        ModelAndView modelAndView = new ModelAndView("updatePromotion");
-        modelAndView.addObject("promotion", this.promotionService.getPromotionById(id).getBody());
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("updatePromotion");
+                modelAndView.addObject("promotion", this.promotionService.getPromotionById(id).getBody());
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 

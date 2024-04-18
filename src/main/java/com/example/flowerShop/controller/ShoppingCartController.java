@@ -30,6 +30,7 @@ public class ShoppingCartController {
 
     /**
      * Injected constructor
+     *
      * @param shoppingCartService
      */
     @Autowired
@@ -56,9 +57,15 @@ public class ShoppingCartController {
     @GetMapping("/cart/getByUser")
     public ModelAndView getCartByUserId() {
         LOGGER.info("The cart for current user logged in was retrieved");
-        ModelAndView modelAndView = new ModelAndView("shoppingCart");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        modelAndView.addObject("shoppingCart", this.shoppingCartService.getCartByUserId(currentUser.getId()).getBody());
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            modelAndView = new ModelAndView("shoppingCart");
+            modelAndView.addObject("shoppingCart", this.shoppingCartService.getCartByUserId(currentUser.getId()).getBody());
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -69,10 +76,16 @@ public class ShoppingCartController {
      */
     @GetMapping("/createCart")
     public ModelAndView createCart() {
-        ModelAndView modelAndView = new ModelAndView("home");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        if (currentUser.getId() != null) {
-            modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            modelAndView = new ModelAndView("home");
+            if (currentUser.getId() != null) {
+                modelAndView.addObject("user", currentUser);
+            }
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
         }
         return modelAndView;
     }

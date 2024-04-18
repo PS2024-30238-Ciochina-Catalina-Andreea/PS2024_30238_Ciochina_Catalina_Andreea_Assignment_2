@@ -29,6 +29,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
 
     private final ProductRepository productRepository;
+
     private final ShoppingCartRepository shoppingCartRepository;
 
     private final OrderItemUtils orderItemUtils;

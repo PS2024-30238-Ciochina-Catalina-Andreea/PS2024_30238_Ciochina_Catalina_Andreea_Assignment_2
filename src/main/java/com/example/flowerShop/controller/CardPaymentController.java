@@ -5,6 +5,7 @@ import com.example.flowerShop.dto.cardPayment.CardPaymentDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.service.impl.CardPaymentServiceImpl;
 
+import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -44,16 +45,26 @@ public class CardPaymentController {
     /**
      * Gets list of payments
      *
-     * @return
+     * @return ModelAndView
      */
     @GetMapping("/listOfPayments")
     public ModelAndView getAllPayments() {
         LOGGER.info("Retrieves list of payments");
-        ModelAndView modelAndView = new ModelAndView("listOfPayments");
-        List<CardPaymentDetailedDTO> payments = this.cardPaymentService.getAllPayments().getBody();
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        modelAndView.addObject("payments", payments);
-        modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("listOfPayments");
+                List<CardPaymentDetailedDTO> payments = this.cardPaymentService.getAllPayments().getBody();
+                modelAndView.addObject("payments", payments);
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -65,8 +76,15 @@ public class CardPaymentController {
      */
     @GetMapping("/createPayment/{price}")
     public ModelAndView getAllPaymentsOnPage(@PathVariable(name = "price") Long price) {
-        ModelAndView modelAndView = new ModelAndView("createPay");
-        modelAndView.addObject("price", price);
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            modelAndView = new ModelAndView("createPay");
+            modelAndView.addObject("price", price);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -94,6 +112,7 @@ public class CardPaymentController {
 
     /**
      * Deletes a payment that was made
+     *
      * @param id
      * @return RedirectView
      */

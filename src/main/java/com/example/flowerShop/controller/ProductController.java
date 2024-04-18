@@ -4,7 +4,7 @@ import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.entity.Product;
 import com.example.flowerShop.service.impl.ProductServiceImpl;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +47,18 @@ public class ProductController {
      */
     @GetMapping("/listOfProducts")
     public ModelAndView getAllProducts() {
-        LOGGER.info("Request for list of products");
-        ModelAndView modelAndView = new ModelAndView("listOfProducts");
-        List<ProductDetailedDTO> products = this.productServiceImpl.getAllProducts().getBody();
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        modelAndView.addObject("products", products);
-        modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            LOGGER.info("Request for list of products");
+            modelAndView = new ModelAndView("listOfProducts");
+            List<ProductDetailedDTO> products = this.productServiceImpl.getAllProducts().getBody();
+            modelAndView.addObject("products", products);
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -75,8 +81,20 @@ public class ProductController {
      */
     @GetMapping("/add")
     public ModelAndView createProduct() {
-        ModelAndView modelAndView = new ModelAndView("createProduct");
-        modelAndView.addObject("product", new Product());
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("createProduct");
+                modelAndView.addObject("product", new Product());
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -103,9 +121,21 @@ public class ProductController {
      * @return ModelAndView
      */
     @GetMapping("/updateProduct/{id}")
-    public ModelAndView updateUser(@PathVariable UUID id) {
-        ModelAndView modelAndView = new ModelAndView("updateProduct");
-        modelAndView.addObject("product", this.getProductById(id).getBody());
+    public ModelAndView updateProduct(@PathVariable UUID id) {
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("updateProduct");
+                modelAndView.addObject("product", this.getProductById(id).getBody());
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -133,7 +163,7 @@ public class ProductController {
      * @return RedirectView
      */
     @PostMapping("/delete/{id}")
-    public RedirectView deleteProductById(@PathVariable UUID id, HttpServletRequest request) {
+    public RedirectView deleteProductById(@PathVariable UUID id) {
         LOGGER.info("Request for deleting an user by id");
         this.productServiceImpl.deleteProductById(id);
         return new RedirectView("/product/listOfProducts?");

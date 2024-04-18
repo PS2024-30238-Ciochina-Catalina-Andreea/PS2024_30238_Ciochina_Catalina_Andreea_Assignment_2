@@ -58,19 +58,25 @@ public class ReviewController {
      * @return ModelAndView
      */
     @GetMapping("/listOfReviews")
-    public ModelAndView getAllProducts() {
-        LOGGER.info("Retrieve list of reviews");
-        ModelAndView modelAndView = new ModelAndView("listOfReviews");
-        List<ReviewDTO> reviewDTOS = this.reviewService.getAllReviews().getBody();
-        Map<String, List<ReviewDTO>> reviewsByProduct = new HashMap<>();
-        assert reviewDTOS != null;
-        for (ReviewDTO review : reviewDTOS) {
-            String productName = review.getProduct().getName();
-            reviewsByProduct.computeIfAbsent(productName, k -> new ArrayList<>()).add(review);
-        }
+    public ModelAndView getAllReviews() {
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        modelAndView.addObject("reviewsByProduct", reviewsByProduct);
-        modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            LOGGER.info("Retrieve list of reviews");
+            modelAndView = new ModelAndView("listOfReviews");
+            List<ReviewDTO> reviewDTOS = this.reviewService.getAllReviews().getBody();
+            Map<String, List<ReviewDTO>> reviewsByProduct = new HashMap<>();
+            assert reviewDTOS != null;
+            for (ReviewDTO review : reviewDTOS) {
+                String productName = review.getProduct().getName();
+                reviewsByProduct.computeIfAbsent(productName, k -> new ArrayList<>()).add(review);
+            }
+            modelAndView.addObject("reviewsByProduct", reviewsByProduct);
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -82,7 +88,7 @@ public class ReviewController {
      */
     @GetMapping("/get/{id}")
     public ResponseEntity<ReviewDTO> getReviewById(@PathVariable UUID id) {
-        LOGGER.info("Revtrieves review with id {}", id);
+        LOGGER.info("Retrieves review with id {}", id);
         return this.reviewService.getReviewById(id);
     }
 
@@ -93,11 +99,17 @@ public class ReviewController {
      */
     @GetMapping("/createReview")
     public ModelAndView createReview() {
-        ModelAndView modelAndView = new ModelAndView("createReview");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        List<ProductDetailedDTO> prods = this.reviewService.getAllProductsForReview().getBody();
-        modelAndView.addObject("products", prods);
-        modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            modelAndView = new ModelAndView("createReview");
+            List<ProductDetailedDTO> prods = this.reviewService.getAllProductsForReview().getBody();
+            modelAndView.addObject("products", prods);
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -132,8 +144,15 @@ public class ReviewController {
      */
     @GetMapping("/updateReview/{id}")
     public ModelAndView updateReview(@PathVariable UUID id) {
-        ModelAndView modelAndView = new ModelAndView("updateReview");
-        modelAndView.addObject("review", this.reviewService.getReviewById(id).getBody());
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            modelAndView = new ModelAndView("updateReview");
+            modelAndView.addObject("review", this.reviewService.getReviewById(id).getBody());
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 

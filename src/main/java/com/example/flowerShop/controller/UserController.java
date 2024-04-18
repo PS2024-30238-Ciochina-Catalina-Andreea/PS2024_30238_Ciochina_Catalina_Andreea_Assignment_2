@@ -50,11 +50,21 @@ public class UserController {
     @GetMapping("/listOfUsers")
     public ModelAndView getAllUsers() {
         LOGGER.info("Request for list of users");
-        ModelAndView modelAndView = new ModelAndView("listOfUsers");
-        List<UserGetDTO> users = this.userServiceImpl.getAllUsers().getBody();
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        modelAndView.addObject("users", users);
-        modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("listOfUsers");
+                List<UserGetDTO> users = this.userServiceImpl.getAllUsers().getBody();
+                modelAndView.addObject("users", users);
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -79,6 +89,7 @@ public class UserController {
     @PostMapping("/createUser")
     public ModelAndView addUser(@ModelAttribute("user") UserPostDTO user) {
         LOGGER.info("Request for creating a new user");
+        session.invalidate();
         ResponseEntity<String> stringResponseEntity = this.userServiceImpl.addUser(user);
         ModelAndView modelAndView = new ModelAndView();
         if (stringResponseEntity.getStatusCode() == HttpStatus.CREATED) {
@@ -107,10 +118,16 @@ public class UserController {
      */
     @GetMapping("/userProfile")
     public ModelAndView userProfile() {
-        LOGGER.info("Gets current logged user profile data");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        ModelAndView modelAndView = new ModelAndView("userProfile");
-        modelAndView.addObject("user", currentUser);
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            LOGGER.info("Gets current logged user profile data");
+            modelAndView = new ModelAndView("userProfile");
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -165,9 +182,16 @@ public class UserController {
      */
     @GetMapping("/updateUser/{id}")
     public ModelAndView updateUser(@PathVariable UUID id) {
-        ModelAndView modelAndView = new ModelAndView("updateUser");
-        User user = this.userServiceImpl.convertToModelObject(id);
-        modelAndView.addObject("user", user);
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            modelAndView = new ModelAndView("updateUser");
+            User user = this.userServiceImpl.convertToModelObject(id);
+            modelAndView.addObject("user", user);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 

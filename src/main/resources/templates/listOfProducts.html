@@ -139,6 +139,12 @@
 <script>
     function addProductToCart(productId, userId) {
         let quantity = document.getElementById(`quantity-${productId}`).value;
+
+        if (isNaN(quantity) || quantity < 1) {
+            alert("Cantitatea trebuie sa fie un numar mai mare de 1.");
+            return;
+        }
+
         const orderItemData = {
             id_product: productId,
             quantity: quantity

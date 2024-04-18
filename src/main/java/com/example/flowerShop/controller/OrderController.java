@@ -51,16 +51,22 @@ public class OrderController {
     @GetMapping("/getByUser/all/{id}")
     public ModelAndView getAllOrdersByUser(@PathVariable UUID id) {
         LOGGER.info("Request for list of orders by user");
-        ModelAndView modelAndView = new ModelAndView("listOfOrders");
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
-        List<OrderDTO> orders = null;
-        if (currentUser.getRole().equals(UserRole.ADMIN))
-            orders = this.orderServiceImpl.getAllOrders().getBody();
-        else
-            orders = this.orderServiceImpl.getAllOrdersByUser(id).getBody();
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            modelAndView = new ModelAndView("listOfOrders");
+            List<OrderDTO> orders = null;
+            if (currentUser.getRole().equals(UserRole.ADMIN))
+                orders = this.orderServiceImpl.getAllOrders().getBody();
+            else
+                orders = this.orderServiceImpl.getAllOrdersByUser(id).getBody();
 
-        modelAndView.addObject("user", currentUser);
-        modelAndView.addObject("orders", orders);
+            modelAndView.addObject("user", currentUser);
+            modelAndView.addObject("orders", orders);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
@@ -98,13 +104,26 @@ public class OrderController {
 
     /**
      * View for update user
+     *
      * @param id
      * @return ModelAndView
      */
     @GetMapping("/update/{id}")
     public ModelAndView updateUser(@PathVariable UUID id) {
-        ModelAndView modelAndView = new ModelAndView("updateOrder");
-        modelAndView.addObject("order", this.getOrderById(id).getBody());
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+        ModelAndView modelAndView;
+        if (currentUser != null) {
+            if (currentUser.getRole().equals(UserRole.ADMIN)) {
+                modelAndView = new ModelAndView("updateOrder");
+                modelAndView.addObject("order", this.getOrderById(id).getBody());
+            } else {
+                modelAndView = new ModelAndView("accessDenied");
+            }
+            modelAndView.addObject("user", currentUser);
+        } else {
+            modelAndView = new ModelAndView();
+            modelAndView.setView(new RedirectView("/login"));
+        }
         return modelAndView;
     }
 
