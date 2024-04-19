@@ -1,10 +1,10 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.UserConstants;
+import com.example.flowerShop.dto.notification.NotificationDTO;
 import com.example.flowerShop.dto.user.LoginDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.dto.user.UserPostDTO;
-import com.example.flowerShop.entity.Review;
 import com.example.flowerShop.mapper.UserMapper;
 import com.example.flowerShop.entity.User;
 import com.example.flowerShop.repository.ReviewRepository;
@@ -16,9 +16,9 @@ import com.example.flowerShop.utils.user.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -51,6 +51,17 @@ public class UserServiceImpl implements UserService {
         this.reviewRepository = reviewRepository;
         this.userUtils = userUtils;
         this.userMapper = userMapper;
+    }
+
+    public void sendEmailToUser(UUID userId, String firstName, String lastName, String email) {
+        HttpHeaders headers = new HttpHeaders();
+        RestTemplate restTemplate = new RestTemplate();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        NotificationDTO notificationDTO = new NotificationDTO(userId, firstName, lastName, email);
+        HttpEntity<NotificationDTO> requestEntity = new HttpEntity<>(notificationDTO, headers);
+        String url = "http://localhost:8085/send-email";
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        String responseBody = response.getBody();
     }
 
     /**
@@ -113,6 +124,7 @@ public class UserServiceImpl implements UserService {
                 if (userOptional.isEmpty()) {
                     LOGGER.info("User created");
                     userRepository.save(userMapper.convertToEntity(user));
+                    this.sendEmailToUser(user.getId(), user.getName(), user.getName(), user.getEmail());
                     return Utils.getResponseEntity(UserConstants.USER_CREATED, HttpStatus.CREATED);
                 } else {
                     LOGGER.error("User already exists, email is present in the db");
