@@ -19,7 +19,7 @@ public class AMQPConfig {
 
     @Bean
     public Queue emailQueue() {
-        return new Queue(QUEUE_NAME);
+        return new Queue(QUEUE_NAME, false);
     }
 
     @Bean

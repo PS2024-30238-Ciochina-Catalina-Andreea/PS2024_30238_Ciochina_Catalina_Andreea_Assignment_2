@@ -1,6 +1,8 @@
 package com.example.flowerShop.service.impl;
 
+import com.example.flowerShop.config.RabbitSender;
 import com.example.flowerShop.constants.UserConstants;
+import com.example.flowerShop.dto.notification.MessageDTO;
 import com.example.flowerShop.dto.notification.NotificationDTO;
 import com.example.flowerShop.dto.user.LoginDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
@@ -18,12 +20,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private RabbitSender rabbitSender;
 
     private final UserRepository userRepository;
 
@@ -43,25 +49,45 @@ public class UserServiceImpl implements UserService {
      * @param userMapper
      */
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,
-                           ReviewRepository reviewRepository,
-                           UserUtils userUtils,
-                           UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, ReviewRepository reviewRepository, UserUtils userUtils, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.userUtils = userUtils;
         this.userMapper = userMapper;
     }
 
-    public void sendEmailToUser(UUID userId, String firstName, String lastName, String email) {
-        HttpHeaders headers = new HttpHeaders();
-        RestTemplate restTemplate = new RestTemplate();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        NotificationDTO notificationDTO = new NotificationDTO(userId, firstName, lastName, email);
-        HttpEntity<NotificationDTO> requestEntity = new HttpEntity<>(notificationDTO, headers);
-        String url = "http://localhost:8085/send-email";
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-        String responseBody = response.getBody();
+    public void sendEmailToUserAsync(NotificationDTO notificationDTO) {
+        try {
+            rabbitSender.send(notificationDTO);
+        } catch (Exception e) {
+            System.out.println("Eroare la trimiterea asincrona a request-ului: " + e.getMessage());
+        }
+    }
+
+    public void sendEmailToUser(UUID userId, String name, String email) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            RestTemplate restTemplate = new RestTemplate();
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            headers.setBearerAuth("cata");
+            NotificationDTO notificationRequestDto = new NotificationDTO(userId, name, email);
+            HttpEntity<NotificationDTO> entity = new HttpEntity<>(notificationRequestDto, headers);
+            ResponseEntity<MessageDTO> response = restTemplate.exchange(
+                    "http://localhost:8085/send-email",
+                    HttpMethod.POST,
+                    entity,
+                    MessageDTO.class
+            );
+            if (response.getStatusCode() == HttpStatus.OK) {
+                this.sendEmailToUserAsync(notificationRequestDto);
+            } else {
+                System.out.println("Eroare la trimiterea email");
+            }
+        } catch (RestClientException e) {
+            System.out.println("Eroare la trimiterea request: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Alta eroare " + e.getMessage());
+        }
     }
 
     /**
@@ -123,8 +149,8 @@ public class UserServiceImpl implements UserService {
                 Optional<User> userOptional = userRepository.findByEmail(user.getEmail());
                 if (userOptional.isEmpty()) {
                     LOGGER.info("User created");
-                    userRepository.save(userMapper.convertToEntity(user));
-                    this.sendEmailToUser(user.getId(), user.getName(), user.getName(), user.getEmail());
+                    User userRepo = userRepository.save(userMapper.convertToEntity(user));
+                    this.sendEmailToUser(userRepo.getId(), userRepo.getName(), userRepo.getEmail());
                     return Utils.getResponseEntity(UserConstants.USER_CREATED, HttpStatus.CREATED);
                 } else {
                     LOGGER.error("User already exists, email is present in the db");
