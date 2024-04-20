@@ -1,9 +1,7 @@
 package com.example.flowerShop.service.impl;
 
-import com.example.flowerShop.config.RabbitSender;
+import com.example.flowerShop.config.EmailSender;
 import com.example.flowerShop.constants.UserConstants;
-import com.example.flowerShop.dto.notification.MessageDTO;
-import com.example.flowerShop.dto.notification.NotificationDTO;
 import com.example.flowerShop.dto.user.LoginDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.dto.user.UserPostDTO;
@@ -28,9 +26,6 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private RabbitSender rabbitSender;
-
     private final UserRepository userRepository;
 
     private final ReviewRepository reviewRepository;
@@ -38,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private final UserUtils userUtils;
 
     private final UserMapper userMapper;
+
+    private final EmailSender emailSender;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -49,46 +46,15 @@ public class UserServiceImpl implements UserService {
      * @param userMapper
      */
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ReviewRepository reviewRepository, UserUtils userUtils, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, ReviewRepository reviewRepository,
+                           UserUtils userUtils, UserMapper userMapper,EmailSender emailSender) {
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.userUtils = userUtils;
         this.userMapper = userMapper;
+        this.emailSender = emailSender;
     }
 
-    public void sendEmailToUserAsync(NotificationDTO notificationDTO) {
-        try {
-            rabbitSender.send(notificationDTO);
-        } catch (Exception e) {
-            System.out.println("Eroare la trimiterea asincrona a request-ului: " + e.getMessage());
-        }
-    }
-
-    public void sendEmailToUser(UUID userId, String name, String email) {
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            RestTemplate restTemplate = new RestTemplate();
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            headers.setBearerAuth("cata");
-            NotificationDTO notificationRequestDto = new NotificationDTO(userId, name, email);
-            HttpEntity<NotificationDTO> entity = new HttpEntity<>(notificationRequestDto, headers);
-            ResponseEntity<MessageDTO> response = restTemplate.exchange(
-                    "http://localhost:8085/send-email",
-                    HttpMethod.POST,
-                    entity,
-                    MessageDTO.class
-            );
-            if (response.getStatusCode() == HttpStatus.OK) {
-                this.sendEmailToUserAsync(notificationRequestDto);
-            } else {
-                System.out.println("Eroare la trimiterea email");
-            }
-        } catch (RestClientException e) {
-            System.out.println("Eroare la trimiterea request: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Alta eroare " + e.getMessage());
-        }
-    }
 
     /**
      * Gets a list of user entries from the db
@@ -150,7 +116,7 @@ public class UserServiceImpl implements UserService {
                 if (userOptional.isEmpty()) {
                     LOGGER.info("User created");
                     User userRepo = userRepository.save(userMapper.convertToEntity(user));
-                    this.sendEmailToUser(userRepo.getId(), userRepo.getName(), userRepo.getEmail());
+                    this.emailSender.sendEmailToUser(userRepo.getId(), userRepo.getName(), userRepo.getEmail());
                     return Utils.getResponseEntity(UserConstants.USER_CREATED, HttpStatus.CREATED);
                 } else {
                     LOGGER.error("User already exists, email is present in the db");
