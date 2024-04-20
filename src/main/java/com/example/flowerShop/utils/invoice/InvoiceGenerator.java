@@ -18,24 +18,36 @@ public class InvoiceGenerator {
         try {
             PdfWriter.getInstance(document, byteArrayOutputStream);
             document.open();
-            Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
 
-            Paragraph idParagraph = new Paragraph("Factura pentru comanda cu ID-ul: " + order.getId(), font);
-            Paragraph dateParagraph = new Paragraph("Data comenzii: " + order.getOrderDate(), font);
-            Paragraph paymentMethodParagraph = new Paragraph("Metoda plata: " + order.getPay(), font);
-            Paragraph addressParagraph = new Paragraph("Adresa de livrare: " + order.getAddress(), font);
-            Paragraph totalPriceParagraph = new Paragraph("Total de plata: " + order.getTotalPrice(), font);
+            Font fontTitlu = FontFactory.getFont(FontFactory.TIMES_BOLD, 24, BaseColor.PINK);
+            Font fontAntet = FontFactory.getFont(FontFactory.TIMES_BOLD, 16, BaseColor.BLACK);
+            Font fontText = FontFactory.getFont(FontFactory.TIMES_ROMAN, 12, BaseColor.BLACK);
+            Font fontMesaj = FontFactory.getFont(FontFactory.TIMES_ITALIC, 12, BaseColor.GRAY);
 
-            document.add(idParagraph);
-            document.add(dateParagraph);
-            document.add(paymentMethodParagraph);
-            document.add(addressParagraph);
-            document.add(totalPriceParagraph);
+            Paragraph titlu = new Paragraph("Factura comanda", fontTitlu);
+            titlu.setAlignment(Element.ALIGN_CENTER);
+            titlu.setSpacingAfter(20);
+            document.add(titlu);
+
+            document.add(createParagraf("ID Comanda: " + order.getId(), fontAntet));
+            document.add(createParagraf("Data Comenzii: " + order.getOrderDate(), fontText));
+            document.add(createParagraf("Metoda de Plata: " + order.getPay(), fontText));
+            document.add(createParagraf("Adresa de Livrare: " + order.getAddress(), fontText));
+            document.add(createParagraf("Pret Total: " + order.getTotalPrice(), fontAntet));
+
+            document.add(createParagraf("Va multumim ca ati ales floraria noastra!", fontMesaj));
+
         } finally {
             if (document != null) {
                 document.close();
             }
         }
         return byteArrayOutputStream.toByteArray();
+    }
+
+    private static Paragraph createParagraf(String content, Font font) {
+        Paragraph paragraph = new Paragraph(content, font);
+        paragraph.setSpacingAfter(10);
+        return paragraph;
     }
 }
