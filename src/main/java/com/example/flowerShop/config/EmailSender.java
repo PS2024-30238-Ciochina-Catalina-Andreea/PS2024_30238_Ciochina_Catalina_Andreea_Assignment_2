@@ -1,5 +1,6 @@
 package com.example.flowerShop.config;
 
+import com.example.flowerShop.dto.notification.InvoiceDTO;
 import com.example.flowerShop.dto.notification.MessageDTO;
 import com.example.flowerShop.dto.notification.NotificationDTO;
 import org.slf4j.Logger;
@@ -21,9 +22,9 @@ public class EmailSender {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
 
-    public void sendEmailToUserAsync(NotificationDTO notificationDTO) {
+    public void sendEmailToUserAsync(InvoiceDTO invoiceDTO) {
         try {
-            rabbitSender.send(notificationDTO);
+            rabbitSender.send(invoiceDTO);
         } catch (Exception e) {
             LOGGER.error("Eroare la trimiterea asincrona a request-ului: " + e.getMessage());
         }

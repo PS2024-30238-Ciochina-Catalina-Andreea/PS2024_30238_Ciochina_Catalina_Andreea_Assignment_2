@@ -1,21 +1,18 @@
 package com.example.flowerShop.service.impl;
 
+import com.example.flowerShop.config.EmailSender;
 import com.example.flowerShop.constants.OrderConstants;
+import com.example.flowerShop.dto.notification.InvoiceDTO;
 import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
-import com.example.flowerShop.entity.Order;
-import com.example.flowerShop.entity.OrderItem;
-import com.example.flowerShop.entity.ShoppingCart;
-import com.example.flowerShop.entity.User;
+import com.example.flowerShop.entity.*;
 import com.example.flowerShop.mapper.OrderMapper;
-import com.example.flowerShop.repository.OrderItemRepository;
-import com.example.flowerShop.repository.OrderRepository;
-import com.example.flowerShop.repository.ShoppingCartRepository;
-import com.example.flowerShop.repository.UserRepository;
+import com.example.flowerShop.repository.*;
 import com.example.flowerShop.service.OrderItemService;
 import com.example.flowerShop.service.OrderService;
 import com.example.flowerShop.utils.Utils;
+import com.example.flowerShop.utils.invoice.InvoiceGenerator;
 import com.example.flowerShop.utils.order.OrderUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
+    private final ProductRepository productRepository;
+
     private final OrderItemRepository orderItemRepository;
 
     private final ShoppingCartRepository shoppingCartRepository;
@@ -40,9 +39,10 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderUtils orderUtils;
 
-    private OrderItemService orderItemService;
-
     private final OrderMapper orderMapper;
+
+    private final EmailSender emailSender;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderItemServiceImpl.class);
 
@@ -58,14 +58,16 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository,
                             UserRepository userRepository, OrderUtils orderUtils, OrderMapper orderMapper,
-                            ShoppingCartRepository shoppingCartRepository, OrderItemService orderItemService) {
+                            ShoppingCartRepository shoppingCartRepository, EmailSender emailSender,
+                            ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.userRepository = userRepository;
         this.orderUtils = orderUtils;
         this.orderMapper = orderMapper;
         this.shoppingCartRepository = shoppingCartRepository;
-        this.orderItemService = orderItemService;
+        this.emailSender = emailSender;
+        this.productRepository = productRepository;
     }
 
     /**
@@ -158,7 +160,10 @@ public class OrderServiceImpl implements OrderService {
                     OrderDTO orderDTO = orderMapper.convToDtoWithObjects(orderDetailedDTO, items, user);
                     LOGGER.info("Order created");
                     shoppingCartRepository.save(shoppingCart.get());
-                    orderRepository.save(orderMapper.convertToEntity(orderDTO));
+                    Order orderRepo = orderRepository.save(orderMapper.convertToEntity(orderDTO));
+                    byte[] fileInvoice = InvoiceGenerator.generateInvoicePDF(orderRepo);
+                    InvoiceDTO invoiceDTO = new InvoiceDTO(orderRepo.getUser().getId(), orderRepo.getUser().getEmail(), fileInvoice);
+                    emailSender.sendEmailToUserAsync(invoiceDTO);
                     return Utils.getResponseEntity(OrderConstants.ORDER_CREATED, HttpStatus.CREATED);
                 } else {
                     LOGGER.error("Invalid data was sent for creating the order");
@@ -222,7 +227,14 @@ public class OrderServiceImpl implements OrderService {
             Optional<Order> orderOptional = orderRepository.findById(id);
             if (orderOptional.isPresent()) {
                 for (OrderItem orderItem : orderOptional.get().getOrderItems()) {
-                   this.orderItemService.deleteOrderItemById(orderItem.getId());
+                    Optional<OrderItem> orderItemOptional = orderItemRepository.findById(orderItem.getId());
+                    if (orderItemOptional.isPresent()) {
+                        OrderItem orderItemExisting = orderItemOptional.get();
+                        Product product = orderItemExisting.getProduct();
+                        product.setStock(product.getStock() + orderItemExisting.getQuantity());
+                        productRepository.save(product);
+                        orderItemRepository.deleteById(id);
+                    }
                 }
                 orderRepository.deleteById(id);
                 LOGGER.info("Order deleted successfully");
