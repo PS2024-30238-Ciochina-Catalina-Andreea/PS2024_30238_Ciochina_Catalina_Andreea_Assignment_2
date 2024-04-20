@@ -11,7 +11,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NotificationDTO implements Serializable {
+
     private UUID id;
     private String name;
     private String email;
+    private String bodyAction;
+    private String body;
 }

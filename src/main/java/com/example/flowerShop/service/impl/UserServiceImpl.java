@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserService {
      */
     @Autowired
     public UserServiceImpl(UserRepository userRepository, ReviewRepository reviewRepository,
-                           UserUtils userUtils, UserMapper userMapper,EmailSender emailSender) {
+                           UserUtils userUtils, UserMapper userMapper, EmailSender emailSender) {
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.userUtils = userUtils;
@@ -116,7 +114,8 @@ public class UserServiceImpl implements UserService {
                 if (userOptional.isEmpty()) {
                     LOGGER.info("User created");
                     User userRepo = userRepository.save(userMapper.convertToEntity(user));
-                    this.emailSender.sendEmailToUser(userRepo.getId(), userRepo.getName(), userRepo.getEmail());
+                    this.emailSender.sendEmailToUserSync(userRepo.getId(), userRepo.getName(), userRepo.getEmail(),
+                            "Account created", "Bine ai venit pe platforma FlowerShop!\n Contul tau a fost creat cu succes!");
                     return Utils.getResponseEntity(UserConstants.USER_CREATED, HttpStatus.CREATED);
                 } else {
                     LOGGER.error("User already exists, email is present in the db");
