@@ -58,6 +58,17 @@
 <body class="floral-background">
 <div class="container floral-border">
     <h1 class="floral-header" style="margin-left: 3rem;">Lista comenzi</h1>
+
+    <form id="reportForm" action="/order/report/" method="post">
+        <input type="radio" id="pdf" name="reportFormat" value="pdf">
+        <label for="pdf">PDF</label><br>
+        <input type="radio" id="csv" name="reportFormat" value="csv">
+        <label for="csv">CSV</label><br>
+        <input type="radio" id="txt" name="reportFormat" value="txt">
+        <label for="txt">TXT</label><br>
+        <button type="button" onclick="submitForm()">Generate Report</button>
+    </form>
+
     <table class="table table-bordered">
         <thead class="thead-light">
         <tr>
@@ -134,5 +145,15 @@
         });
     });
 </script>
+
+<script>
+    function submitForm() {
+        var selectedFormat = document.querySelector('input[name="reportFormat"]:checked').value;
+        var form = document.getElementById('reportForm');
+        form.action = "/order/report/" + selectedFormat;
+        form.submit();
+    }
+</script>
+
 </body>
 </html>

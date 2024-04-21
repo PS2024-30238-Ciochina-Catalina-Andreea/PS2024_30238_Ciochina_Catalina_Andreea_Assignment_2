@@ -3,8 +3,13 @@ package com.example.flowerShop.controller;
 import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
+import com.example.flowerShop.entity.Order;
 import com.example.flowerShop.service.impl.OrderServiceImpl;
 import com.example.flowerShop.utils.order.PaymentType;
+import com.example.flowerShop.utils.report.ContextReport;
+import com.example.flowerShop.utils.report.CsvGenerator;
+import com.example.flowerShop.utils.report.PdfGenerator;
+import com.example.flowerShop.utils.report.TxtGenerator;
 import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -68,6 +73,22 @@ public class OrderController {
             modelAndView.setView(new RedirectView("/login"));
         }
         return modelAndView;
+    }
+
+    @PostMapping("/report/{format}")
+    public RedirectView getReport(@PathVariable String format, HttpServletRequest request) {
+        List<OrderDTO> orders = this.orderServiceImpl.getAllOrders().getBody();
+        ContextReport contextReport;
+        if (format.equals("pdf")) {
+            contextReport = new ContextReport(new PdfGenerator());
+        } else if (format.equals("txt")) {
+            contextReport = new ContextReport(new TxtGenerator());
+        } else {
+            contextReport = new ContextReport(new CsvGenerator());
+        }
+        contextReport.executeStrategy(orders);
+        String referer = request.getHeader("Referer");
+        return new RedirectView(referer);
     }
 
     /**

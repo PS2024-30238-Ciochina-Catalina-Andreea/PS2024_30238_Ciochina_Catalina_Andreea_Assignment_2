@@ -5,11 +5,9 @@ import com.example.flowerShop.constants.OrderConstants;
 import com.example.flowerShop.dto.notification.InvoiceDTO;
 import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
-import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.entity.*;
 import com.example.flowerShop.mapper.OrderMapper;
 import com.example.flowerShop.repository.*;
-import com.example.flowerShop.service.OrderItemService;
 import com.example.flowerShop.service.OrderService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.invoice.InvoiceGenerator;
@@ -42,7 +40,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     private final EmailSender emailSender;
-
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderItemServiceImpl.class);
 
@@ -161,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
                     LOGGER.info("Order created");
                     shoppingCartRepository.save(shoppingCart.get());
                     Order orderRepo = orderRepository.save(orderMapper.convertToEntity(orderDTO));
-                    byte[] fileInvoice = InvoiceGenerator.generateInvoicePDF(orderRepo);
+                    byte[] fileInvoice = InvoiceGenerator.generateInvoicePDF(orderRepo,items);
                     InvoiceDTO invoiceDTO = new InvoiceDTO(orderRepo.getUser().getId(), orderRepo.getUser().getEmail(), fileInvoice);
                     emailSender.sendEmailToUserAsync(invoiceDTO);
                     return Utils.getResponseEntity(OrderConstants.ORDER_CREATED, HttpStatus.CREATED);
