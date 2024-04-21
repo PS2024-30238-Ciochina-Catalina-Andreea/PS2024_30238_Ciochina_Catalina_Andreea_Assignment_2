@@ -191,3 +191,15 @@ div {
     margin-left: 7rem;
     text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.61);
 }
+
+.formats{
+    display: flex;
+    flex-direction: row;
+    margin-left: 20rem;
+    margin-bottom: 2rem;
+}
+
+.rd{
+    margin-left: 1rem;
+    margin-right: 1rem;
+}

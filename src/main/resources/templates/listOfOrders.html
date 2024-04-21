@@ -59,14 +59,14 @@
 <div class="container floral-border">
     <h1 class="floral-header" style="margin-left: 3rem;">Lista comenzi</h1>
 
-    <form id="reportForm" action="/order/report/" method="post">
-        <input type="radio" id="pdf" name="reportFormat" value="pdf">
-        <label for="pdf">PDF</label><br>
-        <input type="radio" id="csv" name="reportFormat" value="csv">
-        <label for="csv">CSV</label><br>
-        <input type="radio" id="txt" name="reportFormat" value="txt">
-        <label for="txt">TXT</label><br>
-        <button type="button" onclick="submitForm()">Generate Report</button>
+    <form id="reportForm" class="formats" action="/order/report/" method="post">
+        <input class="rd" type="radio" id="pdf" name="reportFormat" value="pdf">
+        <label class="rd" for="pdf">PDF</label><br>
+        <input class="rd" type="radio" id="csv" name="reportFormat" value="csv">
+        <label class="rd" for="csv">CSV</label><br>
+        <input class="rd" type="radio" id="txt" name="reportFormat" value="txt">
+        <label class="rd" for="txt">TXT</label><br>
+        <button class="rd" type="button" onclick="submitForm()">Generare raport</button>
     </form>
 
     <table class="table table-bordered">
