@@ -59,7 +59,7 @@
 <div class="container floral-border">
     <h1 class="floral-header" style="margin-left: 3rem;">Lista comenzi</h1>
 
-    <form id="reportForm" class="formats" action="/order/report/" method="post">
+    <form th:if="${user.getRole().toString()} == 'ADMIN'" id="reportForm" class="formats" action="/order/report/" method="post">
         <input class="rd" type="radio" id="pdf" name="reportFormat" value="pdf">
         <label class="rd" for="pdf">PDF</label><br>
         <input class="rd" type="radio" id="csv" name="reportFormat" value="csv">
