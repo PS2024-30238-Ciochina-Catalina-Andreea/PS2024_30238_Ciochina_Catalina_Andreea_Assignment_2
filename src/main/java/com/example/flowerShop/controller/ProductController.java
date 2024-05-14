@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -48,7 +49,9 @@ public class ProductController {
      * @return ModelAndView
      */
     @GetMapping("/listOfProducts")
-    public ModelAndView getAllProducts(@RequestParam(name = "category", required = false) String categoryName) {
+    public ModelAndView getAllProducts(@RequestParam(name = "category", required = false) String categoryName,
+                                       @RequestParam(name = "sortPrice", required = false) String sortPrice,
+                                       @RequestParam(name = "search", required = false) String searchQuery) {
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         ModelAndView modelAndView;
         if (currentUser != null) {
@@ -71,6 +74,19 @@ public class ProductController {
                 products = this.productServiceImpl.getAllProducts().getBody();
                 products = products.stream()
                         .filter(product -> product.getStock() > 1)
+                        .collect(Collectors.toList());
+            }
+            if (sortPrice != null) {
+                if (sortPrice.equals("asc")) {
+                    products.sort(Comparator.comparing(ProductDetailedDTO::getPrice));
+                } else if (sortPrice.equals("desc")) {
+                    products.sort(Comparator.comparing(ProductDetailedDTO::getPrice).reversed());
+                }
+            }
+            if (searchQuery != null && !searchQuery.isEmpty()) {
+                String searchLowerCase = searchQuery.toLowerCase();
+                products = products.stream()
+                        .filter(product -> product.getName().toLowerCase().contains(searchLowerCase))
                         .collect(Collectors.toList());
             }
             modelAndView.addObject("products", products);

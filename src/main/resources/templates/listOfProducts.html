@@ -73,6 +73,15 @@
         <button type="submit">Filtrare</button>
     </form>
 
+    <form action="#" th:action="@{/product/listOfProducts}" method="get">
+        <button class="buttonSort" type="submit" name="sortPrice" value="asc">Sortează Pret Asc</button>
+        <button class="buttonSort" type="submit" name="sortPrice" value="desc">Sortează Pret Desc</button>
+    </form>
+
+    <form style="float: right" action="#" th:action="@{/product/listOfProducts}" method="get">
+        <input type="text" name="search" placeholder="Caută după nume...">
+        <button type="submit">Caută</button>
+    </form>
 
     <h1 class="floral-header">Lista produse</h1>
 
