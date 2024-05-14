@@ -19,6 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/promotion")
@@ -93,6 +94,9 @@ public class PromotionController {
             if (currentUser.getRole().equals(UserRole.ADMIN)) {
                 modelAndView = new ModelAndView("createPromotion");
                 List<ProductDetailedDTO> prods = this.promotionService.getAllProductsForPromotion().getBody();
+                prods = prods.stream()
+                        .filter(product -> product.getStock() > 1)
+                        .collect(Collectors.toList());
                 modelAndView.addObject("products", prods);
             } else {
                 modelAndView = new ModelAndView("accessDenied");

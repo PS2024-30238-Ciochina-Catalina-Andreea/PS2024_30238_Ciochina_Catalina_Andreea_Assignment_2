@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/review")
@@ -104,6 +105,9 @@ public class ReviewController {
         if (currentUser != null) {
             modelAndView = new ModelAndView("createReview");
             List<ProductDetailedDTO> prods = this.reviewService.getAllProductsForReview().getBody();
+            prods = prods.stream()
+                    .filter(product -> product.getStock() > 1)
+                    .collect(Collectors.toList());
             modelAndView.addObject("products", prods);
             modelAndView.addObject("user", currentUser);
         } else {

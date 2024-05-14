@@ -1,18 +1,12 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.ProductConstants;
-import com.example.flowerShop.entity.Promotion;
-import com.example.flowerShop.entity.Review;
+import com.example.flowerShop.entity.*;
 import com.example.flowerShop.mapper.ProductMapper;
 import com.example.flowerShop.dto.product.ProductDTO;
 import com.example.flowerShop.dto.product.ProductDetailedDTO;
-import com.example.flowerShop.entity.Category;
-import com.example.flowerShop.entity.Product;
 
-import com.example.flowerShop.repository.CategoryRepository;
-import com.example.flowerShop.repository.ProductRepository;
-import com.example.flowerShop.repository.PromotionRepository;
-import com.example.flowerShop.repository.ReviewRepository;
+import com.example.flowerShop.repository.*;
 import com.example.flowerShop.service.ProductService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.category.CategoryName;
@@ -32,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     private final PromotionRepository promotionsRepository;
+
 
     private final ReviewRepository reviewRepository;
 
@@ -111,6 +106,24 @@ public class ProductServiceImpl implements ProductService {
             exception.printStackTrace();
         }
         return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<List<ProductDetailedDTO>> getProductsByCategory(CategoryName category) {
+
+        try {
+            List<Product> products;
+            if (category != null && category != CategoryName.ALL) {
+                products = productRepository.findByCategory(categoryRepository.findByName(category).get());
+            } else {
+                products = productRepository.findAll();
+            }
+            return new ResponseEntity<>(productMapper.convertListToDTO(products), HttpStatus.OK);
+        } catch (Exception exception) {
+            LOGGER.error("Error while performing the fetching of the list with products", exception);
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -222,6 +235,7 @@ public class ProductServiceImpl implements ProductService {
 
     /**
      * Delete pproducts from promotion
+     *
      * @param promotions
      * @param productDelete
      */

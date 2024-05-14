@@ -4,6 +4,7 @@ import com.example.flowerShop.dto.product.ProductDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
 import com.example.flowerShop.entity.Product;
 import com.example.flowerShop.service.impl.ProductServiceImpl;
+import com.example.flowerShop.utils.category.CategoryName;
 import com.example.flowerShop.utils.user.UserRole;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/product")
@@ -46,14 +48,33 @@ public class ProductController {
      * @return ModelAndView
      */
     @GetMapping("/listOfProducts")
-    public ModelAndView getAllProducts() {
+    public ModelAndView getAllProducts(@RequestParam(name = "category", required = false) String categoryName) {
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         ModelAndView modelAndView;
         if (currentUser != null) {
             LOGGER.info("Request for list of products");
             modelAndView = new ModelAndView("listOfProducts");
-            List<ProductDetailedDTO> products = this.productServiceImpl.getAllProducts().getBody();
+            List<ProductDetailedDTO> products;
+
+            CategoryName category = null;
+            if (categoryName != null) {
+                category = CategoryName.valueOf(categoryName);
+            }
+
+            if (category != null && category != CategoryName.ALL && category != CategoryName.CUSTOM_BOUQUETS) {
+                products = this.productServiceImpl.getProductsByCategory(category).getBody();
+                products = products.stream()
+                        .filter(product -> product.getStock() > 1)
+                        .collect(Collectors.toList());
+            }
+            else {
+                products = this.productServiceImpl.getAllProducts().getBody();
+                products = products.stream()
+                        .filter(product -> product.getStock() > 1)
+                        .collect(Collectors.toList());
+            }
             modelAndView.addObject("products", products);
+            modelAndView.addObject("category", category != null ? category : CategoryName.ALL);
             modelAndView.addObject("user", currentUser);
         } else {
             modelAndView = new ModelAndView();

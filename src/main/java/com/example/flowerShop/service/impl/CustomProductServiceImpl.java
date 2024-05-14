@@ -1,18 +1,23 @@
 package com.example.flowerShop.service.impl;
 
 import com.example.flowerShop.constants.CustomProductConstants;
+import com.example.flowerShop.constants.ShoppingCartConstants;
 import com.example.flowerShop.dto.customProduct.CustomProductDTO;
 import com.example.flowerShop.dto.customProduct.CustomProductDetailedDTO;;
-import com.example.flowerShop.entity.CustomProduct;
-import com.example.flowerShop.entity.Product;
-import com.example.flowerShop.entity.User;
+import com.example.flowerShop.dto.orderItem.OrderItemDTO;
+import com.example.flowerShop.dto.orderItem.OrderItemDetailedDTO;
+import com.example.flowerShop.dto.product.ProductDTO;
+import com.example.flowerShop.dto.product.ProductDetailedDTO;
+import com.example.flowerShop.entity.*;
 import com.example.flowerShop.mapper.CustomProductMapper;
-import com.example.flowerShop.repository.CustomProductRepository;
-import com.example.flowerShop.repository.ProductRepository;
-import com.example.flowerShop.repository.UserRepository;
+import com.example.flowerShop.mapper.OrderItemMapper;
+import com.example.flowerShop.mapper.ProductMapper;
+import com.example.flowerShop.repository.*;
 import com.example.flowerShop.service.CustomProductService;
 import com.example.flowerShop.utils.Utils;
+import com.example.flowerShop.utils.category.CategoryName;
 import com.example.flowerShop.utils.customProduct.CustomProductUtils;
+import com.example.flowerShop.utils.shoppingCart.ShoppingCartUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +31,35 @@ public class CustomProductServiceImpl implements CustomProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final CustomProductMapper customProductMapper;
+    private final CategoryRepository categoryRepository;
     private final CustomProductRepository customProductRepository;
     private final CustomProductUtils customProductUtils;
+    private final ProductMapper productMapper;
+    private final OrderItemMapper orderItemMapper;
+    private final OrderItemRepository orderItemRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
     public CustomProductServiceImpl(ProductRepository productRepository,
                                     CustomProductMapper customProductMapper,
                                     CustomProductRepository customProductRepository,
                                     CustomProductUtils customProductUtils,
-                                    UserRepository userRepository) {
+                                    UserRepository userRepository,
+                                    ProductMapper productMapper,
+                                    CategoryRepository categoryRepository,
+                                    OrderItemMapper orderItemMapper,
+                                    OrderItemRepository orderItemRepository,
+                                    ShoppingCartRepository shoppingCartRepository) {
         this.customProductMapper = customProductMapper;
         this.customProductRepository = customProductRepository;
         this.productRepository = productRepository;
         this.customProductUtils = customProductUtils;
         this.userRepository = userRepository;
-
+        this.productMapper = productMapper;
+        this.categoryRepository = categoryRepository;
+        this.orderItemMapper = orderItemMapper;
+        this.orderItemRepository = orderItemRepository;
+        this.shoppingCartRepository = shoppingCartRepository;
     }
 
     @Override
@@ -78,10 +97,29 @@ public class CustomProductServiceImpl implements CustomProductService {
 
                 Optional<User> user = userRepository.findById(customProductDetailedDTO.getId_user());
                 List<Product> products = productRepository.findProjectedByIdIn(customProductDetailedDTO.getId_products());
-
+ ////to do - decrease quantity of products when added
                 if (products.stream().allMatch(Objects::nonNull) && !products.isEmpty()) {
                     CustomProductDTO customProductDTO = customProductMapper.convToDtoWithObjects(customProductDetailedDTO, user, products);
                     customProductRepository.save(customProductMapper.convertToEntity(customProductDTO));
+                    Optional<Category> category = categoryRepository.findByName(CategoryName.valueOf(String.valueOf(CategoryName.ACCESSORIES)));
+                    CustomProduct customProduct = customProductRepository.save(customProductMapper.convertToEntity(customProductDTO));
+                    ProductDetailedDTO productDetailedDTO = new ProductDetailedDTO(null,customProductDTO.getName(),customProductDTO.getDescription(),
+                            "/images/custom.jpg",customProduct.getPrice(),1,String.valueOf(CategoryName.CUSTOM_BOUQUETS));
+                    ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
+                    Product product = productRepository.save(productMapper.convertToEntity(productDTO));
+                    OrderItemDTO orderItemDTO = new OrderItemDTO(null, 1, product);
+                    OrderItem orderItem = orderItemRepository.save(orderItemMapper.convertToEntity(orderItemDTO));
+                    Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByUser(user.get());
+                    List<OrderItem> items = shoppingCart.get().getOrderItems();
+                    items.addAll(orderItemRepository.findProjectedByIdIn(Collections.singletonList(orderItem.getId())));
+                    if (shoppingCart.isPresent()) {
+                        ShoppingCart existingCart = shoppingCart.get();
+                        existingCart.setTotalPrice((long) (existingCart.getTotalPrice() + product.getPrice()));
+                        shoppingCartRepository.save(existingCart);
+                    }
+                    customProductRepository.delete(customProduct);
+                    product.setStock(0);
+                    productRepository.save(product);
                     return Utils.getResponseEntity(CustomProductConstants.CUSTOM_PRODUCT_CREATED, HttpStatus.CREATED);
                 } else {
                     return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.BAD_REQUEST);
@@ -111,5 +149,16 @@ public class CustomProductServiceImpl implements CustomProductService {
         }
         return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_DELETING_CUSTOM_PRODUCT, HttpStatus.INTERNAL_SERVER_ERROR);
 
+    }
+
+    @Override
+    public ResponseEntity<List<ProductDetailedDTO>> getAllProducts() {
+        try {
+            List<Product> products = productRepository.findAll();
+            return new ResponseEntity<>(productMapper.convertListToDTO(products), HttpStatus.OK);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

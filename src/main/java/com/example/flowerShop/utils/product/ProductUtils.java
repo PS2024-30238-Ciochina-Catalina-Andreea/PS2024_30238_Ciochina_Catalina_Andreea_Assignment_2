@@ -18,6 +18,10 @@ public class ProductUtils {
             return false;
         }
 
+        if (productDetailedDTO.getImageUrl() == null) {
+            return false;
+        }
+
         Integer stock = productDetailedDTO.getStock();
         if (stock == null || stock <= 1) {
             return false;
@@ -42,6 +46,9 @@ public class ProductUtils {
         }
         if (Objects.nonNull(product.getDescription()) && !"".equalsIgnoreCase(product.getDescription())) {
             productExisting.setDescription(product.getDescription());
+        }
+        if (Objects.nonNull(product.getImageUrl()) && !"".equalsIgnoreCase(product.getImageUrl())) {
+            productExisting.setImageUrl(product.getImageUrl());
         }
         if (Objects.nonNull(product.getPrice()) && product.getPrice() >= 5) {
             productExisting.setPrice(product.getPrice());

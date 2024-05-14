@@ -66,13 +66,15 @@
         <ul>
             <li>
                 <h2 th:text="${entry.key}"></h2>
-                <div th:each="review : ${entry.value}">
-                    <div class="product-container product">
-                        <p>User: <span th:text="${review.getUser().getName()}"></span></p>
-                        <p>Rating: <span th:text="${review.getRating()}"></span></p>
-                        <p>Review: <span th:text="${review.getText()}"></span></p>
-                        <div class="buttonsModif adminButtons" style="padding-left: 15rem" th:if="${user.getId()} == ${review.getUser().getId()}">
-                            <form th:action="@{/review/updateReview/{reviewId}(reviewId=${review.getId()})}" method="get">
+                <div class="product-container" th:each="review : ${entry.value}">
+                    <div class="product" style="display: block;">
+                        <div>User: <span th:text="${review.getUser().getName()}"></span></div>
+                        <div>Rating: <span th:text="${review.getRating()}"></span></div>
+                        <div>Review: <span th:text="${review.getText()}"></span></div>
+                        <div class="buttonsModif adminButtons" style="padding-left: 7rem;display: block;"
+                             th:if="${user.getId()} == ${review.getUser().getId()}">
+                            <form th:action="@{/review/updateReview/{reviewId}(reviewId=${review.getId()})}"
+                                  method="get">
                                 <button class="buttons-product" type="submit">Modifica</button>
                             </form>
                             <form th:id="'deleteReview_' + ${review.getId()}"

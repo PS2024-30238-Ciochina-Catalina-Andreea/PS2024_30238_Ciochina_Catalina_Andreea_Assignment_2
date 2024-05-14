@@ -109,6 +109,10 @@ button {
 
 .product {
     font-size: 16px;
+    display: flex;
+    column-count: 2;
+    padding: 2rem;
+    align-items: center;
 }
 
 .product div {
@@ -140,6 +144,7 @@ div {
 .buttonsModif {
     display: flex;
     flex-direction: column;
+    padding-left: 2rem;
 }
 
 .adminButtons {
@@ -192,14 +197,21 @@ div {
     text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.61);
 }
 
-.formats{
+.formats {
     display: flex;
     flex-direction: row;
     margin-left: 20rem;
     margin-bottom: 2rem;
 }
 
-.rd{
+.rd {
     margin-left: 1rem;
     margin-right: 1rem;
 }
+
+img {
+    height: 10rem;
+    width: 13rem;
+    padding-right:2rem;
+}
+

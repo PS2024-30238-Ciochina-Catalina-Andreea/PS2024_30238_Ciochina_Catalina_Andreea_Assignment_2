@@ -61,29 +61,43 @@
         <button type="submit">Adauga produs</button>
     </form>
 
+    <form class="addProduct" th:action="@{/bouquet/create}" method="get">
+        <button type="submit">Creaza buchet</button>
+    </form>
+
+    <form action="#" th:action="@{/product/listOfProducts}" method="get">
+        <label><input type="radio" name="category" value="FLOWERS">Flori</label>
+        <label><input type="radio" name="category" value="ACCESSORIES">Buchete</label>
+        <label><input type="radio" name="category" value="VASES">Vase</label>
+        <label><input type="radio" name="category" value="ALL">Toate</label>
+        <button type="submit">Filtrare</button>
+    </form>
+
+
     <h1 class="floral-header">Lista produse</h1>
 
     <div class="product-container" th:each="product : ${products}">
         <div class="product">
-
-            <div>ID: <span th:text="${product.id}">ID</span></div>
-            <div>Nume: <span th:text="${product.name}">Nume</span></div>
-            <div>Descriere: <span th:text="${product.description}">Descriere</span></div>
-            <div>Pret: <span th:text="${product.price}">Pret</span></div>
-            <div>Stoc: <span th:text="${product.stock}">Stoc</span></div>
-            <div>Categorie: <span th:text="${product.category}">Categorie</span></div>
-
-
-            <div class="quantity-counter">
-                <span>Cantitate:</span>
-                <label th:for="${'quantity-' + product.id}"></label>
-                <input th:id="${'quantity-' + product.id}" type="number"
-                       class="quantity-input" th:value="1" th:min="1" th:max="${product.stock}">
+            <div>
+                <img th:src="${product.imageUrl}" alt="Imagine produs"/>
             </div>
 
+            <div>
+                <div>ID: <span th:text="${product.id}">ID</span></div>
+                <div>Nume: <span th:text="${product.name}">Nume</span></div>
+                <div>Descriere: <span th:text="${product.description}">Descriere</span></div>
+                <div>Pret: <span th:text="${product.price}">Pret</span></div>
+                <div>Stoc: <span th:text="${product.stock}">Stoc</span></div>
+
+                <div class="quantity-counter">
+                    <span>Cantitate:</span>
+                    <label th:for="${'quantity-' + product.id}"></label>
+                    <input th:id="${'quantity-' + product.id}" type="number"
+                           class="quantity-input" th:value="1" th:min="1" th:max="${product.stock}">
+                </div>
+            </div>
 
             <div class="buttonsModif">
-
                 <form>
                     <button class="buttons-product"
                             th:data-name="${product.id}"
@@ -102,9 +116,7 @@
                         <button class="buttons-product" type="submit">Sterge produs</button>
                     </form>
                 </div>
-
             </div>
-
         </div>
     </div>
 </div>

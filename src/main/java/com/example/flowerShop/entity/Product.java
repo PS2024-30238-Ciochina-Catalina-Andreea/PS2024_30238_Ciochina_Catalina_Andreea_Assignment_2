@@ -35,6 +35,9 @@ public class Product {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "imageUrl", nullable = false)
+    private String imageUrl;
+
     @Column(name = "price", nullable = false)
     private Double price;
 
