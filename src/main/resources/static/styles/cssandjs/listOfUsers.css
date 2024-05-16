@@ -68,6 +68,7 @@ body {
 .navbar ul {
     display: flex;
     list-style: none;
+    margin-left: 4rem;
 }
 
 .navbar li {
@@ -128,3 +129,11 @@ button {
     box-shadow: 0px 0px 10px rgb(55, 91, 114);
 }
 
+.nav {
+    width: 5rem;
+    padding: 0.2rem;
+    padding-left: 0.6rem;
+    padding-right: 0.5rem;
+    margin-left: 1.5rem;
+    border-radius: 0.5rem;
+}

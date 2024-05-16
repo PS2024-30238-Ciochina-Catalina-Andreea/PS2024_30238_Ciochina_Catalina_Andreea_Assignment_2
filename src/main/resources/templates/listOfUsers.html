@@ -10,47 +10,47 @@
     <ul>
         <li>
             <form th:action="@{/product/listOfProducts}" method="get">
-                <button type="submit">Produse</button>
+                <button class="nav" type="submit">Produse</button>
             </form>
         </li>
         <li>
             <form th:action="@{/review/listOfReviews}" method="get">
-                <button type="submit">Reviews</button>
+                <button class="nav" type="submit">Reviews</button>
             </form>
         </li>
         <li>
             <form th:action="@{/cart/getByUser}" method="get">
-                <button type="submit">Cos</button>
+                <button class="nav" type="submit">Cos</button>
             </form>
         </li>
         <li>
             <form th:action="@{/order/getByUser/all/{userId}(userId=${user.getId()})}" method="get">
-                <button type="submit">Comenzi</button>
+                <button class="nav" type="submit">Comenzi</button>
             </form>
         </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/card/listOfPayments}" method="get">
-                <button type="submit">Plati</button>
+                <button class="nav" type="submit">Plati</button>
             </form>
         </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
-                <button type="submit">Useri</button>
+                <button class="nav" type="submit">Useri</button>
             </form>
         </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/promotion/get/all}" method="get">
-                <button type="submit">Promotii</button>
+                <button class="nav" type="submit">Promotii</button>
             </form>
         </li>
         <li>
             <form th:action="@{/userProfile}" method="get">
-                <button type="submit">Profil</button>
+                <button class="nav" type="submit">Profil</button>
             </form>
         </li>
         <li>
             <form th:action="@{/logout}" method="get">
-                <button type="submit">Log Out</button>
+                <button class="nav" type="submit">Log Out</button>
             </form>
         </li>
     </ul>

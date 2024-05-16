@@ -68,6 +68,7 @@ body {
 .navbar ul {
     display: flex;
     list-style: none;
+    margin-left: 4rem;
 }
 
 .navbar li {
@@ -193,7 +194,7 @@ div {
     text-align: center;
     font-size: 36px;
     margin-bottom: 30px;
-    margin-left: 7rem;
+    margin-left: 8rem;
     text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.61);
 }
 
@@ -220,17 +221,21 @@ img {
     width: 10rem;
 }
 
-.resetFilter{
-    width: 8rem;
+.filter{
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .prods{
-    display: flex;
-    flex-direction: column;
-    margin-left:22rem;
-    margin-bottom: 2rem;
+    padding-bottom:1rem;
 }
 
-.search{
-    float: right;
+.nav {
+    width: 5rem;
+    padding: 0.2rem;
+    padding-left: 0.6rem;
+    padding-right: 0.5rem;
+    margin-left: 1.5rem;
+    border-radius: 0.5rem;
 }

@@ -12,6 +12,7 @@
 .navbar ul {
     display: flex;
     list-style: none;
+    margin-left: 4rem;
 }
 
 .navbar li {
@@ -193,4 +194,13 @@ span {
     font-size: 36px;
     margin-bottom: 30px;
     text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.61);
+}
+
+.nav {
+    width: 5rem;
+    padding: 0.2rem;
+    padding-left: 0.6rem;
+    padding-right: 0.5rem;
+    margin-left: 1.5rem;
+    border-radius: 0.5rem;
 }

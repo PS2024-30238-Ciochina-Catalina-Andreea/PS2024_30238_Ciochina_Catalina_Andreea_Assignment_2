@@ -11,52 +11,54 @@
     <ul>
         <li>
             <form th:action="@{/product/listOfProducts}" method="get">
-                <button type="submit">Produse</button>
+                <button class="nav" type="submit">Produse</button>
             </form>
         </li>
         <li>
             <form th:action="@{/review/listOfReviews}" method="get">
-                <button type="submit">Reviews</button>
+                <button class="nav" type="submit">Reviews</button>
             </form>
         </li>
         <li>
             <form th:action="@{/cart/getByUser}" method="get">
-                <button type="submit">Cos</button>
+                <button class="nav" type="submit">Cos</button>
             </form>
         </li>
         <li>
             <form th:action="@{/order/getByUser/all/{userId}(userId=${user.getId()})}" method="get">
-                <button type="submit">Comenzi</button>
+                <button class="nav" type="submit">Comenzi</button>
             </form>
         </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/card/listOfPayments}" method="get">
-                <button type="submit">Plati</button>
+                <button class="nav" type="submit">Plati</button>
             </form>
         </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/listOfUsers}" method="get">
-                <button type="submit">Useri</button>
+                <button class="nav" type="submit">Useri</button>
             </form>
         </li>
         <li th:if="${user.getRole().toString()} == 'ADMIN'">
             <form th:action="@{/promotion/get/all}" method="get">
-                <button type="submit">Promotii</button>
+                <button class="nav" type="submit">Promotii</button>
             </form>
         </li>
         <li>
             <form th:action="@{/userProfile}" method="get">
-                <button type="submit">Profil</button>
+                <button class="nav" type="submit">Profil</button>
             </form>
         </li>
         <li>
             <form th:action="@{/logout}" method="get">
-                <button type="submit">Log Out</button>
+                <button class="nav" type="submit">Log Out</button>
             </form>
         </li>
     </ul>
 </div>
+
 <div class="container">
+
     <form class="addProduct" th:if="${user.getRole().toString()} == 'ADMIN'" th:action="@{/product/add}" method="get">
         <button type="submit">Adauga produs</button>
     </form>
@@ -65,13 +67,16 @@
         <button type="submit">Creaza buchet</button>
     </form>
 
-    <form id="filterForm" action="#" th:action="@{/product/listOfProducts}" method="get">
-        <label><input type="radio" name="category" value="FLOWERS">Flori</label>
-        <label><input type="radio" name="category" value="VASES">Vase</label>
-        <label><input type="radio" name="category" value="ALL" id="allRadio" checked>Toate</label>
+    <h1 class="floral-header">Lista produse</h1>
 
-        <button type="submit">Filtrare</button>
-        <button type="button" class="resetFilter" onclick="resetFilters()">Resetare filtre</button>
+    <form id="filterForm" class="filter" action="#" th:action="@{/product/listOfProducts}" method="get">
+        <div class="category">
+            <label><input type="radio" name="category" value="FLOWERS">Flori</label>
+            <label><input type="radio" name="category" value="VASES">Vase</label>
+            <label><input type="radio" name="category" value="ALL" id="allRadio" checked>Toate</label>
+
+            <button type="submit">Filtrare</button>
+        </div>
 
         <div class="prods">
             <button class="buttonSort" type="submit" name="sortPrice" value="asc">Sortează Pret Asc</button>
@@ -81,10 +86,10 @@
         <div class="search">
             <input type="text" name="search" placeholder="Caută după nume..." value="">
             <button type="submit">Caută</button>
+            <button type="button" class="resetFilter" onclick="resetFilters()">Resetare</button>
         </div>
-    </form>
 
-    <h1 class="floral-header">Lista produse</h1>
+    </form>
 
     <div class="product-container" th:each="product : ${products}">
         <div class="product">
