@@ -219,3 +219,18 @@ img {
     margin-top:1.5rem;
     width: 10rem;
 }
+
+.resetFilter{
+    width: 8rem;
+}
+
+.prods{
+    display: flex;
+    flex-direction: column;
+    margin-left:22rem;
+    margin-bottom: 2rem;
+}
+
+.search{
+    float: right;
+}

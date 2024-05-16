@@ -65,22 +65,23 @@
         <button type="submit">Creaza buchet</button>
     </form>
 
-    <form action="#" th:action="@{/product/listOfProducts}" method="get">
+    <form id="filterForm" action="#" th:action="@{/product/listOfProducts}" method="get">
         <label><input type="radio" name="category" value="FLOWERS">Flori</label>
-        <label><input type="radio" name="category" value="ACCESSORIES">Buchete</label>
         <label><input type="radio" name="category" value="VASES">Vase</label>
-        <label><input type="radio" name="category" value="ALL">Toate</label>
+        <label><input type="radio" name="category" value="ALL" id="allRadio" checked>Toate</label>
+
         <button type="submit">Filtrare</button>
-    </form>
+        <button type="button" class="resetFilter" onclick="resetFilters()">Resetare filtre</button>
 
-    <form action="#" th:action="@{/product/listOfProducts}" method="get">
-        <button class="buttonSort" type="submit" name="sortPrice" value="asc">Sortează Pret Asc</button>
-        <button class="buttonSort" type="submit" name="sortPrice" value="desc">Sortează Pret Desc</button>
-    </form>
+        <div class="prods">
+            <button class="buttonSort" type="submit" name="sortPrice" value="asc">Sortează Pret Asc</button>
+            <button class="buttonSort" type="submit" name="sortPrice" value="desc">Sortează Pret Desc</button>
+        </div>
 
-    <form style="float: right" action="#" th:action="@{/product/listOfProducts}" method="get">
-        <input type="text" name="search" placeholder="Caută după nume...">
-        <button type="submit">Caută</button>
+        <div class="search">
+            <input type="text" name="search" placeholder="Caută după nume..." value="">
+            <button type="submit">Caută</button>
+        </div>
     </form>
 
     <h1 class="floral-header">Lista produse</h1>
@@ -129,6 +130,7 @@
         </div>
     </div>
 </div>
+
 <script>
     document.querySelectorAll('[id^="deleteProd_"]').forEach(function (form) {
         form.addEventListener('submit', function (event) {
@@ -200,6 +202,36 @@
             }
         };
         xhr.send(JSON.stringify(orderItemData));
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var previousValue = localStorage.getItem("selectedCategory");
+        if (previousValue) {
+            if (previousValue !== "ALL") {
+                document.querySelector('input[name="category"][value="' + previousValue + '"]').checked = true;
+                localStorage.setItem("selectedCategory", previousValue);
+            } else {
+                document.getElementById("allRadio").checked = true;
+                localStorage.setItem("selectedCategory", "ALL");
+            }
+        } else {
+            document.getElementById("allRadio").checked = true;
+            localStorage.setItem("selectedCategory", "ALL");
+        }
+
+        document.getElementById("filterForm").addEventListener("submit", function () {
+            var selectedValue = document.querySelector('input[name="category"]:checked').value;
+            localStorage.setItem("selectedCategory", selectedValue);
+        });
+    });
+
+
+    function resetFilters() {
+        document.getElementById("allRadio").checked = true;
+        localStorage.removeItem("selectedCategory");
+        document.getElementById("filterForm").submit();
     }
 
 </script>

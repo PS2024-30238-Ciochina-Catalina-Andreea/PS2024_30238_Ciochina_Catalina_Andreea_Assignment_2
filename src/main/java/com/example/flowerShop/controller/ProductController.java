@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -55,42 +56,17 @@ public class ProductController {
         UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         ModelAndView modelAndView;
         if (currentUser != null) {
-            LOGGER.info("Request for list of products");
+            List<ProductDetailedDTO> products = new ArrayList<>();
             modelAndView = new ModelAndView("listOfProducts");
-            List<ProductDetailedDTO> products;
-
-            CategoryName category = null;
-            if (categoryName != null) {
-                category = CategoryName.valueOf(categoryName);
-            }
-
-            if (category != null && category != CategoryName.ALL && category != CategoryName.CUSTOM_BOUQUETS) {
-                products = this.productServiceImpl.getProductsByCategory(category).getBody();
-                products = products.stream()
-                        .filter(product -> product.getStock() > 1)
-                        .collect(Collectors.toList());
-            }
-            else {
+            if (categoryName == null && sortPrice == null && searchQuery == null) {
+                LOGGER.info("Request for list of products");
                 products = this.productServiceImpl.getAllProducts().getBody();
-                products = products.stream()
-                        .filter(product -> product.getStock() > 1)
-                        .collect(Collectors.toList());
-            }
-            if (sortPrice != null) {
-                if (sortPrice.equals("asc")) {
-                    products.sort(Comparator.comparing(ProductDetailedDTO::getPrice));
-                } else if (sortPrice.equals("desc")) {
-                    products.sort(Comparator.comparing(ProductDetailedDTO::getPrice).reversed());
-                }
-            }
-            if (searchQuery != null && !searchQuery.isEmpty()) {
-                String searchLowerCase = searchQuery.toLowerCase();
-                products = products.stream()
-                        .filter(product -> product.getName().toLowerCase().contains(searchLowerCase))
-                        .collect(Collectors.toList());
+            } else {
+                LOGGER.info("Request for list of filtered products");
+                products = this.productServiceImpl.getAllFilteredProducts(categoryName, sortPrice, searchQuery);
             }
             modelAndView.addObject("products", products);
-            modelAndView.addObject("category", category != null ? category : CategoryName.ALL);
+            modelAndView.addObject("category", this.productServiceImpl.getCategoryName(categoryName));
             modelAndView.addObject("user", currentUser);
         } else {
             modelAndView = new ModelAndView();

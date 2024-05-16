@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -73,6 +74,9 @@ public class ProductServiceImpl implements ProductService {
         try {
             List<Product> products = productRepository.findAll();
             LOGGER.info("Fetching completed, list of products retrieved");
+            products = products.stream()
+                    .filter(product -> product.getStock() > 1)
+                    .collect(Collectors.toList());
             return new ResponseEntity<>(productMapper.convertListToDTO(products), HttpStatus.OK);
         } catch (Exception exception) {
             LOGGER.error("Error while performing the fetching of the list with products", exception);
@@ -256,4 +260,51 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    public List<ProductDetailedDTO> getAllFilteredProducts(String categoryName, String sortPrice, String searchQuery) {
+        List<ProductDetailedDTO> products = this.getAllProducts().getBody();
+        products = filterProductsByCategory(products, categoryName);
+        products = filterProductsBySearch(products, searchQuery);
+        products = sortProducts(products, sortPrice);
+        return products;
+    }
+
+    private List<ProductDetailedDTO> sortProducts(List<ProductDetailedDTO> products, String sortPrice) {
+        if (sortPrice != null) {
+            if (sortPrice.equals("asc")) {
+                products.sort(Comparator.comparing(ProductDetailedDTO::getPrice));
+            } else if (sortPrice.equals("desc")) {
+                products.sort(Comparator.comparing(ProductDetailedDTO::getPrice).reversed());
+            }
+        }
+        products = products.stream()
+                .filter(product -> product.getStock() > 1)
+                .collect(Collectors.toList());
+        return products;
+    }
+
+    private List<ProductDetailedDTO> filterProductsBySearch(List<ProductDetailedDTO> products, String searchQuery) {
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            String searchLowerCase = searchQuery.toLowerCase();
+            products = products.stream()
+                    .filter(product -> product.getName().toLowerCase().contains(searchLowerCase))
+                    .filter(product -> product.getStock() > 1)
+                    .collect(Collectors.toList());
+        }
+        return products;
+    }
+
+    private List<ProductDetailedDTO> filterProductsByCategory(List<ProductDetailedDTO> products, String categoryName) {
+        CategoryName category = categoryName != null ? CategoryName.valueOf(categoryName) : null;
+        if (category != null && category != CategoryName.ALL && category != CategoryName.CUSTOM_BOUQUETS) {
+            products = this.getProductsByCategory(category).getBody();
+            products = products.stream()
+                    .filter(product -> product.getStock() > 1)
+                    .collect(Collectors.toList());
+        }
+        return products;
+    }
+
+    public CategoryName getCategoryName(String categoryName) {
+        return categoryName != null ? CategoryName.valueOf(categoryName) : CategoryName.ALL;
+    }
 }
