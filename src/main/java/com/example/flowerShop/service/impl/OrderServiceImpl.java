@@ -12,6 +12,9 @@ import com.example.flowerShop.service.OrderService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.invoice.InvoiceGenerator;
 import com.example.flowerShop.utils.order.OrderUtils;
+import com.example.flowerShop.utils.reportOrders.Report;
+import com.example.flowerShop.utils.reportOrders.ReportFactory;
+import com.itextpdf.text.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -245,5 +249,10 @@ public class OrderServiceImpl implements OrderService {
             e.printStackTrace();
         }
         return Utils.getResponseEntity(OrderConstants.SOMETHING_WENT_WRONG_AT_DELETING_ORDER, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public void generateUserReport(String reportType, List<OrderDTO> orders, String filePath) throws DocumentException, IOException {
+        Report report = ReportFactory.createReport(reportType);
+        report.generateReport(orders, filePath);
     }
 }

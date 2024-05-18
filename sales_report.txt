@@ -4,7 +4,8 @@ Produs: Lalea mov, Luna: 2024-05, Total: 5
 Produs: c, Luna: 2024-05, Total: 1
 Produs: Vaza roz, Luna: 2024-05, Total: 1
 Produs: Vaza textura matifiata, Luna: 2024-05, Total: 2
+Produs: Vaza Murano, Luna: 2024-05, Total: 1
 
-Luna: 2024-05, Total produse vandute: 15
+Luna: 2024-05, Total produse vandute: 16
 
-Total incasari:644
+Total incasari:733

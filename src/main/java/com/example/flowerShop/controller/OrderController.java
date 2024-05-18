@@ -4,6 +4,7 @@ import com.example.flowerShop.config.FileSender;
 import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
+import com.example.flowerShop.entity.Order;
 import com.example.flowerShop.service.impl.OrderServiceImpl;
 import com.example.flowerShop.utils.order.PaymentType;
 import com.example.flowerShop.utils.report.ContextReport;
@@ -93,9 +94,25 @@ public class OrderController {
         }
         contextReport.executeStrategy(orders);
         String referer = request.getHeader("Referer");
-        fileSender.sendReportOnEmail(format,currentUser.getId(),currentUser.getName(),currentUser.getEmail(),
-                "Sales report","HI, admin!\nAcesta este raportul vanzarilor in formatul pe care l-ai ales.");
+        fileSender.sendReportOnEmail("sales_report." + format, currentUser.getId(), currentUser.getName(), currentUser.getEmail(),
+                "Sales report", "HI, admin!\nAcesta este raportul vanzarilor in formatul pe care l-ai ales.");
         return new RedirectView(referer);
+    }
+
+    @PostMapping("/reportUser/{format}")
+    public RedirectView generateReport(@PathVariable String format, HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        try {
+            UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
+            List<OrderDTO> orders = this.orderServiceImpl.getAllOrdersByUser(currentUser.getId()).getBody();
+            String filePath = "report_" + currentUser.getName() + "." + format.toLowerCase();
+            this.orderServiceImpl.generateUserReport(format, orders, filePath);
+            fileSender.sendReportOnEmail(filePath, currentUser.getId(), currentUser.getName(), currentUser.getEmail(),
+                    "Orders report", "HI!\nAcesta este raportul comenzilor in formatul pe care l-ai ales.");
+            return new RedirectView(referer);
+        } catch (Exception e) {
+            return new RedirectView(referer);
+        }
     }
 
     /**

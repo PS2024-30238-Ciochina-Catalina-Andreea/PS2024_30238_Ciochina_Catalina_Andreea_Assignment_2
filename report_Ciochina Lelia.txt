@@ -1,0 +1,15 @@
+Order Report
+Customer: Ciochina Lelia
+Order ID: b871b6ba-91fd-46ac-8b83-5377b859f341
+Product: Vaza Murano
+Price: 89.0
+Pay: CASH_ON_DELIVERY
+Total: 89
+Date: 2024-05-19T00:36:15.282645
+------Order ID: 98dbd6bf-5a86-48ef-be7f-4d00eaa23069
+Product: Trandafir galben
+Price: 100.0
+Pay: CASH_ON_DELIVERY
+Total: 100
+Date: 2024-05-19T01:40:00.481074
+------

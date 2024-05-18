@@ -41,10 +41,9 @@ public class FileSender {
         LOGGER.info("Raspuns body: " + responseBody);
     }
 
-    public void sendReportOnEmail(String format, UUID userId, String name, String email, String bodyAction, String body) {
+    public void sendReportOnEmail(String nameFile, UUID userId, String name, String email, String bodyAction, String body) {
         String microserviceA3Url = "http://localhost:8085/send-email/report";
         try {
-            String nameFile = "sales_report." + format;
             Path path = Paths.get(nameFile);
             String originalFileName = nameFile;
             String contentType = "text/plain";
