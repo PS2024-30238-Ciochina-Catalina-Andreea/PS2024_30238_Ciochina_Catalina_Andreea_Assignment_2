@@ -93,45 +93,63 @@ public class CustomProductServiceImpl implements CustomProductService {
     @Override
     public ResponseEntity<String> addCustomProduct(CustomProductDetailedDTO customProductDetailedDTO) {
         try {
-            if (this.customProductUtils.validateCustomProductMap(customProductDetailedDTO)) {
-
-                Optional<User> user = userRepository.findById(customProductDetailedDTO.getId_user());
-                List<Product> products = productRepository.findProjectedByIdIn(customProductDetailedDTO.getId_products());
- ////to do - decrease quantity of products when added
-                if (products.stream().allMatch(Objects::nonNull) && !products.isEmpty()) {
-                    CustomProductDTO customProductDTO = customProductMapper.convToDtoWithObjects(customProductDetailedDTO, user, products);
-                    customProductRepository.save(customProductMapper.convertToEntity(customProductDTO));
-                    Optional<Category> category = categoryRepository.findByName(CategoryName.valueOf(String.valueOf(CategoryName.ACCESSORIES)));
-                    CustomProduct customProduct = customProductRepository.save(customProductMapper.convertToEntity(customProductDTO));
-                    ProductDetailedDTO productDetailedDTO = new ProductDetailedDTO(null,customProductDTO.getName(),customProductDTO.getDescription(),
-                            "/images/custom.jpg",customProduct.getPrice(),1,String.valueOf(CategoryName.CUSTOM_BOUQUETS));
-                    ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
-                    Product product = productRepository.save(productMapper.convertToEntity(productDTO));
-                    OrderItemDTO orderItemDTO = new OrderItemDTO(null, 1, product);
-                    OrderItem orderItem = orderItemRepository.save(orderItemMapper.convertToEntity(orderItemDTO));
-                    Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByUser(user.get());
-                    List<OrderItem> items = shoppingCart.get().getOrderItems();
-                    items.addAll(orderItemRepository.findProjectedByIdIn(Collections.singletonList(orderItem.getId())));
-                    if (shoppingCart.isPresent()) {
-                        ShoppingCart existingCart = shoppingCart.get();
-                        existingCart.setTotalPrice((long) (existingCart.getTotalPrice() + product.getPrice()));
-                        shoppingCartRepository.save(existingCart);
-                    }
-                    customProductRepository.delete(customProduct);
-                    product.setStock(0);
-                    productRepository.save(product);
-                    return Utils.getResponseEntity(CustomProductConstants.CUSTOM_PRODUCT_CREATED, HttpStatus.CREATED);
-                } else {
-                    return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.BAD_REQUEST);
-                }
-            } else {
+            if (!this.customProductUtils.validateCustomProductMap(customProductDetailedDTO)) {
                 return Utils.getResponseEntity(CustomProductConstants.INVALID_DATA_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.BAD_REQUEST);
             }
+            Optional<User> user = userRepository.findById(customProductDetailedDTO.getId_user());
+            List<Product> products = productRepository.findProjectedByIdIn(customProductDetailedDTO.getId_products());
+            if (!areProductsValid(products)) {
+                return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.BAD_REQUEST);
+            }
+            CustomProductDTO customProductDTO = customProductMapper.convToDtoWithObjects(customProductDetailedDTO, user, products);
+            CustomProduct customProduct = saveCustomProduct(customProductDTO);
+            Product product = createProduct(customProductDTO, customProduct);
+            OrderItem orderItem = createOrderItem(product);
+            updateShoppingCart(user, orderItem, product);
+            cleanUpCustomProduct(customProduct, product);
+            return Utils.getResponseEntity(CustomProductConstants.CUSTOM_PRODUCT_CREATED, HttpStatus.CREATED);
         } catch (Exception exception) {
             exception.printStackTrace();
+            return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
+    private boolean areProductsValid(List<Product> products) {
+        return products.stream().allMatch(Objects::nonNull) && !products.isEmpty();
+    }
+
+    private CustomProduct saveCustomProduct(CustomProductDTO customProductDTO) {
+        return customProductRepository.save(customProductMapper.convertToEntity(customProductDTO));
+    }
+
+    private Product createProduct(CustomProductDTO customProductDTO, CustomProduct customProduct) {
+        Optional<Category> category = categoryRepository.findByName(CategoryName.valueOf(String.valueOf(CategoryName.ACCESSORIES)));
+        ProductDetailedDTO productDetailedDTO = new ProductDetailedDTO(null, customProductDTO.getName(), customProductDTO.getDescription(),
+                "/images/custom.jpg", customProduct.getPrice(), 1, String.valueOf(CategoryName.CUSTOM_BOUQUETS));
+        ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
+        return productRepository.save(productMapper.convertToEntity(productDTO));
+    }
+
+    private OrderItem createOrderItem(Product product) {
+        OrderItemDTO orderItemDTO = new OrderItemDTO(null, 1, product);
+        return orderItemRepository.save(orderItemMapper.convertToEntity(orderItemDTO));
+    }
+
+    private void updateShoppingCart(Optional<User> user, OrderItem orderItem, Product product) {
+        Optional<ShoppingCart> shoppingCart = shoppingCartRepository.findByUser(user.get());
+        if (shoppingCart.isPresent()) {
+            ShoppingCart existingCart = shoppingCart.get();
+            List<OrderItem> items = existingCart.getOrderItems();
+            items.add(orderItem);
+            existingCart.setTotalPrice((long) (existingCart.getTotalPrice() + product.getPrice()));
+            shoppingCartRepository.save(existingCart);
+        }
+    }
+
+    private void cleanUpCustomProduct(CustomProduct customProduct, Product product) {
+        customProductRepository.delete(customProduct);
+        product.setStock(0);
+        productRepository.save(product);
     }
 
     @Override

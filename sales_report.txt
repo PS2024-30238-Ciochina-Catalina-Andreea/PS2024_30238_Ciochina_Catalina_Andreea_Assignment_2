@@ -1,8 +1,10 @@
-Produs: Vaza de flori parisiana, Luna: 2024-04, Total: 1
-Produs: Iris, Luna: 2024-04, Total: 3
-Produs: Margareta nou, Luna: 2024-04, Total: 8
-Produs: Trandafir roz, Luna: 2024-04, Total: 2
+Produs:  sd, Luna: 2024-05, Total: 1
+Produs: Trandafir galben, Luna: 2024-05, Total: 5
+Produs: Lalea mov, Luna: 2024-05, Total: 5
+Produs: c, Luna: 2024-05, Total: 1
+Produs: Vaza roz, Luna: 2024-05, Total: 1
+Produs: Vaza textura matifiata, Luna: 2024-05, Total: 2
 
-Luna: 2024-04, Total produse vandute: 14
+Luna: 2024-05, Total produse vandute: 15
 
-Total incasari:355
+Total incasari:644

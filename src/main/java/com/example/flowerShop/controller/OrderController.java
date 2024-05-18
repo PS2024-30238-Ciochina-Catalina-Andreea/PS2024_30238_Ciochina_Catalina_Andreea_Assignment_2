@@ -1,9 +1,9 @@
 package com.example.flowerShop.controller;
 
+import com.example.flowerShop.config.FileSender;
 import com.example.flowerShop.dto.order.OrderDTO;
 import com.example.flowerShop.dto.order.OrderDetailedDTO;
 import com.example.flowerShop.dto.user.UserGetDTO;
-import com.example.flowerShop.entity.Order;
 import com.example.flowerShop.service.impl.OrderServiceImpl;
 import com.example.flowerShop.utils.order.PaymentType;
 import com.example.flowerShop.utils.report.ContextReport;
@@ -32,6 +32,8 @@ public class OrderController {
 
     private final OrderServiceImpl orderServiceImpl;
 
+    private final FileSender fileSender;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderController.class);
 
     @Autowired
@@ -43,8 +45,10 @@ public class OrderController {
      * @param orderServiceImpl
      */
     @Autowired
-    public OrderController(OrderServiceImpl orderServiceImpl) {
+    public OrderController(OrderServiceImpl orderServiceImpl,
+                           FileSender fileSender) {
         this.orderServiceImpl = orderServiceImpl;
+        this.fileSender = fileSender;
     }
 
     /**
@@ -77,6 +81,7 @@ public class OrderController {
 
     @PostMapping("/report/{format}")
     public RedirectView getReport(@PathVariable String format, HttpServletRequest request) {
+        UserGetDTO currentUser = (UserGetDTO) session.getAttribute("loggedInUser");
         List<OrderDTO> orders = this.orderServiceImpl.getAllOrders().getBody();
         ContextReport contextReport;
         if (format.equals("pdf")) {
@@ -88,6 +93,8 @@ public class OrderController {
         }
         contextReport.executeStrategy(orders);
         String referer = request.getHeader("Referer");
+        fileSender.sendReportOnEmail(format,currentUser.getId(),currentUser.getName(),currentUser.getEmail(),
+                "Sales report","HI, admin!\nAcesta este raportul vanzarilor in formatul pe care l-ai ales.");
         return new RedirectView(referer);
     }
 

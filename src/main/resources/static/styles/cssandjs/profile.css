@@ -140,7 +140,8 @@ h2 {
     font-size: 36px;
     margin-bottom: 30px;
     margin-left: 7rem;
-    text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.61);
+    text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.7);
+    font-family: Georgia, serif;
 }
 
 .nav {

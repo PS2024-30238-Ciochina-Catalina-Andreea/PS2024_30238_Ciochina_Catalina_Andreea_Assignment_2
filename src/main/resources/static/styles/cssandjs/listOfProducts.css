@@ -46,6 +46,7 @@ body {
     font-size: 36px;
     margin-bottom: 30px;
     text-shadow: 2px 2px 4px #723b38;
+    font-family: Georgia, serif;
 }
 
 @media screen and (max-width: 768px) {
@@ -194,8 +195,9 @@ div {
     text-align: center;
     font-size: 36px;
     margin-bottom: 30px;
-    margin-left: 8rem;
-    text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.61);
+    margin-left: 10rem;
+    text-shadow: 2px 2px 4px rgba(241, 142, 160, 0.7);
+    font-family: Georgia, serif;
 }
 
 .formats {
