@@ -19,7 +19,7 @@ public class CsvReport implements Report {
                             .append(order.getUser().getName()).append(",")
                             .append(item.getProduct().getName()).append(",")
                             .append(String.valueOf(item.getQuantity())).append(",")
-                            .append(String.valueOf(item.getProduct().getPrice()*item.getQuantity())).append(",")
+                            .append(String.valueOf(item.getProduct().getPrice() * item.getQuantity())).append(",")
                             .append(order.getOrderDate().toString()).append("\n");
                 }
             }

@@ -48,7 +48,6 @@
             <small>Introduceți cantitatea pentru fiecare produs selectat.</small>
         </div>
 
-        <!-- Total Price Field -->
         <div class="form-group">
             <label for="totalPrice">Preț Total:</label>
             <input type="text" id="totalPrice" name="totalPrice" readonly>
@@ -115,7 +114,11 @@
                 quantityInput.name = 'quantity-' + productId;
                 quantityInput.required = true;
                 quantityInput.placeholder = 'Cantitate pentru ' + selectedCheckbox.nextElementSibling.textContent;
+                quantityInput.min = 1;
                 quantityInput.addEventListener('input', function () {
+                    if (quantityInput.value < 1) {
+                        quantityInput.value = 1;
+                    }
                     updatePrice();
                 });
                 quantitiesContainer.appendChild(quantityInput);
@@ -129,6 +132,7 @@
             updateSubmitButtonState();
         }
     });
+
 
     function updatePrice() {
         var selectedProducts = document.querySelectorAll('input[name="selectedProducts"]:checked');

@@ -215,22 +215,22 @@ div {
 img {
     height: 10rem;
     width: 13rem;
-    padding-right:2rem;
+    padding-right: 2rem;
 }
 
-.buttonSort{
-    margin-top:1.5rem;
+.buttonSort {
+    margin-top: 1.5rem;
     width: 10rem;
 }
 
-.filter{
+.filter {
     margin-bottom: 3rem;
     display: flex;
     flex-direction: column;
 }
 
-.prods{
-    padding-bottom:1rem;
+.prods {
+    padding-bottom: 1rem;
 }
 
 .nav {

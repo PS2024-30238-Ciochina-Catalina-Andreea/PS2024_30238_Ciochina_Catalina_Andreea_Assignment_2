@@ -82,6 +82,26 @@
                 }
             })
     });
+
+    document.getElementById('price').addEventListener('input', function () {
+        var input = this;
+        var value = parseFloat(input.value);
+        var min = parseFloat(input.min);
+
+        if (value < min) {
+            input.value = min;
+        }
+    });
+
+    document.getElementById('stock').addEventListener('input', function () {
+        var input = this;
+        var value = parseInt(input.value, 10);
+        var min = parseInt(input.min, 10);
+
+        if (value < min) {
+            input.value = min;
+        }
+    });
 </script>
 </body>
 </html>

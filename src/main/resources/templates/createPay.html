@@ -12,7 +12,8 @@
     <form id="paymentForm" action="/card/add" method="POST">
         <div class="form-group">
             <label for="numarCard">Numar card:</label>
-            <input type="text" id="numarCard" name="numarCard" pattern="\d{16}" title="Trebuie sa contina exact 16 cifre" required>
+            <input type="text" id="numarCard" name="numarCard" pattern="\d{16}"
+                   title="Trebuie sa contina exact 16 cifre" required>
         </div>
 
         <div class="form-group">
@@ -25,7 +26,7 @@
             <input type="text" id="totalPrice" name="totalPrice" th:value="${price}" readonly required>
         </div>
 
-    <button type="submit">Plateste</button>
+        <button type="submit">Plateste</button>
     </form>
 </div>
 <script>
@@ -45,7 +46,7 @@
                         notification.textContent = 'Plata s-a efectuat!';
                         document.body.appendChild(notification);
                         setTimeout(function () {
-                            window.location.href= response.url;
+                            window.location.href = response.url;
                         }, 1000);
                     } else {
                         notification.className = 'notificationError';

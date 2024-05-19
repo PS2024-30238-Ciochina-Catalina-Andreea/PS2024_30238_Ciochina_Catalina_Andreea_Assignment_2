@@ -59,7 +59,8 @@
 <div class="container floral-border">
     <h1 class="floral-header" style="margin-left: 3rem;">Lista comenzi</h1>
 
-    <form th:if="${user.getRole().toString()} == 'ADMIN'" id="reportForm" class="formats" action="/order/report/" method="post">
+    <form th:if="${user.getRole().toString()} == 'ADMIN'" id="reportForm" class="formats" action="/order/report/"
+          method="post">
         <input class="rd" type="radio" id="pdf" name="reportFormat" value="pdf">
         <label class="rd" for="pdf">PDF</label><br>
         <input class="rd" type="radio" id="csv" name="reportFormat" value="csv">
@@ -69,7 +70,8 @@
         <button class="rd" type="button" onclick="submitForm()">Generare raport</button>
     </form>
 
-    <form th:if="${user.getRole().toString()} == 'CUSTOMER'" id="reportUserForm" class="formats" action="/order/reportUser/" method="post">
+    <form th:if="${user.getRole().toString()} == 'CUSTOMER'" id="reportUserForm" class="formats"
+          action="/order/reportUser/" method="post">
         <input class="rd" type="radio" id="pdf2" name="reportUserFormat" value="pdf">
         <label class="rd" for="pdf">PDF</label><br>
         <input class="rd" type="radio" id="csv2" name="reportUserFormat" value="csv">

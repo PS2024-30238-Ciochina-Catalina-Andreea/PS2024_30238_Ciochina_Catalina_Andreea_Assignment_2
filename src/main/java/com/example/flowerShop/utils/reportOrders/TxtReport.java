@@ -18,14 +18,14 @@ public class TxtReport implements Report {
         writer.write("Order Report\n");
         writer.write("Customer: " + orders.get(0).getUser().getName() + "\n");
         for (OrderDTO order : orders) {
-            writer.write(("Order ID: " + order.getId())+ "\n");
+            writer.write(("Order ID: " + order.getId()) + "\n");
             for (OrderItem item : order.getOrderItems()) {
-                writer.write("Product: " + item.getProduct().getName()+ "\n");
-                writer.write("Price: " + item.getProduct().getPrice() * item.getQuantity()+ "\n");
+                writer.write("Product: " + item.getProduct().getName() + "\n");
+                writer.write("Price: " + item.getProduct().getPrice() * item.getQuantity() + "\n");
             }
-            writer.write("Pay: " + order.getPay()+ "\n");
-            writer.write("Total: " + order.getTotalPrice()+ "\n");
-            writer.write("Date: " + order.getOrderDate()+ "\n");
+            writer.write("Pay: " + order.getPay() + "\n");
+            writer.write("Total: " + order.getTotalPrice() + "\n");
+            writer.write("Date: " + order.getOrderDate() + "\n");
             writer.write("------\n");
         }
         writer.close();

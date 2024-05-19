@@ -14,14 +14,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
-public class ShoppingCartMapper implements Mapper<ShoppingCart, ShoppingCartDTO, ShoppingCartDetailedDTO>{
+public class ShoppingCartMapper implements Mapper<ShoppingCart, ShoppingCartDTO, ShoppingCartDetailedDTO> {
     @Override
     public ShoppingCartDetailedDTO convertToDTO(ShoppingCart shoppingCart) {
 
-        if(shoppingCart != null){
-            return  ShoppingCartDetailedDTO.builder()
+        if (shoppingCart != null) {
+            return ShoppingCartDetailedDTO.builder()
                     .id(shoppingCart.getId())
-                    .id_order(shoppingCart.getOrder() != null ? shoppingCart.getOrder().getId():null)
+                    .id_order(shoppingCart.getOrder() != null ? shoppingCart.getOrder().getId() : null)
                     .id_user(shoppingCart.getUser().getId())
                     .totalPrice(shoppingCart.getTotalPrice())
                     .id_orderItems(this.orderItemsToOrderItemIds(shoppingCart.getOrderItems()))
@@ -32,7 +32,7 @@ public class ShoppingCartMapper implements Mapper<ShoppingCart, ShoppingCartDTO,
 
     @Override
     public ShoppingCart convertToEntity(ShoppingCartDTO shoppingCartDTO) {
-        if(shoppingCartDTO != null){
+        if (shoppingCartDTO != null) {
             return ShoppingCart.builder()
                     .id(shoppingCartDTO.getId())
                     .order(null)

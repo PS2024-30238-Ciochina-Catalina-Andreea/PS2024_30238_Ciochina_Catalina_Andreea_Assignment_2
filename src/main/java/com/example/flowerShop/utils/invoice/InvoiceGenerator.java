@@ -58,7 +58,7 @@ public class InvoiceGenerator {
     private static PdfPTable getPdfTable(List<OrderItem> items, Font fontAntet) throws DocumentException {
         PdfPTable table = new PdfPTable(4);
         table.setWidthPercentage(100);
-        table.setWidths(new float[]{1, 3, 2,4});
+        table.setWidths(new float[]{1, 3, 2, 4});
 
         PdfPCell cell1 = new PdfPCell(new Phrase("Nr. crt.", fontAntet));
         cell1.setHorizontalAlignment(Element.ALIGN_CENTER);

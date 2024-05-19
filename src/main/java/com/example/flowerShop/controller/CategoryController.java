@@ -23,6 +23,7 @@ public class CategoryController {
 
     /**
      * Dep Injection in constructor with the help of Spring annotation
+     *
      * @param categoryServiceImpl
      */
     @Autowired
@@ -32,7 +33,8 @@ public class CategoryController {
 
     /**
      * Retrieves list of categories
-     * @return ResponseEntity<List<CategoryDTO>>
+     *
+     * @return ResponseEntity<List < CategoryDTO>>
      */
     @GetMapping("/get/all")
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
@@ -42,6 +44,7 @@ public class CategoryController {
 
     /**
      * Gets category by id
+     *
      * @param id
      * @return ResponseEntity<CategoryDTO>
      */
@@ -53,6 +56,7 @@ public class CategoryController {
 
     /**
      * Creates a new category
+     *
      * @param categoryDetailedDTO
      * @return ResponseEntity<String>
      */
@@ -64,6 +68,7 @@ public class CategoryController {
 
     /**
      * Updates category by id
+     *
      * @param id
      * @param categoryDetailedDTO
      * @return ResponseEntity<String>
@@ -76,6 +81,7 @@ public class CategoryController {
 
     /**
      * Deletes category
+     *
      * @param id
      * @return ResponseEntity<String>
      */

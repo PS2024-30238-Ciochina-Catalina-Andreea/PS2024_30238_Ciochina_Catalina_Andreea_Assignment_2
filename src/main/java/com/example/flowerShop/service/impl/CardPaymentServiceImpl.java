@@ -34,7 +34,8 @@ public class CardPaymentServiceImpl implements CardPaymentService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CardPaymentServiceImpl.class);
 
     /**
-     *  Injected constructor
+     * Injected constructor
+     *
      * @param cardPaymentRepository
      * @param cardPaymentMapper
      * @param cardPaymentUtils
@@ -48,7 +49,8 @@ public class CardPaymentServiceImpl implements CardPaymentService {
 
     /**
      * Retrieves the list of all payments present in the db
-     * @return ResponseEntity<List<CardPaymentDetailedDTO>>
+     *
+     * @return ResponseEntity<List < CardPaymentDetailedDTO>>
      */
     @Override
     public ResponseEntity<List<CardPaymentDetailedDTO>> getAllPayments() {
@@ -65,6 +67,7 @@ public class CardPaymentServiceImpl implements CardPaymentService {
 
     /**
      * Creates a new payment with the data introduced by the user
+     *
      * @param cardPaymentDTO
      * @return ResponseEntity<String>
      */
@@ -88,6 +91,7 @@ public class CardPaymentServiceImpl implements CardPaymentService {
 
     /**
      * Deletes an existing payment if it finds it in the db
+     *
      * @param id
      * @return ResponseEntity<String>
      */

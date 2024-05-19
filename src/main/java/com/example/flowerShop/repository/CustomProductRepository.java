@@ -12,5 +12,6 @@ import java.util.UUID;
 public interface CustomProductRepository extends JpaRepository<CustomProduct, UUID> {
 
     Optional<CustomProduct> findById(@Param("id") UUID id);
+
     List<CustomProduct> findByUser(User user);
 }

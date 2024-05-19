@@ -196,7 +196,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     if (orderItemOptional.isPresent()) {
                         OrderItem orderItem = orderItemOptional.get();
                         Product product = orderItem.getProduct();
-                        if(product.getCategory().getName().equals(CategoryName.valueOf(String.valueOf(CategoryName.CUSTOM_BOUQUETS))))
+                        if (product.getCategory().getName().equals(CategoryName.valueOf(String.valueOf(CategoryName.CUSTOM_BOUQUETS))))
                             this.increaseQuantitiesOfProducts(product.getId());
                         items.remove(orderItem);
                         shoppingCart.setOrderItems(items);
@@ -205,7 +205,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         productRepository.save(product);
                         shoppingCartRepository.save(shoppingCart);
                         orderItemRepository.deleteById(orderItemId);
-                        if(product.getCategory().getName().equals(CategoryName.valueOf(String.valueOf(CategoryName.CUSTOM_BOUQUETS))))
+                        if (product.getCategory().getName().equals(CategoryName.valueOf(String.valueOf(CategoryName.CUSTOM_BOUQUETS))))
                             productRepository.delete(product);
                         return Utils.getResponseEntity(ShoppingCartConstants.ORDER_ITEM_DELETED_FROM_CART, HttpStatus.OK);
                     } else {

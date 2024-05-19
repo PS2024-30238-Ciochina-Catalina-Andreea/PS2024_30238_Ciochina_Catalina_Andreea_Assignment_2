@@ -64,7 +64,7 @@ public class OrderItemMapper implements Mapper<OrderItem, OrderItemDTO, OrderIte
         return null;
     }
 
-    public List<OrderItemDTO> convertListToDtoWithObjects(List<OrderItem> source){
+    public List<OrderItemDTO> convertListToDtoWithObjects(List<OrderItem> source) {
         return source.stream()
                 .map(this::convertEntToDtoWithObjects)
                 .filter(Objects::nonNull)

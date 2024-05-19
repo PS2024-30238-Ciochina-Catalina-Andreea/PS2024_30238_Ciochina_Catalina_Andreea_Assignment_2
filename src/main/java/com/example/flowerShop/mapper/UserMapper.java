@@ -11,7 +11,7 @@ public class UserMapper implements Mapper<User, UserPostDTO, UserGetDTO> {
     @Override
     public UserGetDTO convertToDTO(User user) {
 
-        if(user != null){
+        if (user != null) {
             return UserGetDTO.builder()
                     .id(user.getId())
                     .name(user.getName())

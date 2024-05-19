@@ -13,7 +13,8 @@
           enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Promotion Name:</label>
-            <input type="text" id="name" name="name" th:field="*{name}" pattern="[a-zA-Z0-9\s\'\-_]+" title="Introdu un cuvant in numele promotiei" required>
+            <input type="text" id="name" name="name" th:field="*{name}" pattern="[a-zA-Z0-9\s\'\-_]+"
+                   title="Introdu un cuvant in numele promotiei" required>
         </div>
         <div class="form-group">
             <label for="discountPercentage">Discount Percentage:</label>
@@ -52,6 +53,18 @@
                     }
                 }
             })
+    });
+    document.getElementById('discountPercentage').addEventListener('input', function () {
+        var input = this;
+        var value = parseFloat(input.value);
+        var min = parseFloat(input.min);
+        var max = parseFloat(input.max);
+
+        if (value < min) {
+            input.value = min;
+        } else if (value > max) {
+            input.value = max;
+        }
     });
 </script>
 </body>

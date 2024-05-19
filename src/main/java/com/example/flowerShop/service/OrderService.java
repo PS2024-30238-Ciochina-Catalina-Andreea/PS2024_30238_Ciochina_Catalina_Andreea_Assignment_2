@@ -13,7 +13,7 @@ public interface OrderService {
 
     ResponseEntity<OrderDTO> getOrderById(UUID id);
 
-    ResponseEntity<List<OrderDTO>>  getAllOrdersByUser(UUID id);
+    ResponseEntity<List<OrderDTO>> getAllOrdersByUser(UUID id);
 
     ResponseEntity<String> addOrder(OrderDetailedDTO orderDetailedDTO);
 

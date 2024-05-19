@@ -19,7 +19,7 @@ public class PdfReport implements Report {
         PdfWriter.getInstance(document, new FileOutputStream(filePath));
         document.open();
         document.add(new Paragraph("Order Report"));
-        document.add(new Paragraph("Customer: " + orders.get(0).getUser().getName()+"\n"));
+        document.add(new Paragraph("Customer: " + orders.get(0).getUser().getName() + "\n"));
 
         for (OrderDTO order : orders) {
             document.add(new Paragraph("Order ID: " + order.getId()));

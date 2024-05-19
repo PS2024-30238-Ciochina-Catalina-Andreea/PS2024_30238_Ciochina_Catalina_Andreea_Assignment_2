@@ -12,22 +12,26 @@
     <form id="updateUserForm" th:action="@{/update/__${user.id}__}" th:object="${user}" method="POST">
         <div class="form-group">
             <label for="name">Nume:</label>
-            <input type="text" id="name" name="name" th:field="*{name}" pattern="^[A-Za-z]+\s[A-Za-z]+$" maxlength="30" title="Introdu un nume valid, format din cel putin doua cuvinte" required th:value="${user.name}">
+            <input type="text" id="name" name="name" th:field="*{name}" pattern="^[A-Za-z]+\s[A-Za-z]+$" maxlength="30"
+                   title="Introdu un nume valid, format din cel putin doua cuvinte" required th:value="${user.name}">
         </div>
 
         <div class="form-group">
             <label for="contactNumber">Contact:</label>
-            <input type="text" id="contactNumber" name="contactNumber" pattern="\d{10}" title="Introdu un numar de contact valid de 10 cifre" th:field="*{contactNumber}" required>
+            <input type="text" id="contactNumber" name="contactNumber" pattern="\d{10}"
+                   title="Introdu un numar de contact valid de 10 cifre" th:field="*{contactNumber}" required>
         </div>
 
         <div class="form-group">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" th:field="*{email}"  pattern="[a-zA-Z0-9._%+-]+@gmail\.com$" title="Te rog introdu o adresa de Gmail valida" required>
+            <input type="email" id="email" name="email" th:field="*{email}" pattern="[a-zA-Z0-9._%+-]+@gmail\.com$"
+                   title="Te rog introdu o adresa de Gmail valida" required>
         </div>
 
         <div class="form-group">
             <label for="address">Adresa:</label>
-            <input type="text" id="address" name="address" th:field="*{address}" pattern="[a-zA-Z0-9\s]+" title="Introdu cel putin un cuvant in adresa ta" required>
+            <input type="text" id="address" name="address" th:field="*{address}" pattern="[a-zA-Z0-9\s]+"
+                   title="Introdu cel putin un cuvant in adresa ta" required>
         </div>
 
         <div class="form-group">
@@ -40,7 +44,7 @@
                        th:checked="${user.role == 'ADMIN'}">
             </div>
         </div>
-        <button type="submit" id="submitBtn" >Modifica</button>
+        <button type="submit" id="submitBtn">Modifica</button>
     </form>
 </div>
 
@@ -63,7 +67,7 @@
                         notification.className = 'notification';
                         notification.textContent = 'Datele profilului au fost modificate!';
                         document.body.appendChild(notification);
-                    } else  {
+                    } else {
                         notification.className = 'notificationError';
                         notification.textContent = 'Nu s-au modificat datele!';
                         document.body.appendChild(notification);

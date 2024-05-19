@@ -162,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
                     LOGGER.info("Order created");
                     shoppingCartRepository.save(shoppingCart.get());
                     Order orderRepo = orderRepository.save(orderMapper.convertToEntity(orderDTO));
-                    byte[] fileInvoice = InvoiceGenerator.generateInvoicePDF(orderRepo,items);
+                    byte[] fileInvoice = InvoiceGenerator.generateInvoicePDF(orderRepo, items);
                     InvoiceDTO invoiceDTO = new InvoiceDTO(orderRepo.getUser().getId(), orderRepo.getUser().getEmail(), fileInvoice);
                     emailSender.sendEmailToUserAsync(invoiceDTO);
                     return Utils.getResponseEntity(OrderConstants.ORDER_CREATED, HttpStatus.CREATED);

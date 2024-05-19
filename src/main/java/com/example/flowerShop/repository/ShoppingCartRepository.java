@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, UUID> {
-    
+
     Optional<ShoppingCart> findByUser(User user);
 }

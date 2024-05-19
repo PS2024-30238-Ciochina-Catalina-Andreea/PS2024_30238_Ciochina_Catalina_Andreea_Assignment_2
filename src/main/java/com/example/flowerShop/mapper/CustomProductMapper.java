@@ -94,7 +94,7 @@ public class CustomProductMapper implements Mapper<CustomProduct, CustomProductD
                     .description(customProductDTO.getDescription())
                     .products(customProductDTO.getProducts())
                     .quantities(customProductDTO.getQuantities())
-                    .price(calculateTotalPrice(customProductDTO.getQuantities(),customProductDTO.getProducts()))
+                    .price(calculateTotalPrice(customProductDTO.getQuantities(), customProductDTO.getProducts()))
                     .build();
         }
         return null;
