@@ -1,11 +1,7 @@
-Produs:  sd, Luna: 2024-05, Total: 1
-Produs: Trandafir galben, Luna: 2024-05, Total: 5
-Produs: Lalea mov, Luna: 2024-05, Total: 5
-Produs: c, Luna: 2024-05, Total: 1
+Produs: Trandafir Roz, Luna: 2024-05, Total: 10
 Produs: Vaza roz, Luna: 2024-05, Total: 1
-Produs: Vaza textura matifiata, Luna: 2024-05, Total: 2
-Produs: Vaza Murano, Luna: 2024-05, Total: 1
+Produs: My love, Luna: 2024-05, Total: 1
 
-Luna: 2024-05, Total produse vandute: 16
+Luna: 2024-05, Total produse vandute: 12
 
-Total incasari:733
+Total incasari:355

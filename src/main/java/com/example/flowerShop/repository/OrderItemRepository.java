@@ -12,7 +12,7 @@ import java.util.UUID;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
 
-    Optional<OrderItem> findByProductAndQuantity(Product product, Long quantity);
+    List<OrderItem> findAllByProduct(Product product);
 
     List<OrderItem> findProjectedByIdIn(List<UUID> orderItemIds);
 

@@ -17,7 +17,7 @@ import com.example.flowerShop.service.CustomProductService;
 import com.example.flowerShop.utils.Utils;
 import com.example.flowerShop.utils.category.CategoryName;
 import com.example.flowerShop.utils.customProduct.CustomProductUtils;
-import com.example.flowerShop.utils.shoppingCart.ShoppingCartUtils;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,16 +40,10 @@ public class CustomProductServiceImpl implements CustomProductService {
     private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
-    public CustomProductServiceImpl(ProductRepository productRepository,
-                                    CustomProductMapper customProductMapper,
-                                    CustomProductRepository customProductRepository,
-                                    CustomProductUtils customProductUtils,
-                                    UserRepository userRepository,
-                                    ProductMapper productMapper,
-                                    CategoryRepository categoryRepository,
-                                    OrderItemMapper orderItemMapper,
-                                    OrderItemRepository orderItemRepository,
-                                    ShoppingCartRepository shoppingCartRepository) {
+    private HttpSession session;
+
+    @Autowired
+    public CustomProductServiceImpl(ProductRepository productRepository, CustomProductMapper customProductMapper, CustomProductRepository customProductRepository, CustomProductUtils customProductUtils, UserRepository userRepository, ProductMapper productMapper, CategoryRepository categoryRepository, OrderItemMapper orderItemMapper, OrderItemRepository orderItemRepository, ShoppingCartRepository shoppingCartRepository) {
         this.customProductMapper = customProductMapper;
         this.customProductRepository = customProductRepository;
         this.productRepository = productRepository;
@@ -98,12 +92,15 @@ public class CustomProductServiceImpl implements CustomProductService {
             }
             Optional<User> user = userRepository.findById(customProductDetailedDTO.getId_user());
             List<Product> products = productRepository.findProjectedByIdIn(customProductDetailedDTO.getId_products());
+            this.decreaseQuantitiesOfProducts(products, (List<Integer>) customProductDetailedDTO.getQuantities());
             if (!areProductsValid(products)) {
                 return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.BAD_REQUEST);
             }
             CustomProductDTO customProductDTO = customProductMapper.convToDtoWithObjects(customProductDetailedDTO, user, products);
             CustomProduct customProduct = saveCustomProduct(customProductDTO);
             Product product = createProduct(customProductDTO, customProduct);
+            session.setAttribute("quantity_" + product.getId(), customProductDetailedDTO.getQuantities());
+            session.setAttribute("products_" + product.getId(), products);
             OrderItem orderItem = createOrderItem(product);
             updateShoppingCart(user, orderItem, product);
             cleanUpCustomProduct(customProduct, product);
@@ -111,6 +108,21 @@ public class CustomProductServiceImpl implements CustomProductService {
         } catch (Exception exception) {
             exception.printStackTrace();
             return Utils.getResponseEntity(CustomProductConstants.SOMETHING_WENT_WRONG_AT_CREATING_CUSTOM_PRODUCT, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void decreaseQuantitiesOfProducts(List<Product> products, List<Integer> quantities) {
+        if (products.size() != quantities.size()) {
+            throw new IllegalArgumentException("The size of products and quantities must be the same.");
+        }
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            int newQuantity = product.getStock() - quantities.get(i);
+            if (newQuantity < 0) {
+                throw new IllegalArgumentException("Quantity cannot be negative.");
+            }
+            product.setStock(newQuantity);
+            productRepository.save(product);
         }
     }
 
@@ -123,9 +135,8 @@ public class CustomProductServiceImpl implements CustomProductService {
     }
 
     private Product createProduct(CustomProductDTO customProductDTO, CustomProduct customProduct) {
-        Optional<Category> category = categoryRepository.findByName(CategoryName.valueOf(String.valueOf(CategoryName.ACCESSORIES)));
-        ProductDetailedDTO productDetailedDTO = new ProductDetailedDTO(null, customProductDTO.getName(), customProductDTO.getDescription(),
-                "/images/custom.jpg", customProduct.getPrice(), 1, String.valueOf(CategoryName.CUSTOM_BOUQUETS));
+        Optional<Category> category = categoryRepository.findByName(CategoryName.valueOf(String.valueOf(CategoryName.CUSTOM_BOUQUETS)));
+        ProductDetailedDTO productDetailedDTO = new ProductDetailedDTO(null, customProductDTO.getName(), customProductDTO.getDescription(), "/images/custom.jpg", customProduct.getPrice(), 1, String.valueOf(CategoryName.CUSTOM_BOUQUETS));
         ProductDTO productDTO = productMapper.convToProdWithCategory(productDetailedDTO, category);
         return productRepository.save(productMapper.convertToEntity(productDTO));
     }
@@ -151,6 +162,7 @@ public class CustomProductServiceImpl implements CustomProductService {
         product.setStock(0);
         productRepository.save(product);
     }
+
 
     @Override
     public ResponseEntity<String> deleteCustomProductById(UUID id) {

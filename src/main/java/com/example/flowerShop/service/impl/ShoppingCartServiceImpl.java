@@ -12,7 +12,9 @@ import com.example.flowerShop.mapper.ShoppingCartMapper;
 import com.example.flowerShop.repository.*;
 import com.example.flowerShop.service.ShoppingCartService;
 import com.example.flowerShop.utils.Utils;
+import com.example.flowerShop.utils.category.CategoryName;
 import com.example.flowerShop.utils.shoppingCart.ShoppingCartUtils;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(ShoppingCartServiceImpl.class);
+
+    @Autowired
+    private HttpSession session;
 
     /**
      * Injected constructor
@@ -138,6 +143,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     /**
      * Update the cart by user id
+     *
      * @param id
      * @param shoppingCartDetailedDTO
      * @return
@@ -165,6 +171,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     /**
      * Update cart by changing the order item
+     *
      * @param userId
      * @param orderItemId
      * @return ResponseEntity<String>
@@ -189,6 +196,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                     if (orderItemOptional.isPresent()) {
                         OrderItem orderItem = orderItemOptional.get();
                         Product product = orderItem.getProduct();
+                        if(product.getCategory().getName().equals(CategoryName.valueOf(String.valueOf(CategoryName.CUSTOM_BOUQUETS))))
+                            this.increaseQuantitiesOfProducts(product.getId());
                         items.remove(orderItem);
                         shoppingCart.setOrderItems(items);
                         ShoppingCartUtils.updatePrice(shoppingCart, items);
@@ -196,7 +205,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                         productRepository.save(product);
                         shoppingCartRepository.save(shoppingCart);
                         orderItemRepository.deleteById(orderItemId);
-
+                        if(product.getCategory().getName().equals(CategoryName.valueOf(String.valueOf(CategoryName.CUSTOM_BOUQUETS))))
+                            productRepository.delete(product);
                         return Utils.getResponseEntity(ShoppingCartConstants.ORDER_ITEM_DELETED_FROM_CART, HttpStatus.OK);
                     } else {
                         return Utils.getResponseEntity(ShoppingCartConstants.ORDER_ITEM_NOT_FOUND_IN_CART, HttpStatus.BAD_REQUEST);
@@ -213,8 +223,23 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return Utils.getResponseEntity(ShoppingCartConstants.SOMETHING_WENT_WRONG_AT_UPDATING_CART, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    private void increaseQuantitiesOfProducts(UUID id) {
+        List<Product> products = (List<Product>) this.session.getAttribute("products_" + id);
+        List<Integer> quantities = (List<Integer>) this.session.getAttribute("quantity_" + id);
+        if (products.size() != quantities.size()) {
+            throw new IllegalArgumentException("The size of products and quantities must be the same.");
+        }
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            int newQuantity = product.getStock() + quantities.get(i);
+            product.setStock(newQuantity);
+            productRepository.save(product);
+        }
+    }
+
     /**
      * Delete cart by id
+     *
      * @param id
      * @return
      */
