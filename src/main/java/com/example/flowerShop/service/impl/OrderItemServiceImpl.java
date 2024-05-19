@@ -151,10 +151,8 @@ public class OrderItemServiceImpl implements OrderItemService {
                 OrderItem orderItemExisting = orderItemOptional.get();
                 Optional<Product> product;
                 if (orderItemDetailedDTO.getId_product() == null) {
-                    LOGGER.info("no id");
                     product = Optional.ofNullable(orderItemExisting.getProduct());
                 } else {
-                    LOGGER.info(" id");
                     product = productRepository.findById(orderItemDetailedDTO.getId_product());
                 }
 
@@ -210,6 +208,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     /**
      * Updates quantity of order item by id
+     *
      * @param id
      * @param id_cart
      * @param action

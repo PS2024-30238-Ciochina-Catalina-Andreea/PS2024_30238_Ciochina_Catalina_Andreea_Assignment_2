@@ -7,3 +7,10 @@ Pay: CARD
 Total: 197
 Date: 2024-05-19T16:03:16.440774
 ------
+Order ID: 413ba6c5-e604-4717-8d3a-0538617a12d8
+Product: Bujor roz
+Price: 125.0
+Pay: CASH_ON_DELIVERY
+Total: 125
+Date: 2024-05-19T16:17:06.628660
+------
