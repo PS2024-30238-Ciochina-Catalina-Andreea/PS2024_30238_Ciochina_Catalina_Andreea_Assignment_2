@@ -240,6 +240,19 @@
         document.getElementById("filterForm").submit();
     }
 
+    document.querySelectorAll('.quantity-input').forEach(function(input) {
+        input.addEventListener('input', function () {
+            var value = parseFloat(input.value);
+            var min = parseFloat(input.min);
+            var max = parseFloat(input.max);
+
+            if (value < min) {
+                input.value = min;
+            } else if (value > max) {
+                input.value = max;
+            }
+        });
+    });
 </script>
 </body>
 </html>
